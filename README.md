@@ -78,14 +78,53 @@ Its also handles the uploading of images.
 1: Installation
 ---------------------------
 
-The bundle utilises the intervention image library http://image.intervention.io/
+Clone the bundle repo to your src directory.
+```
+git clone https://github.com/irishdan/ResponsiveImageBundle.git
+```
 
-
-
-Clone the repo to your src directory.
+The bundle utilises the intervention image library http://image.intervention.io/. Add as requirement to composer.json
+```
+{
+    "require": {
+        "intervention/image": "^2.3",
+    }
+}
+```
 
 2: Enable the Bundle
 -------------------------
+
+Enable the bundle by adding it to the list of registered bundles
+in the `app/AppKernel.php` file of your project:
+
+```
+<?php
+// app/AppKernel.php
+
+// ...
+class AppKernel extends Kernel
+{
+    public function registerBundles()
+    {
+        $bundles = array(
+            // ...
+
+            new ResponsiveImageBundle\ResponsiveImageBundle(),
+        );
+
+        // ...
+    }
+
+    // ...
+}
+```
+
+Import the service definitions in your config.yml file
+imports:
+```php
+    - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
+```
 
 
 3: Configuration
@@ -94,20 +133,20 @@ Clone the repo to your src directory.
 All of the configurations
 ```
 responsive_image:
-    debug: FALSE # If true debug info is printed on generated images
-    image_compression: 80 # the compression quality of the generated images
-    image_directory: # '%uploads_directory%' # The directory where uploaded images are saved
-    image_styles_directory: 'styles' # The directory within the uploads directory where generated images are saved
+    debug: FALSE                        # If true debug info is printed on generated images
+    image_compression: 80               # the compression quality of the generated images
+    image_directory:                    # '%uploads_directory%' # The directory where uploaded images are saved
+    image_styles_directory: 'styles'    # The directory within the uploads directory where generated images are saved
     image_entity_class: [ 'ResponsiveImageBundle:Image' ] # The image entity
-    image_driver: gd
-    breakpoints:
+    image_driver: gd                    # The php image library
+    breakpoints:                        # Breakpoint definitions
         base: 'min-width: 0px'
         mobile: 'min-width: 300px'
         tablet: 'min-width: 480px'
         phablet: 'min-width: 768px'
         desktop: 'min-width: 1100px'
         tv: 'min-width: 1800px'
-    image_styles:
+    image_styles:                       # Image style definitions
         full:
             effect: scale
             height: 200
@@ -122,7 +161,7 @@ responsive_image:
             effect: crop
             width: 540
             height: 400
-    picture_sets:
+    picture_sets:                       # Picture set definitions
         thumb_picture:
             base:
                 effect: crop
