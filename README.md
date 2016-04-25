@@ -188,7 +188,7 @@ responsive_image:
 4: Usage
 ---------------------------
 
-For image objects can use your own entity, you like as long as it implements the esponsiveImageInterface
+For image objects you can use your own entity, as long as it implements the ResponsiveImageInterface
 ```
 ResponsiveImageBundle\Utils\ResponsiveImageInterface.
 ```
@@ -202,7 +202,7 @@ When creating a new image the image.uploader service handles uploading and savin
 $this->get('image.uploader')->upload($image);
 ```
 
-To generate a styled image tag simply set the image style, use the style_manager service.
+To generate a styled image tag, simply set the image style using the style_manager service.
 ```
 $this->get('image.style_manager')->setImageStyle($image, 'thumb');
 ```
