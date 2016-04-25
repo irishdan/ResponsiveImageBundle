@@ -3,7 +3,7 @@
 For those familiar with Drupal, this bundle combines Drupal's image styles, picture module's and image field focus module's functionality 
 into a single bundle.
 
-For those not familiar with Drupal, this bundle allows you to easily configure image formats and generate. For example an image format called 'thumbnail'
+For those not familiar with Drupal, this bundle allows you to easily configure image formats and generate styled images and responsive images. For example an image format called 'thumbnail'
 can easily be created in config.yml like so: 
 
 ```
@@ -12,8 +12,6 @@ thumbnail:
     width: 180
     height: 180
 ```
-
-Currently scale and crop are supported.
 
 Image styles can be grouped into 'picture sets', which are used to generate responsive images using the html5 '<picture>' element.
 A picture set is a group of image styles with a breakpoint associated with each style.
@@ -120,8 +118,7 @@ class AppKernel extends Kernel
 }
 ```
 
-Import the service definitions in your config.yml file
-imports:
+Import the service definitions in your config.yml file.
 ```php
     - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
 ```
@@ -130,7 +127,7 @@ imports:
 3: Configuration
 ---------------------------
 
-All of the configurations
+All of the available configurations
 ```
 responsive_image:
     debug: FALSE                        # If true debug info is printed on generated images
@@ -200,7 +197,7 @@ There's also a working image object included, Image.php, that you can use direct
 ResponsiveImageBundle\Entity\Image.php
 ```
 
-When creating a new image the image.uploader service handles saving the image file to the server.
+When creating a new image the image.uploader service handles uploading and saving the image file to the server.
 ```
 $this->get('image.uploader')->upload($image);
 ```
@@ -219,7 +216,7 @@ To generate a picture element the style manager service is used again.
 ```
 $this->get('image.style_manager')->generatePictureImage($image, 'thumb_picture');
 ```
-Again print the object will generate the picture element. If the style and the picture properties are both set the picture takes precedence.
+Again, printing the object will generate the picture element html. If the style and the picture properties are both set the picture takes precedence.
 
 After editing an image it may be useful to delete all of the styled images so that they will be regenerated.
 In your CRUD logic:
