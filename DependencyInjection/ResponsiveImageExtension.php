@@ -33,7 +33,7 @@ class ResponsiveImageExtension extends Extension
         $container->setParameter('image_directory', $config['image_directory']);
         $container->setParameter('image_styles_directory', $config['image_styles_directory']);
 
-        // Create the image_entity_class paramater.
+        // Create the image_entity_class parameter.
         $container->setParameter('image_entity_class', $config['image_entity_class']);
 
     }

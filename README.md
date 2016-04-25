@@ -191,6 +191,45 @@ responsive_image:
 4: Usage
 ---------------------------
 
+For image objects can use your own entity, you like as long as it implements the esponsiveImageInterface
+```
+ResponsiveImageBundle\Utils\ResponsiveImageInterface.
+```
+There's also a working image object included, Image.php, that you can use directly or modify.
+```
+ResponsiveImageBundle\Entity\Image.php
+```
 
+When creating a new image the image.uploader service handles saving the image file to the server.
+```
+$this->get('image.uploader')->upload($image);
+```
 
- 
+To generate a styled image tag simply set the image style, use the style_manager service.
+```
+$this->get('image.style_manager')->setImageStyle($image, 'thumb');
+```
+Or you can simply use the setStyle method on the $image object directly. In your template file, invokes the _toString method to generate the img tag.
+
+```
+{{ image }}
+```
+
+To generate a picture element the style manager service is used again.
+```
+$this->get('image.style_manager')->generatePictureImage($image, 'thumb_picture');
+```
+Again print the object will generate the picture element. If the style and the picture properties are both set the picture takes precedence.
+
+After editing an image it may be useful to delete all of the styled images so that they will be regenerated.
+In your CRUD logic:
+```
+$this->get('image.style_manager')->deleteImageFile($image->getPath());
+```
+
+To set the crop and focus areas of an image, in your edit form use the the CropFocusType in the form builder.
+```
+$form->add('crop_coordinates', CropFocusType::class, array(
+    'data' => $image
+));
+```

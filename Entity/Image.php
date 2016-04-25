@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace ResponsiveImageBundle\Entity;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\Mapping as ORM;
