@@ -83,7 +83,7 @@ Clone the bundle repo to your src directory.
 git clone https://github.com/irishdan/ResponsiveImageBundle.git
 ```
 
-The bundle utilises the intervention image library http://image.intervention.io/. Add as requirement to composer.json
+The bundle utilises the intervention image library http://image.intervention.io/. Add it as a requirement to composer.json
 ```
 {
     "require": {
@@ -134,7 +134,7 @@ All of the configurations
 ```
 responsive_image:
     debug: FALSE                        # If true debug info is printed on generated images
-    image_compression: 80               # the compression quality of the generated images
+    image_compression: 80               # The compression quality of the generated images
     image_directory:                    # '%uploads_directory%' # The directory where uploaded images are saved
     image_styles_directory: 'styles'    # The directory within the uploads directory where generated images are saved
     image_entity_class: [ 'ResponsiveImageBundle:Image' ] # The image entity

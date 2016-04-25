@@ -1,7 +1,7 @@
 # Responsive image sample configuration
 # responsive_image:
 #     debug: FALSE
-#     image_directory: '%uploads_directory%'
+#     image_directory: 'uploads'
 #     image_entity_class: [ 'ResponsiveImageBundle:Image' ]
 #     image_styles_directory: 'styles'
 #     image_compression: 80
