@@ -11,11 +11,11 @@ class StylesController extends Controller
     public function indexAction(Request $request)
     {
         // Get all styles and create the form
-        $styles = $this->get('image.style_manager')->getAllStyles();
+        $styles = $this->get('responsive_image.style_manager')->getAllStyles();
         $form = $this->createForm(StylesType::class, $styles);
 
         // pass the form to the form handler.
-        $formHandler = $this->get('image.styles_form_handler');
+        $formHandler = $this->get('responsive_image.styles_form_handler');
         if (!$formHandler->handle($form, $request)) {
             // Handle failed form submission.
         }

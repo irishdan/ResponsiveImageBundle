@@ -1,32 +1,32 @@
 services:
-  image.file_system:
+  responsive_image.file_system:
       class: ResponsiveImageBundle\Utils\FileSystem
       arguments: ['%kernel.root_dir%', '%image_directory%', '%responsive_image%' ]
 
-  image.style_manager:
+  responsive_image.style_manager:
       class: ResponsiveImageBundle\Utils\StyleManager
-      arguments: ['@image.file_system', '%responsive_image%' ]
+      arguments: ['@responsive_image.file_system', '%responsive_image%' ]
 
-  image.imager:
+  responsive_image.imager:
       class: ResponsiveImageBundle\Utils\Imager
-      arguments: [ '@image.file_system', '%responsive_image%' ]
+      arguments: [ '@responsive_image.file_system', '%responsive_image%' ]
 
-  image.file_to_object:
+  responsive_image.file_to_object:
       class: ResponsiveImageBundle\Utils\FileToObject
       arguments: [ '@doctrine.orm.entity_manager' ]
 
-  image.uploader:
+  responsive_image.uploader:
       class: ResponsiveImageBundle\Utils\Uploader
-      arguments: ['@image.file_system']
+      arguments: ['@responsive_image.file_system']
 
   # Custom form field type.
-  image.form.type.gender:
+  responsive_image.form.type.gender:
       class: ResponsiveImageBundle\Form\Type\CropFocusType
-      arguments: [ '@image.style_manager' ]
+      arguments: [ '@responsive_image.style_manager' ]
       tags:
           - { name: form.type }
 
   # Form handlers.
-  image.styles_form_handler:
+  responsive_image.styles_form_handler:
       class: ResponsiveImageBundle\Form\Handler\StylesFormHandler
-      arguments: [ '@image.style_manager' ]
+      arguments: [ '@responsive_image.style_manager' ]
