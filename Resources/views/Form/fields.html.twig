@@ -1,0 +1,10 @@
+{% block crop_focus_widget %}
+    <div class="crop-focus-widget">
+        <div class="crop-focus-image">
+            {{ image | raw }}
+        </div>
+        <div class="crop-focus-coordinates">
+            {{ block('form_widget_simple') }}
+        </div>
+    </div>
+{% endblock %}

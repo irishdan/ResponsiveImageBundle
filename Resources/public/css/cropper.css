@@ -1,0 +1,71 @@
+/* CSS for image cropper widget */
+.crop-focus-image img {
+    width: 100%;
+    height: auto;
+}
+
+div#image-crop-overlay {
+    background-color : #000;
+    overflow : hidden;
+    position: absolute;
+}
+
+div#image-crop-outline {
+    background : #ddff00;
+    overflow : hidden;
+    position: absolute;
+}
+
+div#image-crop-size-hint-background {
+    background-color : #000000;
+}
+
+span#image-crop-size-hint-foreground {
+    color : #ffffff;
+    font-family : 'Verdana', 'Geneva', sans-serif;
+    font-size : 12px;
+    text-shadow : 0 -1px 0 #000000;
+}
+
+div#image-crop-preview-holder {
+    -moz-box-shadow : 0 0 5px #000000;
+    -webkit-box-shadow : 0 0 5px #000000;
+    border : 3px #ef2929 solid;
+    box-shadow : 0 0 5px #000000;
+}
+
+img#image-crop-preview {
+    border : none;
+}
+
+div.image-crop-resize-handler,
+div.image-focus-resize-handler {
+    background-color : #000000;
+    border : 1px #ffffff solid;
+    height : 7px;
+    overflow : hidden;
+    width : 7px;
+    position: absolute;
+    opacity: 0.5;
+}
+
+div.image-focus-rectangle {
+    border: solid 1px #ddff00;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0.5;
+    overflow: hidden;
+}
+
+.focus-destroyer {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    height: 28px;
+    width: 16px;
+    display: block;
+    padding: 1px 1px 0 5px;
+    color: #ddff00;
+    font-weight: bold;
+}

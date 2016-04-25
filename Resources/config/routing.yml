@@ -1,0 +1,7 @@
+custom_image_settings:
+    path:     /admin/image_settings
+    defaults: { _controller: ResponsiveImageBundle:Styles:index }
+
+custom_image:
+    path:     /%uploads_directory%/%image_styles_directory%/{stylename}/{filename}
+    defaults: { _controller: ResponsiveImageBundle:Image:index }

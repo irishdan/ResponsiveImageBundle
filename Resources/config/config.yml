@@ -1,0 +1,55 @@
+# Responsive image sample configuration
+# responsive_image:
+#     debug: FALSE
+#     image_directory: '%uploads_directory%'
+#     image_entity_class: [ 'ResponsiveImageBundle:Image' ]
+#     image_styles_directory: 'styles'
+#     image_compression: 80
+#     image_driver: gd
+#     breakpoints:
+#         base: 'min-width: 0px'
+#         mobile: 'min-width: 300px'
+#         tablet: 'min-width: 480px'
+#         phablet: 'min-width: 768px'
+#         desktop: 'min-width: 1100px'
+#         tv: 'min-width: 1800px'
+#     image_styles:
+#         full:
+#             effect: scale
+#             height: 200
+#         thumb:
+#             effect: crop
+#             width: 180
+#             height: 180
+#         project_full:
+#             effect: scale
+#             width: 940
+#         project_thumb:
+#             effect: crop
+#             width: 540
+#             height: 400
+#     picture_sets:
+#         thumb_picture:
+#             # translates into style thumb_picture-base
+#             base:
+#                 effect: crop
+#                 width: 300
+#                 height: 300
+#             mobile:
+#                 effect: crop
+#                 width: 480
+#                 height: 480
+#             tablet:
+#                 effect: crop
+#                 width: 700
+#                 height: 700
+#             phablet:
+#                 effect: crop
+#                 width: 180
+#                 height: 180
+#             # to use a pre-defined style just use its name as below
+#             desktop: thumb
+#             tv:
+#                 effect: crop
+#                 width: 300
+#                 height: 300
