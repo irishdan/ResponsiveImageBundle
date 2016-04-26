@@ -4,8 +4,7 @@ namespace ResponsiveImageBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class DefaultControllerTest extends WebTestCase
+class StylesControllerTest extends WebTestCase
 {
-
-
+    
 }

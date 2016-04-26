@@ -45,10 +45,10 @@ class StyleManager
             $this->pictureSets = $parameters['picture_sets'];
 
             // Get the any picture set styles and incorporate into the configured styles array.
-            foreach ($parameters['picture_sets'] as $picture_set_name => $picture_set) {
+            foreach ($parameters['picture_sets'] as $pictureSetName => $picture_set) {
                 foreach ($picture_set as $breakpoint => $set_style) {
                     if (is_array($set_style)) {
-                        $this->styles[$picture_set_name . '-' . $breakpoint] = $set_style;
+                        $this->styles[$pictureSetName . '-' . $breakpoint] = $set_style;
                     }
                 }
             }
@@ -79,29 +79,29 @@ class StyleManager
 
     /**
      * @param ResponsiveImageInterface $image
-     * @param $picture_set_name
+     * @param $pictureSetName
      * @return ResponsiveImageInterface
      */
-    public function generatePictureImage(ResponsiveImageInterface $image, $picture_set_name) {
+    public function generatePictureImage(ResponsiveImageInterface $image, $pictureSetName) {
         $filename = $image->getPath();
-        $picture = $this->generatePicture($picture_set_name, $filename);
+        $picture = $this->generatePicture($pictureSetName, $filename);
         $image->setPicture($picture);
 
         return $image;
     }
 
     /**
-     * @param $picture_set_name
+     * @param $pictureSetName
      * @param $filename
      * @return string
      */
-    public function generatePicture($picture_set_name, $filename) {
-        $set = $this->pictureSets[$picture_set_name];
+    public function generatePicture($pictureSetName, $filename) {
+        $set = $this->pictureSets[$pictureSetName];
 
         $picture = '<picture>';
         foreach (array_reverse($set) as $break => $style) {
             if (is_array($style)) {
-                $stylename = $picture_set_name.'-'.$break;
+                $stylename = $pictureSetName.'-'.$break;
             }
             else {
                 $stylename = $style;
