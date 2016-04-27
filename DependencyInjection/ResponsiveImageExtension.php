@@ -18,7 +18,7 @@ class ResponsiveImageExtension extends Extension
         foreach ($configs as $subConfig) {
             $config = array_merge($config, $subConfig);
         }
-
+        
         // Set defaults from config.yml.
         $container->setParameter('responsive_image', $config);
 

@@ -96,25 +96,29 @@ class StyleManager
      * @return string
      */
     public function generatePicture($pictureSetName, $filename) {
-        $set = $this->pictureSets[$pictureSetName];
+        if (!empty($this->pictureSets[$pictureSetName])) {
+            $set = $this->pictureSets[$pictureSetName];
 
-        $picture = '<picture>';
-        foreach (array_reverse($set) as $break => $style) {
-            if (is_array($style)) {
-                $stylename = $pictureSetName.'-'.$break;
+            $picture = '<picture>';
+            foreach (array_reverse($set) as $break => $style) {
+                if (is_array($style)) {
+                    $stylename = $pictureSetName . '-' . $break;
+                } else {
+                    $stylename = $style;
+                }
+                $styles_directory = $this->fileSystem->getStylesDir();
+                $path = $styles_directory . '/' . $stylename . '/' . $filename;
+                $picture .= '<source srcset="/' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
             }
-            else {
-                $stylename = $style;
-            }
-            $styles_directory = $this->fileSystem->getStylesDir();
-            $path = $styles_directory . '/' . $stylename . '/' . $filename;
-            $picture .= '<source srcset="/' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
+
+            $picture .= '<img srcset="/' . $path . '">';
+            $picture .= '</picture>';
+
+            return $picture;
         }
-
-        $picture .= '<img srcset="/' . $path . '">';
-        $picture .= '</picture>';
-
-        return $picture;
+        else {
+            return FALSE;
+        }
     }
 
     /**
