@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danielbyrne
- * Date: 26/04/2016
- * Time: 09:42
- */
 
 namespace ResponsiveImageBundle\Tests\Utils;
 
@@ -15,9 +9,10 @@ use ResponsiveImageBundle\Utils\StyleManager;
 
 class StyleManagerTest extends \PHPUnit_Framework_TestCase
 {
+    
+    use \ResponsiveImageBundle\Tests\Traits\Parameters;
+    
     private $image;
-
-    private $parameters;
 
     private $fileSystem;
 
@@ -28,33 +23,6 @@ class StyleManagerTest extends \PHPUnit_Framework_TestCase
         $this->image = new Image();
         $this->image->setPath('dummy.jpg');
 
-        $this->parameters = [
-            'image_directory' => 'uploads/documents',
-            'image_styles_directory' => 'styles',
-            'breakpoints' => [
-                'base' => 'min-width: 0px',
-                'desktop' => 'min-width: 1100px',
-                'tv' => 'min-width: 1800px',
-            ],
-            'image_styles' => [
-                'thumb' => [
-                    'effect' => 'crop',
-                    'width' => 180,
-                    'height' => 180,
-                ],
-            ],
-            'picture_sets' => [
-                'thumb_picture' => [
-                    'base' => [
-                        'effect' => 'crop',
-                        'width' => 300,
-                        'height' => 600,
-                    ],
-                    'desktop' => 'thumb',
-                ],
-            ],
-        ];
-
         $this->fileSystem = New FileSystem('root_directory', $this->parameters);
 
         $this->styleManager = New StyleManager($this->fileSystem, $this->parameters);
@@ -62,11 +30,11 @@ class StyleManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testSetImageStyle()
     {
-        $this->image = $this->styleManager->setImageStyle($image, 'thumb');
+        $this->image = $this->styleManager->setImageStyle($this->image , 'thumb');
 
         // Assert that the web path is correct
         $expectedPath = '/uploads/documents/styles/thumb/dummy.jpg';
-        $this->assertEquals($expectedPath, $image->getStyle());
+        $this->assertEquals($expectedPath, $this->image->getStyle());
     }
 
     public function testGeneratePictureImage()

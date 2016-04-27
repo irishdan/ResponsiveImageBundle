@@ -1,57 +1,37 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danielbyrne
- * Date: 26/04/2016
- * Time: 09:31
- */
 
 namespace ResponsiveImageBundle\Tests\Utils;
 
 
+use ResponsiveImageBundle\Utils\FileSystem;
+
+/**
+ * Class FileSystemTest
+ * @package ResponsiveImageBundle\Tests\Utils
+ */
 class FileSystemTest extends \PHPUnit_Framework_TestCase
 {
+    use \ResponsiveImageBundle\Tests\Traits\Parameters;
+
+    /**
+     * @var
+     */
+    private $fileSystem;
+
+    /**
+     *
+     */
     public function setUp() {
-
+        $this->fileSystem = New FileSystem('root_directory', $this->parameters);
     }
 
-    public function testDirectoryExists()
-    {
-
-    }
-
-    public function testDeleteDirectory()
-    {
-
-    }
-
-    public function testDeleteFile()
-    {
-
-    }
-
+    /**
+     *
+     */
     public function testUploadedFilePath()
     {
+        $uploadedFilePath = $this->fileSystem->uploadedFilePath('test_path');
 
-    }
-
-    public function testStyleDirectoryPath()
-    {
-
-    }
-
-    public function testStyleFilePath()
-    {
-
-    }
-
-    public function testGetFilenameFromPath()
-    {
-
-    }
-
-    public function testStyleWebPath()
-    {
-
+        $this->assertEquals('root_direc/web/uploads/documents/test_path', $uploadedFilePath);
     }
 }

@@ -9,6 +9,11 @@ namespace ResponsiveImageBundle\Utils;
 class StyleManager
 {
     /**
+     * @var array
+     */
+    private $breakpoints = [];
+
+    /**
      * @var FileSystem
      */
     private $fileSystem;
@@ -22,11 +27,6 @@ class StyleManager
      * @var array
      */
     private $styles = [];
-
-    /**
-     * @var array
-     */
-    private $breakpoints = [];
 
     /**
      * StyleManager constructor.
@@ -96,26 +96,6 @@ class StyleManager
 
     /**
      * @param ResponsiveImageInterface $image
-     * @param null $styleName
-     * @return ResponsiveImageInterface
-     */
-    public function setImageStyle(ResponsiveImageInterface $image, $styleName = null) {
-        $filename = $image->getPath();
-        if (!empty($styleName)) {
-            $stylePath = $this->fileSystem->styleWebPath($styleName);
-        }
-        else {
-            $stylePath = $this->fileSystem->getUploadsDir();
-        }
-        $webPath = '/' . $stylePath . '/' . $filename;
-
-        $image->setStyle($webPath);
-
-        return $image;
-    }
-
-    /**
-     * @param ResponsiveImageInterface $image
      * @param $pictureSetName
      * @return ResponsiveImageInterface
      */
@@ -125,6 +105,26 @@ class StyleManager
         $image->setPicture($picture);
 
         return $image;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllStyles() {
+        return $this->styles;
+    }
+
+    /**
+     * @param $stylename
+     * @return bool
+     */
+    public function getStyle($stylename) {
+        if (!in_array($stylename, array_keys($this->styles))) {
+            return FALSE;
+        }
+        else {
+            return $this->styles[$stylename];
+        }
     }
 
     /**
@@ -159,22 +159,22 @@ class StyleManager
     }
 
     /**
-     * @return array
+     * @param ResponsiveImageInterface $image
+     * @param null $styleName
+     * @return ResponsiveImageInterface
      */
-    public function getAllStyles() {
-        return $this->styles;
-    }
-
-    /**
-     * @param $stylename
-     * @return bool
-     */
-    public function getStyle($stylename) {
-        if (!in_array($stylename, array_keys($this->styles))) {
-            return FALSE;
+    public function setImageStyle(ResponsiveImageInterface $image, $styleName = null) {
+        $filename = $image->getPath();
+        if (!empty($styleName)) {
+            $stylePath = $this->fileSystem->styleWebPath($styleName);
         }
         else {
-            return $this->styles[$stylename];
+            $stylePath = $this->fileSystem->getUploadsDir();
         }
+        $webPath = '/' . $stylePath . '/' . $filename;
+
+        $image->setStyle($webPath);
+
+        return $image;
     }
 }

@@ -67,11 +67,17 @@ class Imager
      * @param $driver
      * @param $compression
      */
-    public function __construct(FileSystem $system, $responsiveImageConfig) {
+    public function __construct(FileSystem $system, $responsiveImageConfig = []) {
         $this->fileSystem = $system;
-        $this->debug = $responsiveImageConfig['debug'];
-        $this->driver = $responsiveImageConfig['image_driver'];
-        $this->compression =  $responsiveImageConfig['image_compression'];
+        if (!empty($responsiveImageConfig['debug'])) {
+            $this->debug = $responsiveImageConfig['debug'];
+        }
+        if (!empty($responsiveImageConfig['image_driver'])) {
+            $this->driver = $responsiveImageConfig['image_driver'];
+        }
+        if (!empty($responsiveImageConfig['image_compression'])) {
+            $this->compression =  $responsiveImageConfig['image_compression'];
+        }
     }
 
     /**
@@ -105,6 +111,13 @@ class Imager
         }
     }
 
+    public function setCoordinateGroups($cropFocusCoords) {
+        // x1, y1, x2, y2:x3, y3, x4, y4
+        $coordsSets = explode(':', $cropFocusCoords);
+        $this->cropCoordinates = explode(', ', $coordsSets[0]);
+        $this->focusCoordinates = explode(', ', $coordsSets[1]);
+    }
+
     /**
      * Performs the image manipulation for the image using current style information
      * and user defined crop and focus rectangles.
@@ -124,10 +137,7 @@ class Imager
 
         // Set Crop and focus Co-ordinates.
         if (!empty($cropFocusCoords)) {
-            // x1, y1, x2, y2:x3, y3, x4, y4
-            $coordsSets = explode(':', $cropFocusCoords);
-            $this->cropCoordinates = explode(', ', $coordsSets[0]);
-            $this->focusCoordinates = explode(', ', $coordsSets[1]);
+            $this->setCoordinateGroups($cropFocusCoords);
         }
 
         if (empty($this->getCoordinates('focus')) || $style['effect'] == 'scale') {
