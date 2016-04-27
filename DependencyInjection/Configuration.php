@@ -45,7 +45,6 @@ class Configuration implements ConfigurationInterface
         ;
 
         // @TODO: Pictures set should be checked for valid break points and image styles.
-        // @TODO: image uploads directory needs to be used.
         // @TODO: Test its working with imagemagik
 
         return $treeBuilder;

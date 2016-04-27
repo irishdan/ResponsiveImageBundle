@@ -1,19 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: danielbyrne
- * Date: 26/04/2016
- * Time: 09:49
- */
 
 namespace ResponsiveImageBundle\Tests\Utils;
 
+use ResponsiveImageBundle\Utils\Uploader;
 
 class UploaderTest extends \PHPUnit_Framework_TestCase
 {
 
+    private $uploader;
+
+    public function setUp() {
+        $this->uploader = new Uploader();
+    }
+
     public function testCreateFileName()
     {
+
     }
 
     public function testIsUniqueFilename()

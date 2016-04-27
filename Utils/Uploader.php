@@ -44,7 +44,7 @@ class Uploader {
     }
 
     /**
-     * Sets file. XX
+     * Sets file.
      *
      * @param UploadedFile $file
      */
@@ -54,7 +54,7 @@ class Uploader {
     }
 
     /**
-     * Get file. XX
+     * Get file.
      *
      * @return UploadedFile
      */

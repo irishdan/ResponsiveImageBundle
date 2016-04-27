@@ -14,13 +14,6 @@ class ResponsiveImageExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        // Load the config from bundle config.yml
-        // @TODO: Does this work?
-        $loader = new YamlFileLoader(
-             $container,
-             new FileLocator(__DIR__.'/../Resources/config')
-        );
-        $loader->load('config.yml');
 
         foreach ($configs as $subConfig) {
             $config = array_merge($config, $subConfig);
