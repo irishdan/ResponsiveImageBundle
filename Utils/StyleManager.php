@@ -54,7 +54,44 @@ class StyleManager
             }
         }
 
-        $this->breakpoints = $parameters['breakpoints'];
+        if (!empty($parameters['breakpoints'])) {
+            $this->breakpoints = $parameters['breakpoints'];
+        }
+    }
+
+    /**
+     * @param $filename
+     */
+    public function deleteImageStyledFiles($filename) {
+        // For all styles append the style to the filename eg 'stylename/filename.jpg';
+        foreach ($this->styles as $styleName => $styleData) {
+            $styles_path = $this->fileSystem->getSystemStylesPath();
+            $path = $styles_path . '/' . $styleName . '/' . $filename;
+            $this->fileSystem->deleteFile($path);
+        }
+    }
+
+    /**
+     * @param $filename
+     */
+    public function deleteImageFile($filename) {
+        $system_upload_path = $this->fileSystem->getSystemUploadPath();
+        $path = $system_upload_path . '/' . $filename;
+        // Delete the source file.
+        $this->fileSystem->deleteFile($path);
+        // Delete the styled files.
+        $this->deleteImageStyledFiles($filename);
+    }
+
+    /**
+     * @param array $styles
+     */
+    public function deleteStyledImages(array $styles) {
+        foreach ($styles as $style) {
+            $system_styles_path = $this->fileSystem->getSystemStylesPath();
+            $path = $system_styles_path . '/' . $style;
+            $this->fileSystem->deleteDirectory($path);
+        }
     }
 
     /**
@@ -84,7 +121,7 @@ class StyleManager
      */
     public function generatePictureImage(ResponsiveImageInterface $image, $pictureSetName) {
         $filename = $image->getPath();
-        $picture = $this->generatePicture($pictureSetName, $filename);
+        $picture = $this->pictureTag($pictureSetName, $filename);
         $image->setPicture($picture);
 
         return $image;
@@ -95,7 +132,7 @@ class StyleManager
      * @param $filename
      * @return string
      */
-    public function generatePicture($pictureSetName, $filename) {
+    public function pictureTag($pictureSetName, $filename) {
         if (!empty($this->pictureSets[$pictureSetName])) {
             $set = $this->pictureSets[$pictureSetName];
 
@@ -138,41 +175,6 @@ class StyleManager
         }
         else {
             return $this->styles[$stylename];
-        }
-    }
-
-    /**
-     * @param $filename
-     */
-    public function deleteImageStyledFiles($filename) {
-        // For all styles append the style to the filename eg 'stylename/filename.jpg';
-        foreach ($this->styles as $styleName => $styleData) {
-            $styles_path = $this->fileSystem->getSystemStylesPath();
-            $path = $styles_path . '/' . $styleName . '/' . $filename;
-            $this->fileSystem->deleteFile($path);
-        }
-    }
-
-    /**
-     * @param $filename
-     */
-    public function deleteImageFile($filename) {
-        $system_upload_path = $this->fileSystem->getSystemUploadPath();
-        $path = $system_upload_path . '/' . $filename;
-        // Delete the source file.
-        $this->fileSystem->deleteFile($path);
-        // Delete the styled files.
-        $this->deleteImageStyledFiles($filename);
-    }
-
-    /**
-     * @param array $styles
-     */
-    public function deleteStyledImages(array $styles) {
-        foreach ($styles as $style) {
-            $system_styles_path = $this->fileSystem->getSystemStylesPath();
-            $path = $system_styles_path . '/' . $style;
-            $this->fileSystem->deleteDirectory($path);
         }
     }
 }

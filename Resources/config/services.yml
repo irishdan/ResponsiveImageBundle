@@ -1,7 +1,7 @@
 services:
   responsive_image.file_system:
       class: ResponsiveImageBundle\Utils\FileSystem
-      arguments: ['%kernel.root_dir%', '%image_directory%', '%responsive_image%' ]
+      arguments: ['%kernel.root_dir%', '%responsive_image%' ]
 
   responsive_image.style_manager:
       class: ResponsiveImageBundle\Utils\StyleManager

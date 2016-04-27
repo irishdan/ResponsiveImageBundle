@@ -313,12 +313,20 @@ class Image implements ResponsiveImageInterface
         $this->style = $style;
     }
 
+    function getStyle() {
+        return $this->style;
+    }
+
     /**
      * @param null $picture
      */
     public function setPicture($picture)
     {
         $this->picture = $picture;
+    }
+
+    public function getPicture() {
+        return $this->picture;
     }
 
     /**
@@ -335,12 +343,10 @@ class Image implements ResponsiveImageInterface
             $src = $this->getPath();
         }
 
-        $title = $this->title;
-        $alt = $this->alt;
-
-        // @TODO: If image style is used height and width should be transposed.
-        $height = $this->height;
-        $width = $this->width;
+        $title = empty($this->title) ? '' : $this->title;
+        $alt = empty($this->alt) ? '' : $this->alt;
+        $height = empty($this->height) ? '' : $this->height;
+        $width = empty($this->width) ? '' : $this->width;
 
         return '<img src="' . $src . '" height="' . $height . '" width="' . $width . '" title="' . $title . '" alt="' . $alt . '"/>';
     }

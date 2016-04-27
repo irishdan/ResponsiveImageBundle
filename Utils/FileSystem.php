@@ -6,6 +6,10 @@ namespace ResponsiveImageBundle\Utils;
  * Class FileSystem
  * @package ResponsiveImageBundle\Utils
  */
+/**
+ * Class FileSystem
+ * @package ResponsiveImageBundle\Utils
+ */
 class FileSystem
 {
     /**
@@ -48,20 +52,24 @@ class FileSystem
      */
     private $webStylesDirectory;
 
+
     /**
      * FileSystem constructor.
-     * @param $uploads_dir
-     * @param $styles_dir
+     * @param $rootDir
+     * @param $imageConfigs
      */
-    public function __construct($rootDir, $uploadsDir, $stylesDir) {
+    public function __construct($rootDir, $imageConfigs) {
+
+        $uploadsDir = $imageConfigs['image_directory'];
+        $stylesDir = $imageConfigs['image_styles_directory'];
         $symfonyDir = substr($rootDir, 0, -4);
 
         $this->setRootDir($symfonyDir);
         $this->setUploadsDir($uploadsDir);
-        $this->setStylesDir($uploadsDir . '/' . $stylesDir['image_styles_directory']);
+        $this->setStylesDir($uploadsDir . '/' . $stylesDir);
         $this->setSystemPath($symfonyDir . '/web');
         $this->setSystemUploadPath($this->systemPath . '/' . $this->uploadsDir);
-        $this->setSystemStylesPath($this->systemUploadPath . '/' . $stylesDir['image_styles_directory']);
+        $this->setSystemStylesPath($this->systemUploadPath . '/' . $stylesDir);
     }
 
     /**
