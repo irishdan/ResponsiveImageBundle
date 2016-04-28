@@ -69,7 +69,10 @@ The generated picture element would be like:
 </picture>
 ```
 
-A custom (widget) formType is included to allow users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
+A custom formType is included which creates a 'crop and focus widget'. This widget allows users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
+
+
+<img src="/docs/images/cropfocuswidget.jpg" />
 
 Its also handles the uploading of images.
 
