@@ -42,7 +42,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->variableNode('image_styles')->end()
                 ->variableNode('picture_sets')->end()
-                ->end()
+                ->variableNode('crop_focus_widget')->end()
             ->end()
         ;
 

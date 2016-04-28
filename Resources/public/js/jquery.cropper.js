@@ -92,6 +92,7 @@
                 this.$overlay = $('<div id="image-crop-overlay"></div>')
                     .css({
                         opacity : this.options.overlayOpacity,
+
                     })
                     .width(this.$image.width())
                     .height(this.$image.height())

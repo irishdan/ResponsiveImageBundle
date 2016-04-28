@@ -73,8 +73,8 @@ A custom formType is included which creates a 'crop and focus widget'. This widg
 
 
 <img src="/docs/images/cropfocuswidget.jpg" />
+The black area will always be cropped out for all images styles. The inner rectangle will always be fulling included in styled images.
 
-Its also handles the uploading of images.
 
 1: Installation
 ---------------------------
@@ -192,6 +192,9 @@ responsive_image:
                 effect: crop
                 width: 300
                 height: 500
+    crop_focus_widget:                  # Crop focus widget settings
+            include_js_css: TRUE        # If true widget js css is included in the field html. Otherwise add it manually.
+            display_coordinates: TRUE   # Toggles between a text field or hidden field.
 ```
 
 

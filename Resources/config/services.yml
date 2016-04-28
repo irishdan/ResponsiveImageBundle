@@ -22,7 +22,7 @@ services:
   # Custom form field type.
   responsive_image.form.type.gender:
       class: ResponsiveImageBundle\Form\Type\CropFocusType
-      arguments: [ '@responsive_image.style_manager' ]
+      arguments: [ '@responsive_image.style_manager', '%responsive_image%' ]
       tags:
           - { name: form.type }
 

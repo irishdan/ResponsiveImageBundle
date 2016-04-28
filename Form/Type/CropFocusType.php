@@ -18,15 +18,21 @@ class CropFocusType extends AbstractType
     /**
      * @var
      */
+    private $config;
+
+    /**
+     * @var
+     */
     private $styleManager;
 
     /**
      * CropFocusType constructor.
      * @param $styleManager
      */
-    public function __construct($styleManager)
+    public function __construct($styleManager, $config)
     {
         $this->styleManager = $styleManager;
+        $this->config = $config;
     }
 
     /**
@@ -66,6 +72,10 @@ class CropFocusType extends AbstractType
         $image = $this->styleManager->setImageStyle($image);
         $options['value'] = $image->getCropCoordinates();
         $options['image'] = $image;
+
+        $config = $this->config['crop_focus_widget'];
+        $options['include_js_css'] = empty($config['include_js_css']) ? FALSE : TRUE;
+        $options['display_coordinates'] = empty($config['display_coordinates']) ? FALSE : TRUE;
 
         $view->vars = array_replace($view->vars, $options);
     }
