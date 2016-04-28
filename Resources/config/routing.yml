@@ -1,7 +1,9 @@
-custom_image_settings:
-    path:     /admin/image_settings
-    defaults: { _controller: ResponsiveImageBundle:Styles:index }
-
-custom_image:
+# Route for generating images
+responsive_image:
     path:     /%image_directory%/%image_styles_directory%/{stylename}/{filename}
     defaults: { _controller: ResponsiveImageBundle:Image:index }
+
+# Option route for style settings form
+# responsive_image_settings:
+#    path:     /admin/image_settings
+#    defaults: { _controller: ResponsiveImageBundle:Styles:index }

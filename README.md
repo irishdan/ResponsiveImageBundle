@@ -118,9 +118,16 @@ class AppKernel extends Kernel
 }
 ```
 
-Import the service definitions in your config.yml file.
+Import the service definitions in to your config.yml file.
 ```php
     - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
+```
+
+Import the routing in to routing.yml file.
+```php
+responsive_image:
+    resource: "@ResponsiveImageBundle/Resources/config/routing.yml"
+    prefix:   /
 ```
 
 
@@ -197,16 +204,16 @@ There's also a working image object included, Image.php, that you can use direct
 ResponsiveImageBundle\Entity\Image.php
 ```
 
-When creating a new image the image.uploader service handles uploading and saving the image file to the server.
+When creating a new image the responsive_image.uploader service handles uploading and saving the image file to the server.
 ```
 $this->get('responsive_image.uploader')->upload($image);
 ```
 
-To generate a styled image tag, simply set the image style using the style_manager service.
+To generate a styled image tag, simply set the image style using the responsive_image.style_manager service.
 ```
 $this->get('responsive_image.style_manager')->setImageStyle($image, 'thumb');
 ```
-Or you can simply use the setStyle method on the $image object directly. In your template file, invokes the _toString method to generate the img tag.
+Or you can simply use the setStyle method on the $image object directly. In your template file, printing invokes the _toString method to generate the img tag.
 
 ```
 {{ image }}
