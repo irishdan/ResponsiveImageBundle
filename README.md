@@ -71,9 +71,11 @@ The generated picture element would be like:
 
 A custom formType is included which creates a 'crop and focus widget'. This widget allows users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
 
-
 <img src="/docs/images/cropfocuswidget.jpg" />
-The black area will always be cropped out for all images styles. The inner rectangle will always be fulling included in styled images.
+
+The black area will always be cropped out for all image styles. The inner rectangle will always be fully included in styled images. 
+There are some combinations of styles dimensions and focus dimensions where its just not possible include the whole focus rectangle. 
+In this case the largest possible portion of the focus rectangle is included.
 
 
 1: Installation
@@ -137,7 +139,7 @@ responsive_image:
 3: Configuration
 ---------------------------
 
-All of the available configurations
+All of the available configuration:
 ```
 responsive_image:
     debug: FALSE                        # If true debug info is printed on generated images
@@ -197,8 +199,11 @@ responsive_image:
             display_coordinates: TRUE   # Toggles between a text field or hidden field.
 ```
 
+Most Browser do not yet support the <picture> tag. Therefore a polyfil is needed. This is available here http://scottjehl.github.io/picturefill
+and is also included in the bundle at Resources/public/js/vendor/picturefill.js.
 
-4: Usage
+
+4:Usage
 ---------------------------
 
 For image objects you can use your own entity, as long as it implements the ResponsiveImageInterface
@@ -225,7 +230,7 @@ Or you can simply use the setStyle method on the $image object directly. In your
 {{ image }}
 ```
 
-To generate a picture element the style manager service is used again.
+To generate a picture element the style manager service is used.
 ```
 $this->get('responsive_image.style_manager')->generatePictureImage($image, 'thumb_picture');
 ```
@@ -237,7 +242,7 @@ In your CRUD logic:
 $this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
 ```
 
-To set the crop and focus areas of an image, in your edit form use the the CropFocusType in the form builder.
+To set the crop and focus areas of an image in your edit form use the the CropFocusType in the form builder.
 ```
 $form->add('crop_coordinates', CropFocusType::class, array(
     'data' => $image
