@@ -64,8 +64,9 @@ class Imager
      * Imager constructor.
      *
      * @param FileSystem $system
-     * @param $driver
-     * @param $compression
+     * @param array $responsiveImageConfig
+     * @internal param $driver
+     * @internal param $compression
      */
     public function __construct(FileSystem $system, $responsiveImageConfig = []) {
         $this->fileSystem = $system;
@@ -87,7 +88,6 @@ class Imager
         $y = 10;
 
         foreach ($this->debugData as $key => $value) {
-            $text = '';
             $x = 10;
 
             if (!is_array($value)) {
@@ -111,11 +111,23 @@ class Imager
         }
     }
 
+    /**
+     * @param $cropFocusCoords
+     */
     public function setCoordinateGroups($cropFocusCoords) {
         // x1, y1, x2, y2:x3, y3, x4, y4
         $coordsSets = explode(':', $cropFocusCoords);
         $this->cropCoordinates = explode(', ', $coordsSets[0]);
         $this->focusCoordinates = explode(', ', $coordsSets[1]);
+    }
+
+    /**
+     * @param array $style
+     */
+    public function setStyleData($style = []) {
+        $this->styleData['effect'] =  empty($style['effect']) ? null : $style['effect'];
+        $this->styleData['width'] =  empty($style['width']) ? null : $style['width'];
+        $this->styleData['height'] =  empty($style['height']) ? null : $style['height'];
     }
 
     /**
@@ -125,6 +137,7 @@ class Imager
      * @param $source
      * @param $destination
      * @param array $style
+     * @param null $cropFocusCoords
      * @return string
      */
     public function createImage($source, $destination, array $style = [], $cropFocusCoords = NULL) {
@@ -132,8 +145,7 @@ class Imager
         $this->img = $this->manager->make($source);
 
         // Set style data.
-        $this->styleData['width'] =  empty($style['width']) ? null : $style['width'];
-        $this->styleData['height'] =  empty($style['height']) ? null : $style['height'];
+        $this->setStyleData($style);
 
         // Set Crop and focus Co-ordinates.
         if (!empty($cropFocusCoords)) {
@@ -144,7 +156,7 @@ class Imager
             $this->doCropRectangle();
         }
 
-        switch($style['effect']) {
+        switch($this->styleData['effect']) {
             case 'scale':
                 // Simply scale the according to style data.
                 $this->img->resize($this->styleData['width'], $this->styleData['height'], function($constraint) {
@@ -210,7 +222,6 @@ class Imager
                     }
                 }
 
-                // @TODO: Is it possible to do all of these manipulations at once.
                 $this->img->fit($this->styleData['width'], $this->styleData['height'], function ($constraint) {
                     $constraint->upsize();
                 });
@@ -301,9 +312,7 @@ class Imager
 
             $validOffsets = [];
             for ($i = $minOffset; $i <= $maxOffset; $i++) {
-                if ($i + $cropLength <= $imageLength &&
-                    $i <= $focusNear &&
-                    $i + $cropLength >= $focusFar) {
+                if ($this->isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar)) {
                     // Need a factor of near / far to compare to offFactor.
                     // Closest to that wins.
                     $near =  $focusNear - $i;
@@ -329,6 +338,24 @@ class Imager
         }
 
         return $offset;
+    }
+
+    /**
+     * @param $i
+     * @param $cropLength
+     * @param $imageLength
+     * @param $focusNear
+     * @param $focusFar
+     * @return bool
+     */
+    public function isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar) {
+        $inBounds = FALSE;
+        if ($i + $cropLength <= $imageLength &&
+            $i <= $focusNear &&
+            $i + $cropLength >= $focusFar) {
+            $inBounds = TRUE;
+        }
+        return $inBounds;
     }
 
     /**
@@ -369,6 +396,13 @@ class Imager
         }
     }
 
+    /**
+     * Saves the new image
+     *
+     * @param $destination
+     * @param $source
+     * @return string
+     */
     public function saveImage($destination, $source) {
         // Check if directory exists and if not create it.
         $this->fileSystem->directoryExists($destination, TRUE);

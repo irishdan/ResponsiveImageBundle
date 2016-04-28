@@ -230,9 +230,10 @@ class Image implements ResponsiveImageInterface
     /**
      * Set weight
      *
-     * @param string $alt
-     *
+     * @param $path
      * @return Image
+     * @internal param string $alt
+     *
      */
     public function setPath($path)
     {
@@ -254,9 +255,10 @@ class Image implements ResponsiveImageInterface
     /**
      * Set weight
      *
-     * @param string $alt
-     *
+     * @param $weight
      * @return Image
+     * @internal param string $alt
+     *
      */
     public function setWeight($weight)
     {
@@ -331,9 +333,8 @@ class Image implements ResponsiveImageInterface
 
     /**
      * Generates an <img> tag for a given style.
-     *
-     * @param null $style
      * @return string
+     * @internal param null $style
      */
     public function img() {
         if (!empty($this->style)) {

@@ -227,8 +227,9 @@ class FileSystem
     /**
      * Daletes a directory and its contents or a file.
      *
-     * @param $directory
+     * @param $target
      * @return bool
+     * @internal param $directory
      */
     public function deleteDirectory($target) {
         if(is_dir($target)){
@@ -245,9 +246,10 @@ class FileSystem
     }
 
     /**
-     * @param $filename
-     * @param null $directory
+     * @param $path
      * @return bool
+     * @internal param $filename
+     * @internal param null $directory
      */
     public function deleteFile($path) {
         // If path exists delete the file.

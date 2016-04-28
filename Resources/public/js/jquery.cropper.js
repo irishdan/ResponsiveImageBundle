@@ -75,7 +75,7 @@
                 this.$image = $(object);
 
                 // Initialize an image holder
-                this.$holder = $('<div />')
+                this.$holder = $('<div></div>')
                     .css({
                         position : 'relative'
                     })
@@ -89,17 +89,16 @@
                     });
 
                 // Initialize an overlay layer and place it above the image
-                this.$overlay = $('<div id="image-crop-overlay" />')
+                this.$overlay = $('<div id="image-crop-overlay"></div>')
                     .css({
                         opacity : this.options.overlayOpacity,
-                        // position : 'absolute'
                     })
                     .width(this.$image.width())
                     .height(this.$image.height())
                     .insertAfter(this.$image);
 
                 // Initialize a trigger layer and place it above the overlay layer
-                this.$trigger = $('<div />')
+                this.$trigger = $('<div></div>')
                     .css({
                         backgroundColor : '#000000',
                         opacity : 0,
@@ -110,15 +109,14 @@
                     .insertAfter(this.$overlay);
 
                 // Initialize an outline layer and place it above the trigger layer
-                this.$outline = $('<div id="image-crop-outline" />')
+                this.$outline = $('<div id="image-crop-outline"></div>')
                     .css({
                         opacity : this.options.outlineOpacity,
-                        // position : 'absolute'
                     })
                     .insertAfter(this.$trigger);
 
                 // Initialize a selection layer and place it above the outline layer
-                this.$selection = $('<div />')
+                this.$selection = $('<div></div>')
                     .css({
                         background : 'url(' + this.$image.attr('src') + ') no-repeat',
                         backgroundSize: this.$image.width() + 'px auto',
@@ -127,21 +125,21 @@
                     .insertAfter(this.$outline);
 
                 // Initialize a resize handlers and place in the inferface.
-                this.$nwCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-nw-resize-handler" />')
+                this.$nwCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-nw-resize-handler"></div>')
                     .insertAfter(this.$selection);
 
-                this.$neCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-ne-resize-handler" />')
+                this.$neCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-ne-resize-handler"></div>')
                     .insertAfter(this.$selection);
 
-                this.$swCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-sw-resize-handler" />')
+                this.$swCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-sw-resize-handler"></div>')
                     .insertAfter(this.$selection);
 
-                this.$seCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-se-resize-handler" />')
+                this.$seCropResizer = $('<div class="image-crop-resize-handler" id="image-crop-se-resize-handler"></div>')
                     .insertAfter(this.$selection);
 
                 // Add the elements for focus selection
                 // Initialize a selection layer and place it above the outline layer
-                this.$focusSelection = $('<div />')
+                this.$focusSelection = $('<div></div>')
                     .css({
                         // backgroundSize: '970px auto',
                         position : 'absolute'
@@ -153,20 +151,20 @@
                 this.$focusDestroyer = $('.focus-destroyer');
 
                 // Initialize a north/west resize handler and place it above the selection layer
-                this.$nwFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-nw-resize-handler" />')
+                this.$nwFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-nw-resize-handler"></div>')
                     .insertAfter(this.$focusSelection);
 
                 // Initialize a north/east resize handler and place it above the selection layer
-                this.$neFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-ne-resize-handler" />')
+                this.$neFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-ne-resize-handler"></div>')
                     .insertAfter(this.$focusSelection);
 
                 // Initialize a south/west resize handler and place it above the selection layer
-                this.$swFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-sw-resize-handler" />')
+                this.$swFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-sw-resize-handler"></div>')
                     .insertAfter(this.$focusSelection);
 
 
                 // Initialize a south/east resize handler and place it above the selection layer
-                this.$seFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-se-resize-handler" />')
+                this.$seFocusResizer = $('<div class="image-focus-resize-handler" id="image-focus-se-resize-handler"></div>')
                     .insertAfter(this.$focusSelection);
 
                 // Verify if the selection size is bigger than the minimum accepted

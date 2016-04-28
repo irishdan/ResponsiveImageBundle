@@ -34,7 +34,7 @@ class ImageController extends Controller
 
         if (file_exists($originalPath)) {
             // Get the image object.
-            $imageEntityClass = $this->container->getParameter('image_entity_class');
+            $imageEntityClass = $this->getParameter('image_entity_class');
             $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename, $imageEntityClass[0]);
 
             // Get crop coordinates if any.

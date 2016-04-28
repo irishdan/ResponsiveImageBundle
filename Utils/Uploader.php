@@ -2,6 +2,7 @@
 
 namespace ResponsiveImageBundle\Utils;
 
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -85,6 +86,30 @@ class Uploader {
     }
 
     /**
+     * @param $uploadMaxSize
+     * @return int
+     */
+    public function mToBytes($uploadMaxSize) {
+        $uploadMaxSize = trim($uploadMaxSize);
+        $last = strtolower($uploadMaxSize[strlen($uploadMaxSize) - 1]);
+        switch($last) {
+            case 'g':
+                $uploadMaxSize *= 1024;
+                break;
+
+            case 'm':
+                $uploadMaxSize *= 1024;
+                break;
+
+            case 'k':
+                $uploadMaxSize *= 1024;
+                break;
+        }
+
+        return $uploadMaxSize;
+    }
+
+    /**
      * @param $name
      * @return bool
      */
@@ -128,13 +153,15 @@ class Uploader {
         $messages = array();
         $this->uploadOk = TRUE;
         $uploadMaxSize = ini_get('upload_max_filesize');
+        // Convert to bytes.
+        $uploadMaxSize = $this->mToBytes($uploadMaxSize);
 
         if (!$this->file instanceof UploadedFile && !empty($image->getFile()->getError())) {
             $messages[] = 'Uploaded file should be an instance of \'UploadedFile\'';
             $this->uploadOk = FALSE;
         }
         elseif ($this->file->getSize() > $uploadMaxSize) {
-            $messages[] = 'File size cannot be larger than ' . $uploadMaxSize;
+            $messages[] = sprintf('%s: File size cannot be larger than %s', $this->file->getSize(), $uploadMaxSize);
             $this->uploadOk = FALSE;
         }
         elseif (!$this->isAllowedType()) {
@@ -153,7 +180,7 @@ class Uploader {
             );
 
             // Set the path property to the filename where you've saved the file.
-            $image->setpath($newFileName);
+            $image->setPath($newFileName);
 
             // Set the image dimensions.
             $imageData = getimagesize('/' . $this->fileSystem->getSystemUploadDirectory() . '/' . $newFileName);
@@ -169,8 +196,7 @@ class Uploader {
             return $image;
         }
         else {
-            print_r($messages);
-            die;
+            throw new FileException($messages[0]);
         }
     }
 }

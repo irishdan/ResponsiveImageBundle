@@ -31,7 +31,6 @@ class FileSystemTest extends \PHPUnit_Framework_TestCase
     public function testUploadedFilePath()
     {
         $uploadedFilePath = $this->fileSystem->uploadedFilePath('test_path');
-
         $this->assertEquals('root_direc/web/uploads/documents/test_path', $uploadedFilePath);
     }
 }
