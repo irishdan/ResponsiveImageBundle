@@ -46,10 +46,10 @@ services:
       class: ResponsiveImageBundle\Event\ImageListener
       arguments: [ '%responsive_image', '@responsive_image.imager' ]
       tags:
-          - { name: kernel.event_listener, event: responsive_image.generated, method: onImageCreated }
+          - { name: kernel.event_listener, event: responsive_image.created, method: onImageCreated }
 
   responsive_image.listener.image_update:
       class: ResponsiveImageBundle\Event\ImageListener
       arguments: [ '%responsive_image', '@responsive_image.imager' ]
       tags:
-          - { name: kernel.event_listener, event: responsive_image.generated, method: onImageUpdated }
+          - { name: kernel.event_listener, event: responsive_image.updated, method: onImageUpdated }

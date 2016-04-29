@@ -17,21 +17,21 @@ class ImageController extends Controller
      * @param $filename
      * @return BinaryFileResponse
      */
-    public function indexAction($styleName, $fileName)
+    public function indexAction($stylename, $filename)
     {
         // Get image style information.
-        if (empty($this->get('responsive_image.style_manager')->styleExists($styleName))) {
+        if (empty($this->get('responsive_image.style_manager')->styleExists($stylename))) {
             throw $this->createNotFoundException('The style does not exist');
         }
 
         // Create image if the file exists.
-        if ($this->get('responsive_image.file_system')->fileExists($fileName)) {
+        if ($this->get('responsive_image.file_system')->fileExists($filename)) {
             // Get the image object.
             $imageEntityClass = $this->getParameter('image_entity_class');
-            $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($fileName, $imageEntityClass[0]);
+            $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename, $imageEntityClass[0]);
 
             if (!empty($imageObject)) {
-                $image = $this->get('responsive_image.image_manager')->createStyledImage($imageObject, $styleName);
+                $image = $this->get('responsive_image.image_manager')->createStyledImage($imageObject, $stylename);
             }
 
             if (!empty($image)) {
