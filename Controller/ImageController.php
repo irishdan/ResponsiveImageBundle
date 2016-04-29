@@ -2,8 +2,7 @@
 
 namespace ResponsiveImageBundle\Controller;
 
-use ResponsiveImageBundle\Event\ImageEvent;
-use ResponsiveImageBundle\Event\ImageEvents;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -20,38 +19,24 @@ class ImageController extends Controller
      */
     public function indexAction($stylename, $filename)
     {
-        // Get the file system service.
-        $system = $this->get('responsive_image.file_system');
-
-        $stylePath = $system->styleDirectoryPath($stylename);
-        $originalPath = $system->uploadedFilePath($filename);
-
         // Get image style information.
         $style = $this->get('responsive_image.style_manager')->getStyle($stylename);
-
-        // If the file doesn't exist, show a 404 page.
         if (empty($style)) {
             throw $this->createNotFoundException('The style does not exist');
         }
 
+        $system = $this->get('responsive_image.file_system');
+        $originalPath = $system->uploadedFilePath($filename);
         if (file_exists($originalPath)) {
             // Get the image object.
             $imageEntityClass = $this->getParameter('image_entity_class');
             $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename, $imageEntityClass[0]);
 
-            // Get crop coordinates if any.
-            $crop = empty($imageObject) ? null : $imageObject->getCropCoordinates();
+            if (!empty($imageObject)) {
+                $image = $this->get('responsive_image.image_manager')->createStyledImage($imageObject, $stylename);
+            }
 
-            $image = $this->get('responsive_image.imager')->createImage($originalPath, $stylePath, $style, $crop);
             if (!empty($image)) {
-                // Despatch event to any listeners.
-                $event = new ImageEvent($imageObject, $stylename);
-                $dispatcher = $this->get('event_dispatcher');
-                $dispatcher->dispatch(
-                    ImageEvents::IMAGE_CREATED,
-                    $event
-                );
-
                 $response = new BinaryFileResponse($image);
             }
             else {
@@ -61,7 +46,7 @@ class ImageController extends Controller
         else {
             throw $this->createNotFoundException('The file does not exist');
         }
-
+        
         return $response;
     }
 }

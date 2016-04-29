@@ -12,8 +12,8 @@ services:
       arguments: [ '@responsive_image.file_system', '%responsive_image%' ]
 
   responsive_image.image_manager:
-        class: ResponsiveImageBundle\Utils\ImageManager
-        arguments: [ '@responsive_image.imager', '@responsive_image.style_manager', '%responsive_image%' ]
+        class: ResponsiveImageBundle\Utils\ResponsiveImageManager
+        arguments: [ '@responsive_image.imager', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@event_dispatcher' ]
 
   responsive_image.file_to_object:
       class: ResponsiveImageBundle\Utils\FileToObject

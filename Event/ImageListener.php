@@ -50,16 +50,16 @@ class ImageListener {
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
     public function onImageCreated(ImageEvent $event) {
-        $image = $event->getImage();
-        $this->imageManager->createAllStyledImages($image);
+        // $image = $event->getImage();
+        // $this->imageManager->createAllStyledImages($image);
     }
 
     /**
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
     public function onImageUpdated(ImageEvent $event) {
-        $image = $event->getImage();
-        $this->imageManager->deleteAllStyledImages($image);
-        $this->imageManager->createAllStyledImages($image);
+        // $image = $event->getImage();
+        // $this->imageManager->deleteAllStyledImages($image);
+        // $this->imageManager->createAllStyledImages($image);
     }
 }
