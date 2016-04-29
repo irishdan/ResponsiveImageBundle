@@ -12,25 +12,31 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ImageEvent extends Event {
 
-  /**
-   * @var
-   */
-  protected $image;
-
-  /**
-   * EnquiryEvent constructor.
-   * @param ResponsiveImageInterface $image
+    /**
+     * @var
      */
-  public function __construct(ResponsiveImageInterface $image)
-  {
-    $this->image = $image;
-  }
+    protected $image;
 
-  /**
-   * @return mixed
-   */
-  public function getImage()
-  {
-    return $this->image;
-  }
+    /**
+     * @var
+     */
+    protected $style;
+
+    /**
+     * EnquiryEvent constructor.
+     * @param ResponsiveImageInterface $image
+     */
+    public function __construct(ResponsiveImageInterface $image, $style)
+    {
+        $this->image = $image;
+        $this->style = $style;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
 }

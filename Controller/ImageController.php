@@ -45,7 +45,7 @@ class ImageController extends Controller
             $image = $this->get('responsive_image.imager')->createImage($originalPath, $stylePath, $style, $crop);
             if (!empty($image)) {
                 // Despatch event to any listeners.
-                $event = new ImageEvent($imageObject);
+                $event = new ImageEvent($imageObject, $stylename);
                 $dispatcher = $this->get('event_dispatcher');
                 $dispatcher->dispatch(
                     ImageEvents::IMAGE_CREATED,

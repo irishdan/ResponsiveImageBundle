@@ -3,5 +3,5 @@
 namespace ResponsiveImageBundle\Event;
 
 final class ImageEvents {
-  const IMAGE_CREATED = 'image.created';
+  const IMAGE_GENERATED = 'responsive_image.generated';
 }

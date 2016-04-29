@@ -34,5 +34,6 @@ services:
   # Event listeners.
   responsive_image.listener.contract:
         class: ResponsiveImageBundle\Event\ImageListener
+        arguments: [ '%responsive_image' ]
         tags:
-            - { name: kernel.event_listener, event: image.created, method: onImageCreated }
+            - { name: kernel.event_listener, event: responsive_image.generated, method: onImageGenerated }
