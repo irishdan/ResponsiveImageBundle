@@ -94,6 +94,12 @@ class StyleManager
         }
     }
 
+    public function styleExists($styleName) {
+        $style = $this->getStyle($styleName);
+
+        return !empty($style);
+    }
+
     /**
      * @param ResponsiveImageInterface $image
      * @param $pictureSetName

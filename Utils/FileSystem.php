@@ -224,6 +224,11 @@ class FileSystem
         }
     }
 
+    public function fileExists($fileName) {
+        $originalPath = $this->uploadedFilePath($fileName);
+        return file_exists($originalPath);
+    }
+
     /**
      * Daletes a directory and its contents or a file.
      *
