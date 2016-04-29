@@ -4,14 +4,28 @@ namespace ResponsiveImageBundle\Event;
 
 use ResponsiveImageBundle\Event\ImageEvent;
 
+/**
+ * Class ImageListener
+ * @package ResponsiveImageBundle\Event
+ */
 class ImageListener {
+    /**
+     * @var
+     */
     private $config;
 
+    /**
+     * ImageListener constructor.
+     * @param $config
+     */
     public function __construct($config)
     {
         $this->config = $config;
     }
 
+    /**
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
     public function onImageGenerated(ImageEvent $event)
     {
         if (!empty($this->config['aws_s3'])) {
@@ -24,5 +38,19 @@ class ImageListener {
             //     region: AWS_S3_REGION
         }
 
+    }
+
+    /**
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
+    public function onImageCreated(ImageEvent $event) {
+
+    }
+
+    /**
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
+    public function onImageUpdated(ImageEvent $event) {
+        
     }
 }

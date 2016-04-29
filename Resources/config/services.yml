@@ -11,6 +11,10 @@ services:
       class: ResponsiveImageBundle\Utils\Imager
       arguments: [ '@responsive_image.file_system', '%responsive_image%' ]
 
+  responsive_image.image_manager:
+        class: ResponsiveImageBundle\Utils\ImageManager
+        arguments: [ '@responsive_image.imager', '@responsive_image.style_manager', '%responsive_image%' ]
+
   responsive_image.file_to_object:
       class: ResponsiveImageBundle\Utils\FileToObject
       arguments: [ '@doctrine.orm.entity_manager' ]
@@ -32,8 +36,20 @@ services:
       arguments: [ '@responsive_image.style_manager' ]
 
   # Event listeners.
-  responsive_image.listener.contract:
-        class: ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image' ]
-        tags:
-            - { name: kernel.event_listener, event: responsive_image.generated, method: onImageGenerated }
+  responsive_image.listener.image_generated:
+      class: ResponsiveImageBundle\Event\ImageListener
+      arguments: [ '%responsive_image', '@responsive_image.imager' ]
+      tags:
+          - { name: kernel.event_listener, event: responsive_image.generated, method: onImageGenerated }
+
+  responsive_image.listener.image_created:
+      class: ResponsiveImageBundle\Event\ImageListener
+      arguments: [ '%responsive_image', '@responsive_image.imager' ]
+      tags:
+          - { name: kernel.event_listener, event: responsive_image.generated, method: onImageCreated }
+
+  responsive_image.listener.image_update:
+      class: ResponsiveImageBundle\Event\ImageListener
+      arguments: [ '%responsive_image', '@responsive_image.imager' ]
+      tags:
+          - { name: kernel.event_listener, event: responsive_image.generated, method: onImageUpdated }
