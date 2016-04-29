@@ -11,7 +11,7 @@ services:
       class: ResponsiveImageBundle\Utils\Imager
       arguments: [ '@responsive_image.file_system', '%responsive_image%' ]
 
-  responsive_image.image_manager:
+  responsive_image.responsive_image_manager:
         class: ResponsiveImageBundle\Utils\ResponsiveImageManager
         arguments: [ '@responsive_image.imager', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@event_dispatcher' ]
 
@@ -24,7 +24,7 @@ services:
       arguments: ['@responsive_image.file_system']
 
   # Custom form field type.
-  responsive_image.form.type.gender:
+  responsive_image.form.type.crop_focus:
       class: ResponsiveImageBundle\Form\Type\CropFocusType
       arguments: [ '@responsive_image.style_manager', '%responsive_image%' ]
       tags:
@@ -38,18 +38,18 @@ services:
   # Event listeners.
   responsive_image.listener.image_generated:
       class: ResponsiveImageBundle\Event\ImageListener
-      arguments: [ '%responsive_image', '@responsive_image.imager' ]
+      arguments: [ '%responsive_image', '@responsive_image.responsive_image_manager' ]
       tags:
           - { name: kernel.event_listener, event: responsive_image.generated, method: onImageGenerated }
 
   responsive_image.listener.image_created:
       class: ResponsiveImageBundle\Event\ImageListener
-      arguments: [ '%responsive_image', '@responsive_image.imager' ]
+      arguments: [ '%responsive_image', '@responsive_image.responsive_image_manager' ]
       tags:
           - { name: kernel.event_listener, event: responsive_image.created, method: onImageCreated }
 
   responsive_image.listener.image_update:
       class: ResponsiveImageBundle\Event\ImageListener
-      arguments: [ '%responsive_image', '@responsive_image.imager' ]
+      arguments: [ '%responsive_image', '@responsive_image.responsive_image_manager' ]
       tags:
           - { name: kernel.event_listener, event: responsive_image.updated, method: onImageUpdated }

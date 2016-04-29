@@ -75,15 +75,22 @@ class ResponsiveImageManager
      * @param ResponsiveImageInterface $image
      */
     public function createAllStyledImages(ResponsiveImageInterface $image) {
-
+        $filename = $image->getPath();
+        $styles = $this->styleManager->getAllStyles();
+        if (!empty($filename)) {
+            foreach ($styles as $stylename => $style) {
+                $this->createStyledImage($image, $stylename);
+            }
+        }
     }
 
     /**
      * @param ResponsiveImageInterface $image
      */
     public function deleteAllStyledImages(ResponsiveImageInterface $image) {
-
+        $filename = $image->getPath();
+        if (!empty($filename)) {
+            $this->styleManager->deleteImageStyledFiles($filename);
+        }
     }
-
-
 }
