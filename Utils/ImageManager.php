@@ -36,6 +36,11 @@ class ImageManager
         $this->config = $config;
     }
 
+    public function createStyledImage($image, $style) {
+        $crop = empty($imageObject) ? null : $image->getCropCoordinates();
+        $this->get('responsive_image.imager')->createImage($originalPath, $stylePath, $style, $crop);
+    }
+
     /**
      * @param ResponsiveImageInterface $image
      */

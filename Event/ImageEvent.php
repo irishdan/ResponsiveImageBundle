@@ -26,7 +26,7 @@ class ImageEvent extends Event {
      * EnquiryEvent constructor.
      * @param ResponsiveImageInterface $image
      */
-    public function __construct(ResponsiveImageInterface $image, $style)
+    public function __construct(ResponsiveImageInterface $image, $style = null)
     {
         $this->image = $image;
         $this->style = $style;
