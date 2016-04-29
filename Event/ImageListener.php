@@ -9,7 +9,7 @@ class ImageListener {
   {
   }
 
-  public function onEnquiryCreated(ImageEvent $event)
+  public function onImageCreated(ImageEvent $event)
   {
   }
 }

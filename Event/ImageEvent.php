@@ -23,7 +23,7 @@ class ImageEvent extends Event {
      */
   public function __construct(ResponsiveImageInterface $image)
   {
-    $this->enquiry = $image;
+    $this->image = $image;
   }
 
   /**

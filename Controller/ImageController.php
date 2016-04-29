@@ -2,6 +2,8 @@
 
 namespace ResponsiveImageBundle\Controller;
 
+use ResponsiveImageBundle\Event\ImageEvent;
+use ResponsiveImageBundle\Event\ImageEvents;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -24,7 +26,7 @@ class ImageController extends Controller
         $stylePath = $system->styleDirectoryPath($stylename);
         $originalPath = $system->uploadedFilePath($filename);
 
-        // Get all image styles.
+        // Get image style information.
         $style = $this->get('responsive_image.style_manager')->getStyle($stylename);
 
         // If the file doesn't exist, show a 404 page.
@@ -41,7 +43,20 @@ class ImageController extends Controller
             $crop = empty($imageObject) ? null : $imageObject->getCropCoordinates();
 
             $image = $this->get('responsive_image.imager')->createImage($originalPath, $stylePath, $style, $crop);
-            $response = new BinaryFileResponse($image);
+            if (!empty($image)) {
+                // Despatch event to any listeners.
+                $event = new ImageEvent($imageObject);
+                $dispatcher = $this->get('event_dispatcher');
+                $dispatcher->dispatch(
+                    ImageEvents::IMAGE_CREATED,
+                    $event
+                );
+
+                $response = new BinaryFileResponse($image);
+            }
+            else {
+                throw $this->createNotFoundException('Derived image could not be created');
+            }
         }
         else {
             throw $this->createNotFoundException('The file does not exist');
