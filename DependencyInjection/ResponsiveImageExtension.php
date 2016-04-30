@@ -13,6 +13,13 @@ class ResponsiveImageExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        if (!empty($config['aws_s3'])) {
+            if (!empty($config['aws_s3']['enabled'])) {
+                $url = 'http://s3-' . $config['aws_s3']['region'] . '.amazonaws.com/' . $config['aws_s3']['bucket'] . '/' . $config['aws_s3']['directory'] . '/';
+                $config['path_prefix'] = $url;
+            }
+        }
+
         foreach ($configs as $subConfig) {
             $config = array_merge($config, $subConfig);
         }

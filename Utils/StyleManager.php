@@ -57,6 +57,10 @@ class StyleManager
         if (!empty($parameters['breakpoints'])) {
             $this->breakpoints = $parameters['breakpoints'];
         }
+
+        if (!empty($parameters['path_prefix'])) {
+            $this->displayPathPrefix = $parameters['path_prefix'];
+        }
     }
 
     public function createPathsArray($filename) {
@@ -169,10 +173,18 @@ class StyleManager
                 }
                 $styles_directory = $this->fileSystem->getStylesDir();
                 $path = $styles_directory . '/' . $stylename . '/' . $filename;
-                $picture .= '<source srcset="/' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
+
+                if (!empty($this->displayPathPrefix)) {
+                    $path = $this->displayPathPrefix . $path;
+                }
+                else {
+                    $path = '/' . $path;
+                }
+
+                $picture .= '<source srcset="' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
             }
 
-            $picture .= '<img srcset="/' . $path . '">';
+            $picture .= '<img srcset="' . $path . '">';
             $picture .= '</picture>';
 
             return $picture;
@@ -195,7 +207,14 @@ class StyleManager
         else {
             $stylePath = $this->fileSystem->getUploadsDir();
         }
-        $webPath = '/' . $stylePath . '/' . $filename;
+        $webPath = $stylePath . '/' . $filename;
+        if (!empty($this->displayPathPrefix)) {
+            $webPath = $this->displayPathPrefix . $webPath;
+        }
+        else {
+            $webPath = '/' . $webPath;
+        }
+        // @TODO: Above code is duplicated.
 
         $image->setStyle($webPath);
 

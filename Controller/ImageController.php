@@ -31,7 +31,7 @@ class ImageController extends Controller
             $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename, $imageEntityClass[0]);
 
             if (!empty($imageObject)) {
-                $image = $this->get('responsive_image.image_manager')->createStyledImage($imageObject, $stylename);
+                $image = $this->get('responsive_image.responsive_image_manager')->createStyledImage($imageObject, $stylename);
             }
 
             if (!empty($image)) {
