@@ -279,6 +279,10 @@ class FileSystem
         return $this->systemStylesPath . '/' . $stylename;
     }
 
+    public function uploadedFileWebPath($filename) {
+        return $this->uploadsDir . '/' . $filename;
+    }
+
     /**
      * @param $stylename
      * @param $filename
@@ -303,6 +307,17 @@ class FileSystem
     public function styleWebPath($stylename) {
         $stylesDirectory = $this->stylesDir;
         $path = $stylesDirectory . '/' . $stylename;
+
+        return $path;
+    }
+
+    /**
+     * @param $stylename
+     * @return string
+     */
+    public function styledFileWebPath($stylename, $filename) {
+        $stylesDirectory = $this->stylesDir;
+        $path = $stylesDirectory . '/' . $stylename . '/' . $filename;
 
         return $path;
     }

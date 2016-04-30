@@ -65,7 +65,7 @@ class S3Bridge
     }
 
     /**
-     *
+     * Initialise the S3 client.
      */
     public function getClient() {
         // AWS access info
@@ -79,6 +79,25 @@ class S3Bridge
         ]);
     }
 
+    /**
+     * Removes all the images set in the $this->paths array from the configured S3 bucket.
+     */
+    public function removeFroms3()
+    {
+        $this->getClient();
+    }
+
+    /**
+     *  Sync Bucket with local entities.
+     */
+    public function syncBucket() {
+
+    }
+
+    /**
+     * @param $paths
+     * @param bool $clear
+     */
     public function setPaths($paths, $clear = FALSE) {
         if ($clear) {
             $this->paths = [];
@@ -89,7 +108,7 @@ class S3Bridge
     }
 
     /**
-     *
+     * Tranfers all the images set in the $this->paths array to the configured S3 bucket.
      */
     public function uploadToS3()
     {
@@ -118,13 +137,5 @@ class S3Bridge
                 // handle the error.
             }
         }
-    }
-
-    /**
-     *
-     */
-    public function removeFroms3()
-    {
-        $this->getClient();
     }
 }

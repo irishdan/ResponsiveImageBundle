@@ -59,6 +59,24 @@ class StyleManager
         }
     }
 
+    public function createPathsArray($filename) {
+        $styles = $this->getAllStyles();
+        $systemLocation = $this->fileSystem->uploadedFilePath($filename);
+        $styledLocation = $this->fileSystem->uploadedFileWebPath($filename);
+
+        // Add the original file to the array.
+        $paths = [$systemLocation => $styledLocation];
+
+        foreach ($styles as $stylename => $style) {
+            $systemLocation = $this->fileSystem->styleFilePath($stylename, $filename);
+            $styledLocation = $this->fileSystem->styledFileWebPath($stylename, $filename);
+
+            $paths[$systemLocation] = $styledLocation;
+        }
+
+        return $paths;
+    }
+
     /**
      * @param $filename
      */

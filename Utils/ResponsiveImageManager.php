@@ -41,8 +41,6 @@ class ResponsiveImageManager
     /**
      * @var array
      */
-    private $imagePaths = [];
-
     private $s3;
 
     /**
@@ -125,9 +123,9 @@ class ResponsiveImageManager
     {
         $image = $event->getImage();
         $file = $image->getPath();
-        $filepath = $this->system->uploadedFilePath($file);
+        $paths = $this->styleManager->createPathsArray($file);
 
-        $this->s3->setPaths([$filepath => $file]);
+        $this->s3->setPaths($paths);
         $this->s3->uploadToS3();
     }
 }
