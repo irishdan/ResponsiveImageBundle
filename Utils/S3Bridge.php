@@ -3,6 +3,8 @@
 namespace ResponsiveImageBundle\Utils;
 
 
+use Aws\CommandPool;
+use Aws\Exception\AwsException;
 use Aws\S3\S3Client;
 
 /**
@@ -92,46 +94,30 @@ class S3Bridge
     public function uploadToS3()
     {
         $this->getClient();
+        $commands = array();
+
         foreach ($this->paths as $path => $file) {
-            try{
-                // Upload a file.
-                $result = $this->s3->putObject(array(
+            $commands[] = $this->s3->getCommand(
+                'PutObject', array(
                     'region'       => $this->region,
                     'Bucket'       => $this->bucket,
                     'Key'          => $this->directory . $file,
                     'SourceFile'   => $path,
                     'ACL'          => 'public-read',
                     'StorageClass' => 'REDUCED_REDUNDANCY',
-                ));
-                // var_dump($result);
-            } catch (\Exception $e) {
-                echo $e->getMessage() . "\n";
+                )
+            );
+
+            $pool = new CommandPool($this->s3, $commands);
+            $promise = $pool->promise();
+
+            // Force the pool to complete synchronously
+            try {
+                $result = $promise->wait();
+            } catch (AwsException $e) {
+                // handle the error.
             }
         }
-
-        // $s3 = new S3Client(awsAccessKey, awsSecretKey);
-        // $s3->putBucket($bucket, \S3::ACL_PUBLIC_READ);
-//
-        // $commands = array();
-        // $commands[] = $s3->getCommand('PutObject', array(
-        //     'Bucket' => 'SOME_BUCKET',
-        //     'Key' => 'photos/photo01.jpg',
-        //     'Body' => fopen('/tmp/photo01.jpg', 'r'),
-        // ));
-        // $commands[] = $s3->getCommand('PutObject', array(
-        //     'Bucket' => 'SOME_BUCKET',
-        //     'Key' => 'photos/photo02.jpg',
-        //     'Body' => fopen('/tmp/photo02.jpg', 'r'),
-        // ));
-//
-        // // Execute an array of command objects to do them in parallel
-        // $s3->execute($commands);
-//
-        // // Loop over the commands, which have now all been executed
-        // foreach ($commands as $command) {
-        //     $result = $command->getResult();
-        //     // Do something with result
-        // }
     }
 
     /**
