@@ -31,5 +31,9 @@ class ResponsiveImageExtension extends Extension
         $resources = $container->getParameter('twig.form.resources');
         $container->setParameter('twig.form.resources', array_merge(array('ResponsiveImageBundle::cropfocus.html.twig'), $resources));
 
+        // Add the aws_s3 config as a parameter.
+        // @TODO: Add validation etc for this config
+        $container->setParameter('responsive_image.aws_s3', $config['aws_s3']);
+
     }
 }

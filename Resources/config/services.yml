@@ -13,7 +13,7 @@ services:
 
   responsive_image.responsive_image_manager:
         class: ResponsiveImageBundle\Utils\ResponsiveImageManager
-        arguments: [ '@responsive_image.imager', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@event_dispatcher' ]
+        arguments: [ '@responsive_image.imager', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@event_dispatcher' , '@responsive_image.s3_bridge' ]
 
   responsive_image.file_to_object:
       class: ResponsiveImageBundle\Utils\FileToObject
@@ -22,6 +22,10 @@ services:
   responsive_image.uploader:
       class: ResponsiveImageBundle\Utils\Uploader
       arguments: ['@responsive_image.file_system']
+
+  responsive_image.s3_bridge:
+      class: ResponsiveImageBundle\Utils\S3Bridge
+      arguments: [ '%responsive_image.aws_s3%' ]
 
   # Custom form field type.
   responsive_image.form.type.crop_focus:
