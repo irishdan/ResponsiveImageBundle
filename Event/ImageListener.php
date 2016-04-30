@@ -42,6 +42,7 @@ class ImageListener {
             //     key: AWS_S3_KEY
             //     secret: AWS_S3_SECRET
             //     region: AWS_S3_REGION
+            $this->imageManager->transferToS3($event);
         }
 
     }
@@ -52,6 +53,8 @@ class ImageListener {
     public function onImageCreated(ImageEvent $event) {
         $image = $event->getImage();
         $this->imageManager->createAllStyledImages($image);
+
+        $this->imageManager->transferToS3($event);
     }
 
     /**
@@ -61,5 +64,7 @@ class ImageListener {
         $image = $event->getImage();
         $this->imageManager->deleteAllStyledImages($image);
         $this->imageManager->createAllStyledImages($image);
+
+        $this->imageManager->transferToS3($event);
     }
 }

@@ -43,11 +43,9 @@ class Configuration implements ConfigurationInterface
                 ->variableNode('image_styles')->end()
                 ->variableNode('picture_sets')->end()
                 ->variableNode('crop_focus_widget')->end()
+                ->variableNode('aws_s3')->end()
             ->end()
         ;
-
-        // @TODO: Pictures set should be checked for valid break points and image styles.
-        // @TODO: Test its working with imagemagik
 
         return $treeBuilder;
     }
