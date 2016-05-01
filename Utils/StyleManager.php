@@ -155,6 +155,17 @@ class StyleManager
         }
     }
 
+    protected function prefixPath($url) {
+        if (!empty($this->displayPathPrefix)) {
+            $url = $this->displayPathPrefix . $url;
+        }
+        else {
+            $url = '/' . $url;
+        }
+
+        return $url;
+    }
+
     /**
      * @param $pictureSetName
      * @param $filename
@@ -173,13 +184,7 @@ class StyleManager
                 }
                 $styles_directory = $this->fileSystem->getStylesDir();
                 $path = $styles_directory . '/' . $stylename . '/' . $filename;
-
-                if (!empty($this->displayPathPrefix)) {
-                    $path = $this->displayPathPrefix . $path;
-                }
-                else {
-                    $path = '/' . $path;
-                }
+                $path = $this->prefixPath($path);
 
                 $picture .= '<source srcset="' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
             }
@@ -208,13 +213,7 @@ class StyleManager
             $stylePath = $this->fileSystem->getUploadsDir();
         }
         $webPath = $stylePath . '/' . $filename;
-        if (!empty($this->displayPathPrefix)) {
-            $webPath = $this->displayPathPrefix . $webPath;
-        }
-        else {
-            $webPath = '/' . $webPath;
-        }
-        // @TODO: Above code is duplicated.
+        $webPath = $this->prefixPath($webPath);
 
         $image->setStyle($webPath);
 
