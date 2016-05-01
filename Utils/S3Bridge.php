@@ -82,9 +82,20 @@ class S3Bridge
     /**
      * Removes all the images set in the $this->paths array from the configured S3 bucket.
      */
-    public function removeFroms3()
+    public function removeFromS3()
     {
         $this->getClient();
+
+        $objects = [];
+        foreach ($this->paths as $path => $file) {
+            $objects[] = ['Key' => $this->directory . $file];
+        }
+        $result = $this->s3->deleteObjects(array(
+            'Bucket'  => $this->bucket,
+            'Delete' => [
+                'Objects' => $objects,
+            ],
+        ));
     }
 
     /**

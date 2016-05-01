@@ -197,6 +197,18 @@ responsive_image:
     crop_focus_widget:                  # Crop focus widget settings
             include_js_css: TRUE        # If true widget js css is included in the field html. Otherwise add it manually.
             display_coordinates: TRUE   # Toggles between a text field or hidden field.
+    aws_s3:
+            enabled: TRUE
+            keep_local_files: NONE # NONE ALL ORIGINAL
+            move_to_bucket: ALL # ALL STYLED_ONLY
+            temp_directory: '/tmp' # NULL
+            protocol: 'http' # 'http' 'https'
+            bucket: 'bucketname'
+            region: 'eu-west-1'
+            version: 'latest'
+            directory: ''
+            access_key_id: KEY_ID
+            secret_access_key: ACCESS_SECRET
 ```
 
 Most Browser do not yet support the <picture> tag. Therefore a polyfil is needed. This is available here http://scottjehl.github.io/picturefill

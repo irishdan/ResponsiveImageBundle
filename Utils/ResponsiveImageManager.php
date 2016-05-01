@@ -127,5 +127,6 @@ class ResponsiveImageManager
 
         $this->s3->setPaths($paths);
         $this->s3->uploadToS3();
+        // $this->s3->removeFromS3();
     }
 }

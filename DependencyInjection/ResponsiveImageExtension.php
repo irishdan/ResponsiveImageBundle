@@ -15,7 +15,7 @@ class ResponsiveImageExtension extends Extension
 
         if (!empty($config['aws_s3'])) {
             if (!empty($config['aws_s3']['enabled'])) {
-                $url = 'http://s3-' . $config['aws_s3']['region'] . '.amazonaws.com/' . $config['aws_s3']['bucket'] . '/' . $config['aws_s3']['directory'] . '/';
+                $url = $config['aws_s3']['protocol'] . '://s3-' . $config['aws_s3']['region'] . '.amazonaws.com/' . $config['aws_s3']['bucket'] . '/' . $config['aws_s3']['directory'] . '/';
                 $config['path_prefix'] = $url;
             }
         }
