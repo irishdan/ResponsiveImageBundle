@@ -199,10 +199,10 @@ responsive_image:
             display_coordinates: TRUE   # Toggles between a text field or hidden field.
     aws_s3:
             enabled: TRUE
-            keep_local_files: NONE # NONE ALL ORIGINAL
-            move_to_bucket: ALL # ALL STYLED_ONLY
-            temp_directory: '/tmp' # NULL
-            protocol: 'http' # 'http' 'https'
+            keep_local_files: NONE      # NONE ALL ORIGINAL
+            move_to_bucket: ALL         # ALL STYLED_ONLY
+            temp_directory: '/tmp'      # NULL
+            protocol: 'http'            # 'http' 'https'
             bucket: 'bucketname'
             region: 'eu-west-1'
             version: 'latest'

@@ -43,10 +43,51 @@ class Configuration implements ConfigurationInterface
                 ->variableNode('image_styles')->end()
                 ->variableNode('picture_sets')->end()
                 ->variableNode('crop_focus_widget')->end()
-                ->variableNode('aws_s3')->end()
+                ->append($this->addAWSNode())
             ->end()
         ;
 
         return $treeBuilder;
+    }
+
+    protected function addAWSNode() {
+        $builder = new TreeBuilder();
+        $node = $builder->root('aws_s3');
+
+        $node
+            ->children()
+                ->booleanNode('enabled')
+                    ->defaultFalse()
+                ->end()
+                ->scalarNode('keep_local_files')
+                    ->defaultValue('NONE')
+                ->end()
+                ->scalarNode('move_to_bucket')
+                    ->defaultValue('ALL')
+                ->end()
+                ->scalarNode('temp_directory')
+                    ->defaultValue(null)
+                ->end()
+                ->scalarNode('bucket')
+                    ->defaultValue(null)
+                ->end()
+                ->scalarNode('region')
+                    ->defaultValue('eu-west-1')
+                ->end()
+                ->scalarNode('version')
+                    ->defaultValue('latest')
+                ->end()
+                ->scalarNode('directory')
+                    ->defaultValue('')
+                ->end()
+                ->scalarNode('protocol')
+                    ->defaultValue('http')
+                ->end()
+                ->scalarNode('access_key_id')->end()
+                ->scalarNode('secret_access_key')->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }
