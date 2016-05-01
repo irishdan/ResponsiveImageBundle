@@ -7,7 +7,6 @@
 (function($) {
     $.imageCrop = function(object, customOptions) {
         cropper = {
-
             defaultOptions: {
                 aspectRatio : 0,
                 displaySizeHint : false,
@@ -208,6 +207,13 @@
                 return [offset.left, offset.top];
             },
 
+            // Update the overlay layer
+            updateOverlayLayer: function() {
+                this.$overlay.css({
+                    display : this.selectionExists ? 'block' : 'none'
+                });
+            },
+
             // Get the current mouse position relative to the image position
             getMousePosition: function(event) {
                 var imageOffset = this.getElementOffset(this.$image);
@@ -219,13 +225,6 @@
                 y = (y < 0) ? 0 : (y > this.$image.height()) ? this.$image.height() : y;
 
                 return [x, y];
-            },
-
-            // Update the overlay layer
-            updateOverlayLayer: function() {
-                this.$overlay.css({
-                    display : this.selectionExists ? 'block' : 'none'
-                });
             },
 
             // Update the trigger layer
@@ -430,7 +429,7 @@
                     cropper.updateInterface('resizeCrop');
                 }
             },
-            
+
             resizeFocus: function(event) {
                 event.preventDefault();
                 event.stopPropagation();

@@ -74,8 +74,21 @@ class CropFocusType extends AbstractType
         $options['image'] = $image;
 
         $config = $this->config['crop_focus_widget'];
-        $options['include_js_css'] = empty($config['include_js_css']) ? FALSE : TRUE;
+        if (!empty($config['include_js_css'])) {
+            $options['include_js_css'] = TRUE;
+            $pubicDirectory = dirname(__FILE__) . '/../../Resources/public/';
+            $js = file_get_contents($pubicDirectory . 'js/jquery.cropper.js', FILE_USE_INCLUDE_PATH);
+            $css = file_get_contents($pubicDirectory . 'css/cropper.css', FILE_USE_INCLUDE_PATH);
+
+            $options['js'] = $js;
+            $options['css'] = $css;
+        }
+        else {
+            $options['include_js_css'] = FALSE;
+        }
+
         $options['display_coordinates'] = empty($config['display_coordinates']) ? FALSE : TRUE;
+
 
         $view->vars = array_replace($view->vars, $options);
     }
