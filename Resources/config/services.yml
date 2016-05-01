@@ -1,4 +1,8 @@
 services:
+  responsive_image.responsive_image_manager:
+      class: ResponsiveImageBundle\Utils\ResponsiveImageManager
+      arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@event_dispatcher' , '@responsive_image.s3_bridge' ]
+
   responsive_image.file_system:
       class: ResponsiveImageBundle\Utils\FileSystem
       arguments: ['%kernel.root_dir%', '%responsive_image%' ]
@@ -7,13 +11,9 @@ services:
       class: ResponsiveImageBundle\Utils\StyleManager
       arguments: ['@responsive_image.file_system', '%responsive_image%' ]
 
-  responsive_image.imager:
-      class: ResponsiveImageBundle\Utils\Imager
+  responsive_image.image_maker:
+      class: ResponsiveImageBundle\Utils\ImageMaker
       arguments: [ '@responsive_image.file_system', '%responsive_image%' ]
-
-  responsive_image.responsive_image_manager:
-        class: ResponsiveImageBundle\Utils\ResponsiveImageManager
-        arguments: [ '@responsive_image.imager', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@event_dispatcher' , '@responsive_image.s3_bridge' ]
 
   responsive_image.file_to_object:
       class: ResponsiveImageBundle\Utils\FileToObject

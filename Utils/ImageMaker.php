@@ -8,7 +8,7 @@ use Intervention\Image\ImageManager;
  * Class Imager
  * @package ResponsiveImageBundle\Utils
  */
-class Imager
+class ImageMaker
 {
     /**
      * @var

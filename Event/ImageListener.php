@@ -48,6 +48,7 @@ class ImageListener {
         $this->imageManager->createAllStyledImages($image);
 
         $this->imageManager->transferToS3($event);
+        $this->imageManager->deleteAllStyledImages($image);
     }
 
     /**
@@ -59,5 +60,6 @@ class ImageListener {
         $this->imageManager->createAllStyledImages($image);
 
         $this->imageManager->transferToS3($event);
+        $this->imageManager->deleteAllStyledImages($image);
     }
 }
