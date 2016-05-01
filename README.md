@@ -95,6 +95,16 @@ The bundle utilises the intervention image library http://image.intervention.io/
 }
 ```
 
+To use AWS the, the AWS PHP sdk is also required.
+
+```
+{
+    "require": {
+        "aws/aws-sdk-php": "^3.18",
+    }
+}
+```
+
 2: Enable the Bundle
 -------------------------
 
@@ -156,8 +166,8 @@ responsive_image:
         desktop: 'min-width: 1100px'
         tv: 'min-width: 1800px'
     image_styles:                       # Image style definitions
-        full:
-            effect: scale
+        full:                           # Style name
+            effect: scale               # Style effect (scale or crop)
             height: 200
         thumb:
             effect: crop
@@ -172,9 +182,9 @@ responsive_image:
             height: 400
     picture_sets:                       # Picture set definitions
         thumb_picture:
-            base:
-                effect: crop
-                width: 300
+            base:                       # Breakpoint name
+                effect: crop            # Style effect
+                width: 300              
                 height: 600
             mobile:
                 effect: crop
@@ -188,8 +198,7 @@ responsive_image:
                 effect: crop
                 width: 180
                 height: 380
-            # to use a pre-defined style just use its name as below
-            desktop: thumb
+            desktop: thumb              # To use a pre-defined style just use its name
             tv:
                 effect: crop
                 width: 300
@@ -198,15 +207,15 @@ responsive_image:
             include_js_css: TRUE        # If true widget js css is included in the field html. Otherwise add it manually.
             display_coordinates: TRUE   # Toggles between a text field or hidden field.
     aws_s3:
-            enabled: TRUE
+            enabled: TRUE               # Enable or disable AWS support
             keep_local_files: NONE      # NONE ALL ORIGINAL
             move_to_bucket: ALL         # ALL STYLED_ONLY
             temp_directory: '/tmp'      # NULL
-            protocol: 'http'            # 'http' 'https'
-            bucket: 'bucketname'
-            region: 'eu-west-1'
-            version: 'latest'
-            directory: ''
+            protocol: 'http'            # The protocol used for S3 images 'http' or 'https'
+            bucket: 'bucketname'        # The S3 bucket name
+            region: 'eu-west-1'         # The S3 region
+            version: 'latest'           # The sdk version
+            directory: 'buck-folder'    # The directory top store images on the S3 bucket
             access_key_id: KEY_ID
             secret_access_key: ACCESS_SECRET
 ```
