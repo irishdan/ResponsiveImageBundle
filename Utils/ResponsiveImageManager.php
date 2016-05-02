@@ -75,6 +75,8 @@ class ResponsiveImageManager
         $style = $this->styleManager->getStyle($styleName);
 
         $crop = empty($imageObject) ? null : $imageObject->getCropCoordinates();
+
+        // @TODO: Destination should be switchable to temporary directory.
         $image = $this->imager->createImage($originalPath, $stylePath, $style, $crop);
 
         // @TODO: for what?

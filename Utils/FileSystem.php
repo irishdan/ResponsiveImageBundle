@@ -6,21 +6,17 @@ namespace ResponsiveImageBundle\Utils;
  * Class FileSystem
  * @package ResponsiveImageBundle\Utils
  */
-/**
- * Class FileSystem
- * @package ResponsiveImageBundle\Utils
- */
 class FileSystem
 {
+    /**
+     * @var $config
+     */
+    private $config;
+
     /**
      * @var string
      */
     private $rootDir;
-
-    /**
-     * @var
-     */
-    private $uploadsDir;
 
     /**
      * @var string
@@ -45,6 +41,16 @@ class FileSystem
     /**
      * @var
      */
+    private $tempDirectory = null;
+
+    /**
+     * @var
+     */
+    private $uploadsDir;
+
+    /**
+     * @var
+     */
     private $webDirectory;
 
     /**
@@ -52,14 +58,12 @@ class FileSystem
      */
     private $webStylesDirectory;
 
-
     /**
      * FileSystem constructor.
      * @param $rootDir
      * @param $imageConfigs
      */
     public function __construct($rootDir, $imageConfigs) {
-
         $uploadsDir = $imageConfigs['image_directory'];
         $stylesDir = $imageConfigs['image_styles_directory'];
         $symfonyDir = substr($rootDir, 0, -4);
@@ -70,6 +74,13 @@ class FileSystem
         $this->setSystemPath($symfonyDir . '/web');
         $this->setSystemUploadPath($this->systemPath . '/' . $this->uploadsDir);
         $this->setSystemStylesPath($this->systemUploadPath . '/' . $stylesDir);
+
+        // Set the temp directory.
+        if (!empty($imageConfigs['aws_s3'])) {
+            if (!empty($imageConfigs['aws_s3']['temp_directory'])) {
+                $this->tempDirectory($symfonyDir . '/' . $imageConfigs['aws_s3']['temp_directory']);
+            }
+        }
     }
 
     /**
@@ -208,6 +219,8 @@ class FileSystem
     }
 
     /**
+     * Check if a directory exists in the system and optionally create it if it doesn't
+     *
      * @param $directory
      * @param bool $create
      * @return bool
@@ -224,17 +237,20 @@ class FileSystem
         }
     }
 
+    /**
+     * @param $fileName
+     * @return mixed
+     */
     public function fileExists($fileName) {
         $originalPath = $this->uploadedFilePath($fileName);
         return file_exists($originalPath);
     }
 
     /**
-     * Daletes a directory and its contents or a file.
+     * Deletes a directory and its contents or a file.
      *
      * @param $target
      * @return bool
-     * @internal param $directory
      */
     public function deleteDirectory($target) {
         if(is_dir($target)){
@@ -253,8 +269,6 @@ class FileSystem
     /**
      * @param $path
      * @return bool
-     * @internal param $filename
-     * @internal param null $directory
      */
     public function deleteFile($path) {
         // If path exists delete the file.
@@ -279,6 +293,10 @@ class FileSystem
         return $this->systemStylesPath . '/' . $stylename;
     }
 
+    /**
+     * @param $filename
+     * @return string
+     */
     public function uploadedFileWebPath($filename) {
         return $this->uploadsDir . '/' . $filename;
     }
@@ -312,6 +330,8 @@ class FileSystem
     }
 
     /**
+     * Return the web accessible slyled file path.
+     *
      * @param $stylename
      * @return string
      */
@@ -320,5 +340,20 @@ class FileSystem
         $path = $stylesDirectory . '/' . $stylename . '/' . $filename;
 
         return $path;
+    }
+
+    /**
+     *  Return the temporary directory if it has been set.
+     *
+     * @return bool|string
+     */
+    public function getTempDirectory () {
+        if ($this->tempDirectory != NULL) {
+            $this->directoryExists($this->tempDirectory, TRUE);
+            return $this->tempDirectory;
+        }
+        else {
+            return NULL;
+        }
     }
 }
