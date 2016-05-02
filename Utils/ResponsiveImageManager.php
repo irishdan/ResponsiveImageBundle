@@ -3,7 +3,6 @@
 namespace ResponsiveImageBundle\Utils;
 
 
-use Aws\S3\S3Client;
 use ResponsiveImageBundle\Event\ImageEvent;
 use ResponsiveImageBundle\Event\ImageEvents;
 
@@ -117,16 +116,38 @@ class ResponsiveImageManager
     }
 
     /**
-     *  Transfer files to S3 bucket
+     * Transfer files to S3 bucket
+     *
+     * @param ResponsiveImageInterface $image
      */
-    public function transferToS3($event)
+    public function transferToS3(ResponsiveImageInterface $image)
     {
-        $image = $event->getImage();
         $file = $image->getPath();
         $paths = $this->styleManager->createPathsArray($file);
 
         $this->s3->setPaths($paths);
         $this->s3->uploadToS3();
-        // $this->s3->removeFromS3();
+    }
+
+    /**
+     * Delete temporary files
+     *
+     * @param ResponsiveImageInterface $image
+     */
+    public function removeFiles(ResponsiveImageInterface $image) {
+        $file = $image->getPath();
+        $paths = $this->styleManager->createPathsArray($file);
+        
+        $this->s3->setPaths($paths);
+        $this->s3->removeFromS3();
+    }
+
+    /**
+     * Delete temporary files
+     *
+     * @param ResponsiveImageInterface $image
+     */
+    public function deleteTempFiles(ResponsiveImageInterface $image = null) {
+        
     }
 }

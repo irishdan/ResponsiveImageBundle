@@ -220,7 +220,7 @@ responsive_image:
             secret_access_key: ACCESS_SECRET
 ```
 
-Most Browser do not yet support the <picture> tag. Therefore a polyfil is needed. This is available here http://scottjehl.github.io/picturefill
+Most Browsers do not yet support the <picture> tag. Therefore a polyfil is needed. This is available here http://scottjehl.github.io/picturefill
 and is also included in the bundle at Resources/public/js/vendor/picturefill.js.
 
 
