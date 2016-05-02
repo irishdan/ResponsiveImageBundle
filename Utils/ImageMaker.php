@@ -112,6 +112,8 @@ class ImageMaker
     }
 
     /**
+     * Separates the crop and focus cordinates from the image object and stores them.
+     *
      * @param $cropFocusCoords
      */
     public function setCoordinateGroups($cropFocusCoords) {
@@ -122,6 +124,8 @@ class ImageMaker
     }
 
     /**
+     * Returns the style information of a defined style.
+     *
      * @param array $style
      */
     public function setStyleData($style = []) {
@@ -131,7 +135,7 @@ class ImageMaker
     }
 
     /**
-     * Performs the image manipulation for the image using current style information
+     * Performs the image manipulation using current style information
      * and user defined crop and focus rectangles.
      *
      * @param $source
@@ -237,7 +241,7 @@ class ImageMaker
     }
 
     /**
-     *  Crops out unneeded area.
+     *  Crops out defined crop area.
      */
     public function doCropRectangle() {
         // Get the offset.
@@ -341,6 +345,9 @@ class ImageMaker
     }
 
     /**
+     * Tests if a given offset is valid.
+     * Valid offsets cropped images will include the focus rectangle and will not fall outside of the orginal image.
+     *
      * @param $i
      * @param $cropLength
      * @param $imageLength
@@ -359,6 +366,8 @@ class ImageMaker
     }
 
     /**
+     * Returns either the crop or focus rectangle coordinates.
+     *
      * @param string $type
      * @return mixed
      */
@@ -380,7 +389,7 @@ class ImageMaker
     }
 
     /**
-     * Get the lengths based on coordinate (x, y, x2, y2)
+     * Gets vertical or horizontal length between two coordinates (x, y, x2, y2).
      *
      * @param string $type
      * @param array $coords
@@ -397,7 +406,8 @@ class ImageMaker
     }
 
     /**
-     * Saves the new image
+     * Saves the new image.
+     * @TODO: Allow for the desintation to be overridden, eg for temporary directory.
      *
      * @param $destination
      * @param $source

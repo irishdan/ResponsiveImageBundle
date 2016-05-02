@@ -5,8 +5,17 @@ namespace ResponsiveImageBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+/**
+ * Class Configuration
+ * @package ResponsiveImageBundle\DependencyInjection
+ */
 class Configuration implements ConfigurationInterface
 {
+    /**
+     * The root configuration for repsonsive image bundle.
+     *
+     * @return TreeBuilder
+     */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
@@ -51,6 +60,11 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
+    /**
+     * The configuration for responsive image AWS functionality.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition|\Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
     protected function addAWSNode() {
         $builder = new TreeBuilder();
         $node = $builder->root('aws_s3');

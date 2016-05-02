@@ -58,6 +58,8 @@ class ResponsiveImageManager
     }
 
     /**
+     * Creates a single styled image for an image object.
+     *
      * @param $imageObject
      * @param $styleName
      * @param bool $storePath
@@ -75,6 +77,7 @@ class ResponsiveImageManager
         $crop = empty($imageObject) ? null : $imageObject->getCropCoordinates();
         $image = $this->imager->createImage($originalPath, $stylePath, $style, $crop);
 
+        // @TODO: for what?
         if ($storePath) {
             $this->imagePaths[] = $stylePath;
         }
@@ -90,6 +93,8 @@ class ResponsiveImageManager
     }
 
     /**
+     * Creates all styled images for a given image object.
+     *
      * @param ResponsiveImageInterface $image
      */
     public function createAllStyledImages(ResponsiveImageInterface $image)

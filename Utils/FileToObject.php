@@ -24,6 +24,8 @@ class FileToObject
     }
 
     /**
+     * Fetches and returns the image object based on the file name.
+     *
      * @param $filename
      * @param $entityClassName
      * @param string $property
