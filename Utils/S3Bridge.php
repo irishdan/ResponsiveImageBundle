@@ -64,6 +64,10 @@ class S3Bridge
         $this->version = $config['version'];
     }
 
+    public function fetchS3Object($key)
+    {
+
+    }
     /**
      * Initialise the S3 client.
      */
@@ -96,13 +100,6 @@ class S3Bridge
                 'Objects' => $objects,
             ],
         ));
-    }
-
-    /**
-     *  Sync Bucket with local entities.
-     */
-    public function syncBucket() {
-
     }
 
     /**

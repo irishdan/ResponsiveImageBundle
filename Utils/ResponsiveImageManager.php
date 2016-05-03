@@ -42,6 +42,10 @@ class ResponsiveImageManager
      */
     private $s3;
 
+    private $images = [];
+
+    private $remoteSource = FALSE;
+
     /**
      * ImageManager constructor.
      * @param $imager
@@ -66,32 +70,69 @@ class ResponsiveImageManager
      * @param bool $tmp
      * @return mixed
      */
-    public function createStyledImage($imageObject, $styleName, $storePath = FALSE, $tmp = FALSE)
+    public function createImageDerivative($imageObject, $styleName)
     {
         $system = $this->system;
-        $stylePath = $system->styleDirectoryPath($styleName);
-        $originalPath = $system->uploadedFilePath($imageObject->getPath());
+
+        $filename = $imageObject->getPath();
+
+        // Where's the original file? AWS or local?
+        // If AWS fetch the file and store in temp directory if there is one, set $this->sourceFetched.
+        // $filePath = $system->uploadedFilePath($imageObject->getPath());
+        $filePath = $this->getSourceFile($imageObject);
+
+        // @TODO: This is possibly the temp path.
+        // $stylePath = $system->styleDirectoryPath($styleName);
+        $stylePath = $system->getStorageDirectory('save', NULL, $styleName);
+
+
+
 
         $style = $this->styleManager->getStyle($styleName);
 
         $crop = empty($imageObject) ? null : $imageObject->getCropCoordinates();
 
         // @TODO: Destination should be switchable to temporary directory.
-        $image = $this->imager->createImage($originalPath, $stylePath, $style, $crop);
+        // $image = $this->imager->createImage($filePath, $stylePath, $style, $crop);
 
-        // @TODO: for what?
-        if ($storePath) {
-            $this->imagePaths[] = $stylePath;
-        }
+        // Store this here for postprocessing.
+        $styleTree = $system->getStyleTree($styleName);
+        $this->images[$styleName] = [$stylePath .$filename, $styleTree . '/' . $filename];
+
+        var_dump($this->images);
 
         // Despatch event to any listeners.
-        $event = new ImageEvent($imageObject, $style);
-        $this->dispatcher->dispatch(
-            ImageEvents::IMAGE_GENERATED,
-            $event
-        );
+        // $event = new ImageEvent($imageObject, $style);
+        // $this->dispatcher->dispatch(
+        //     ImageEvents::IMAGE_GENERATED,
+        //     $event
+        // );
 
-        return $image;
+        // return $image;
+    }
+
+    public function getSourceFile($image) {
+        $filename = $image->getPath();
+
+        if (!empty($this->images['source']) && !empty($this->images['source']['local'])) {
+            return $this->images['source']['local'];
+        }
+        else {
+            // $local_policy = $this->config['aws_s3']['local_file_policy'];
+            //if ($local_policy == 'NONE') {
+            // @TODO: We need to download the file.
+            // @TODO: Once its downloaded and ready the path is temporary
+            // @TODO: Simplify. Are we testing here or are we testing there?
+
+            $path = $this->system->getStorageDirectory('temporary', $filename);
+            // }
+            //var_dump($path);
+
+            $this->images['source'] = [$path, $filename];
+        }
+
+
+        return $path;
     }
 
     /**
@@ -101,12 +142,12 @@ class ResponsiveImageManager
      */
     public function createAllStyledImages(ResponsiveImageInterface $image)
     {
-        $this->imagePaths = [];
+        // $this->imagePaths = [];
         $filename = $image->getPath();
         $styles = $this->styleManager->getAllStyles();
         if (!empty($filename)) {
             foreach ($styles as $stylename => $style) {
-                $this->createStyledImage($image, $stylename, TRUE);
+                $this->createImageDerivative($image, $stylename, TRUE);
             }
         }
     }

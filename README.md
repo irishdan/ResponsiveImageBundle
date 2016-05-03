@@ -208,7 +208,7 @@ responsive_image:
             display_coordinates: TRUE   # Toggles between a text field or hidden field.
     aws_s3:
             enabled: TRUE               # Enable or disable AWS support
-            keep_local_files: NONE      # NONE ALL ORIGINAL
+            local_file_policy: NONE      # NONE ALL ORIGINAL
             move_to_bucket: ALL         # ALL STYLED_ONLY
             temp_directory: '/tmp'      # NULL
             protocol: 'http'            # The protocol used for S3 images 'http' or 'https'

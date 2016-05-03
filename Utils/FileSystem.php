@@ -78,7 +78,7 @@ class FileSystem
         // Set the temp directory.
         if (!empty($imageConfigs['aws_s3'])) {
             if (!empty($imageConfigs['aws_s3']['temp_directory'])) {
-                $this->tempDirectory($symfonyDir . '/' . $imageConfigs['aws_s3']['temp_directory']);
+                $this->tempDirectory = $symfonyDir . '/' . $imageConfigs['aws_s3']['temp_directory'];
             }
         }
     }
@@ -209,6 +209,10 @@ class FileSystem
     public function setUploadsDir($uploadsDir)
     {
         $this->uploadsDir = $uploadsDir;
+    }
+
+    public function getStyleTree($stylename) {
+        return $this->stylesDir . '/' . $stylename;
     }
 
     /**
@@ -350,10 +354,58 @@ class FileSystem
     public function getTempDirectory () {
         if ($this->tempDirectory != NULL) {
             $this->directoryExists($this->tempDirectory, TRUE);
-            return $this->tempDirectory;
+            return $this->tempDirectory . '/';
         }
         else {
-            return NULL;
+            return sys_get_temp_dir();
         }
+    }
+
+    /**
+     * Returns the appropriate local storage directory based on the current operation and config parameters.
+     *
+     * @param $operation
+     * @return string
+     */
+    public function getStorageDirectory($operation = 'save', $filename = NULL, $stylename = NULL) {
+        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+
+        switch ($operation) {
+            case 'save':
+            case 'save_orginal':
+            case 'save_styled':
+                // Images are being saved for web use.
+                // Config file policies should be used to determine where files should be saved.
+                if (TRUE) {
+                    // Use the temporary directory for now.
+                    $directory = $this->getTempDirectory();
+                }
+                else {
+                    $directory = $this->getSystemUploadDirectory();
+                }
+
+                break;
+
+            case 'temporary':
+                // Use the temporary directory.
+                $directory = $this->getTempDirectory();
+
+                break;
+
+            default:
+                $directory = $this->getSystemUploadDirectory();
+                break;
+        }
+
+        if (!empty($stylename)) {
+            $styleTree = $this->getStyleTree($stylename);
+            $directory .=  $styleTree . '/';
+        }
+
+        if (!empty($filename)) {
+            $directory .=  $filename;
+        }
+
+        return $directory;
     }
 }

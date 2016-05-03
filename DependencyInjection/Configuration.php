@@ -74,7 +74,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('enabled')
                     ->defaultFalse()
                 ->end()
-                ->enumNode('keep_local_files')
+                ->enumNode('local_file_policy')
                     ->defaultValue('NONE')
                     ->values(['NONE', 'ALL', 'ORIGINAL_ONLY'])
                 ->end()
