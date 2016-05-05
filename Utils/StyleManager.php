@@ -64,6 +64,7 @@ class StyleManager
     }
 
     public function createPathsArray($filename) {
+        // @TODO: This is similar to another function.
         $styles = $this->getAllStyles();
         $systemLocation = $this->fileSystem->uploadedFilePath($filename);
         $styledLocation = $this->fileSystem->uploadedFileWebPath($filename);
@@ -84,14 +85,14 @@ class StyleManager
     /**
      * @param $filename
      */
-    public function deleteImageStyledFiles($filename) {
-        // For all styles append the style to the filename eg 'stylename/filename.jpg';
-        foreach ($this->styles as $styleName => $styleData) {
-            $styles_path = $this->fileSystem->getSystemStylesPath();
-            $path = $styles_path . '/' . $styleName . '/' . $filename;
-            $this->fileSystem->deleteFile($path);
-        }
-    }
+    // public function deleteImageStyledFiles($filename) {
+    //     // For all styles append the style to the filename eg 'stylename/filename.jpg';
+    //     foreach ($this->styles as $styleName => $styleData) {
+    //         $styles_path = $this->fileSystem->getSystemStylesPath();
+    //         $path = $styles_path . '/' . $styleName . '/' . $filename;
+    //         $this->fileSystem->deleteFile($path);
+    //     }
+    // }
 
     /**
      * @param $filename
