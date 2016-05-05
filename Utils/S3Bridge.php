@@ -64,10 +64,21 @@ class S3Bridge
         $this->version = $config['version'];
     }
 
-    public function fetchS3Object($key)
+    /**
+     * @param $storePath
+     * @param $key
+     */
+    public function fetchS3Object($storePath, $key)
     {
-
+        $this->getClient();
+        // Save object to a file.
+        $result = $this->s3->getObject(array(
+            'Bucket' => $this->bucket,
+            'Key'    => $key,
+            'SaveAs' => $storePath
+        ));
     }
+
     /**
      * Initialise the S3 client.
      */

@@ -42,8 +42,14 @@ class ResponsiveImageManager
      */
     private $s3;
 
+    /**
+     * @var array
+     */
     private $images = [];
 
+    /**
+     * @var bool
+     */
     private $remoteSource = FALSE;
 
     /**
@@ -111,24 +117,46 @@ class ResponsiveImageManager
         // return $image;
     }
 
+    /**
+     * @param $image
+     * @return string
+     */
     public function getSourceFile($image) {
         $filename = $image->getPath();
 
-        if (!empty($this->images['source']) && !empty($this->images['source']['local'])) {
-            return $this->images['source']['local'];
+
+        if (!empty($this->images[0])) {
+            return $this->images[0][0];
         }
         else {
-            // $local_policy = $this->config['aws_s3']['local_file_policy'];
-            //if ($local_policy == 'NONE') {
-            // @TODO: We need to download the file.
-            // @TODO: Once its downloaded and ready the path is temporary
-            // @TODO: Simplify. Are we testing here or are we testing there?
+            // The original file is in difference places depending on the local file policy.
+            $local_policy = $this->config['aws_s3']['local_file_policy'];
+            switch ($local_policy) {
+                case 'NONE':
+                    // @TODO: We need to download the file.
+                    // @TODO: Once its downloaded and ready the path is temporary.
+                    $fetchFromS3 = TRUE;
+                    $action = 'temporary';
+                    break;
 
-            $path = $this->system->getStorageDirectory('temporary', $filename);
-            // }
-            //var_dump($path);
+                default:
+                    $action = 'save';
+                    break;
+            }
 
-            $this->images['source'] = [$path, $filename];
+            $directory = $this->system->getStorageDirectory($action);
+            $path = $directory . $filename;
+            $tree = $this->system->getUploadsDir() . '/' . $filename;
+
+            // If the policy was set to keep no files, the original should be downloaded from s3.
+            if (!empty($fetchFromS3)) {
+                $s3key = empty($this->config['aws_s3']['directory']) ? $tree :  $this->config['aws_s3']['directory'] . '/' . $tree;
+                $this->system->directoryExists($directory , TRUE);
+                $this->s3->fetchS3Object($path, $s3key);
+            }
+
+
+            $this->images[0] = [$path, $tree];
         }
 
 

@@ -352,12 +352,13 @@ class FileSystem
      * @return bool|string
      */
     public function getTempDirectory () {
+        $uploadsFolder = $this->getUploadsDir();
         if ($this->tempDirectory != NULL) {
             $this->directoryExists($this->tempDirectory, TRUE);
-            return $this->tempDirectory . '/';
+            return $this->tempDirectory . $uploadsFolder .'/';
         }
         else {
-            return sys_get_temp_dir();
+            return sys_get_temp_dir() . $uploadsFolder  . '/';
         }
     }
 
