@@ -2,6 +2,7 @@
 
 namespace ResponsiveImageBundle\Utils;
 
+
 /**
  * Class FileSystem
  * @package ResponsiveImageBundle\Utils
@@ -211,6 +212,10 @@ class FileSystem
         $this->uploadsDir = $uploadsDir;
     }
 
+    /**
+     * @param $stylename
+     * @return string
+     */
     public function getStyleTree($stylename) {
         return $this->stylesDir . '/' . $stylename;
     }
@@ -227,6 +232,7 @@ class FileSystem
      *
      * @param $directory
      * @param bool $create
+     *
      * @return bool
      */
     public function directoryExists($directory, $create = FALSE) {
@@ -243,6 +249,7 @@ class FileSystem
 
     /**
      * @param $fileName
+     *
      * @return mixed
      */
     public function fileExists($fileName) {
@@ -254,6 +261,7 @@ class FileSystem
      * Deletes a directory and its contents or a file.
      *
      * @param $target
+     *
      * @return bool
      */
     public function deleteDirectory($target) {
@@ -270,6 +278,9 @@ class FileSystem
         }
     }
 
+    /**
+     *
+     */
     public function clearTemporaryFiles() {
         $temp = $this->getTempDirectory();
         $uploadsFolder = $this->getUploadsDir();
@@ -278,6 +289,7 @@ class FileSystem
 
     /**
      * @param $path
+     *
      * @return bool
      */
     public function deleteFile($path) {
@@ -289,6 +301,7 @@ class FileSystem
 
     /**
      * @param $filename
+     *
      * @return string
      */
     public function uploadedFilePath($filename) {
@@ -297,6 +310,7 @@ class FileSystem
 
     /**
      * @param $stylename
+     *
      * @return string
      */
     public function styleDirectoryPath($stylename) {
@@ -305,6 +319,7 @@ class FileSystem
 
     /**
      * @param $filename
+     *
      * @return string
      */
     public function uploadedFileWebPath($filename) {
@@ -314,6 +329,7 @@ class FileSystem
     /**
      * @param $stylename
      * @param $filename
+     *
      * @return string
      */
     public function styleFilePath($stylename, $filename) {
@@ -322,6 +338,7 @@ class FileSystem
 
     /**
      * @param $path
+     *
      * @return string
      */
     public function getFilenameFromPath($path) {
@@ -330,6 +347,7 @@ class FileSystem
 
     /**
      * @param $stylename
+     *
      * @return string
      */
     public function styleWebPath($stylename) {
@@ -340,9 +358,10 @@ class FileSystem
     }
 
     /**
-     * Return the web accessible slyled file path.
+     * Returns the web accessible styled file path.
      *
      * @param $stylename
+     *
      * @return string
      */
     public function styledFileWebPath($stylename, $filename) {
@@ -353,12 +372,11 @@ class FileSystem
     }
 
     /**
-     *  Return the temporary directory if it has been set.
+     * Return the temporary directory if it has been set.
      *
      * @return bool|string
      */
     public function getTempDirectory () {
-        // $uploadsFolder = $this->getUploadsDir();
         if ($this->tempDirectory != NULL) {
             $this->directoryExists($this->tempDirectory, TRUE);
             return $this->tempDirectory;
@@ -372,6 +390,7 @@ class FileSystem
      * Returns the appropriate local storage directory based on the current operation and config parameters.
      *
      * @param $operation
+     *
      * @return string
      */
     public function getStorageDirectory($operation = 'save', $filename = NULL, $stylename = NULL) {
@@ -383,7 +402,7 @@ class FileSystem
                     $directory = $this->getTempDirectory();
                 }
                 else {
-                    $directory = $this->getSystemUploadDirectory() . '/';
+                    $directory = $this->getSystemUploadDirectory();
                 }
                 break;
             case 'styled':
@@ -411,11 +430,30 @@ class FileSystem
             $directory .=  $styleTree . '/';
         }
 
+        $directory = $this->trailingSlash($directory, TRUE);
+
         // Add the filename on the end.
         if (!empty($filename)) {
             $directory .=  $filename;
         }
 
         return $directory;
+    }
+
+    /**
+     * Ensures that a string has a trailing slash or not.
+     *
+     * @param $path
+     * @param bool $slash
+     *
+     * @return string
+     */
+    public function trailingSlash($path, $slash = TRUE) {
+        $path = rtrim($path, '/');
+        if ($slash) {
+            $path .= '/';
+        }
+
+        return $path;
     }
 }

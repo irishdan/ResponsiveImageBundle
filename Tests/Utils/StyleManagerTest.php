@@ -37,9 +37,9 @@ class StyleManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedPath, $this->image->getStyle());
     }
 
-    public function testGeneratePictureImage()
+    public function testSetPictureImage()
     {
-        $this->styleManager->generatePictureImage($this->image, 'thumb_picture');
+        $this->styleManager->setPictureImage($this->image, 'thumb_picture');
         $picture = $this->image->getPicture();
 
         $this->assertContains('<picture>', $picture);
@@ -73,5 +73,27 @@ class StyleManagerTest extends \PHPUnit_Framework_TestCase
         // Style info.
         $expected = $this->parameters['image_styles']['thumb'];
         $this->assertEquals($expected, $style);
+    }
+
+    public function prefixProvider() {
+        return array(
+            array('path', 'style', 'http://prefix.', 'ALL', 'http://prefix.path'),
+            array('path', 'style', '', 'ALL', '/path'),
+            array('path', 'style', '', 'STYLED_ONLY', '/path'),
+            array('path', NULL, 'http://prefix.', 'ALL', 'http://prefix.path'),
+            array('path', NULL, 'http://prefix.', 'STYLED_ONLY', '/path'),
+        );
+    }
+
+    /**
+     * @dataProvider prefixProvider
+     */
+    public function testPrefixPath($path, $style, $prefix, $policy, $expected) {
+        $this->styleManager->setDisplayPathPrefix($prefix);
+        $this->styleManager->setRemoteFilePolicy($policy);
+
+        $result = $this->styleManager->prefixPath($path, $style);
+
+        $this->assertEquals($expected, $result);
     }
 }

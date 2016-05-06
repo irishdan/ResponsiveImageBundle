@@ -4,9 +4,9 @@ namespace ResponsiveImageBundle\Tests\Utils;
 
 
 use ResponsiveImageBundle\Utils\FileSystem;
-use ResponsiveImageBundle\Utils\Imager;
+use ResponsiveImageBundle\Utils\ImageMaker;
 
-class ImagerTest extends \PHPUnit_Framework_TestCase
+class ImageMakerTest extends \PHPUnit_Framework_TestCase
 {
     use \ResponsiveImageBundle\Tests\Traits\Parameters;
 
@@ -18,7 +18,7 @@ class ImagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp() {
         $filesystem = New FileSystem('root_directory', $this->parameters);
-        $this->imager = new Imager($filesystem, $this->parameters);
+        $this->imager = new ImageMaker($filesystem, $this->parameters);
 
         $this->imager->setCoordinateGroups($this->coordinates[0]);
     }

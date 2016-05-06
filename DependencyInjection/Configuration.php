@@ -78,7 +78,7 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('NONE')
                     ->values(['NONE', 'ALL', 'ORIGINAL_ONLY'])
                 ->end()
-                ->enumNode('move_to_bucket')
+                ->enumNode('remote_file_policy')
                     ->defaultValue('ALL')
                     ->values(['ALL', 'STYLED_ONLY'])
                 ->end()

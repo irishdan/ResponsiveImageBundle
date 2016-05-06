@@ -6,12 +6,20 @@ namespace ResponsiveImageBundle\Utils;
  * Class StyleManager
  * @package ResponsiveImageBundle\Utils
  */
+/**
+ * Class StyleManager
+ * @package ResponsiveImageBundle\Utils
+ */
 class StyleManager
 {
     /**
      * @var array
      */
     private $breakpoints = [];
+
+    private $displayPathPrefix;
+
+    private $remoteFilePolicy;
 
     /**
      * @var FileSystem
@@ -30,6 +38,7 @@ class StyleManager
 
     /**
      * StyleManager constructor.
+     *
      * @param \ResponsiveImageBundle\Utils\FileSystem $system
      * @param $parameters
      */
@@ -43,7 +52,6 @@ class StyleManager
 
         if (!empty($parameters['picture_sets'])) {
             $this->pictureSets = $parameters['picture_sets'];
-
             // Get the any picture set styles and incorporate into the configured styles array.
             foreach ($parameters['picture_sets'] as $pictureSetName => $picture_set) {
                 foreach ($picture_set as $breakpoint => $set_style) {
@@ -61,26 +69,33 @@ class StyleManager
         if (!empty($parameters['path_prefix'])) {
             $this->displayPathPrefix = $parameters['path_prefix'];
         }
-    }
 
-    public function createPathsArray($filename) {
-        // @TODO: This is similar to another function.
-        $styles = $this->getAllStyles();
-        $systemLocation = $this->fileSystem->uploadedFilePath($filename);
-        $styledLocation = $this->fileSystem->uploadedFileWebPath($filename);
+        if (!empty($parameters['aws_s3'])) {
+            if (!empty($parameters['aws_s3']['remote_file_policy'])) {
+                $this->remoteFilePolicy = $parameters['aws_s3']['remote_file_policy'];
+            }
 
-        // Add the original file to the array.
-        $paths = [$systemLocation => $styledLocation];
-
-        foreach ($styles as $stylename => $style) {
-            $systemLocation = $this->fileSystem->styleFilePath($stylename, $filename);
-            $styledLocation = $this->fileSystem->styledFileWebPath($stylename, $filename);
-
-            $paths[$systemLocation] = $styledLocation;
         }
-
-        return $paths;
     }
+
+    // public function createPathsArray($filename) {
+    //     // @TODO: This is similar to another function.
+    //     $styles = $this->getAllStyles();
+    //     $systemLocation = $this->fileSystem->uploadedFilePath($filename);
+    //     $styledLocation = $this->fileSystem->uploadedFileWebPath($filename);
+//
+    //     // Add the original file to the array.
+    //     $paths = [$systemLocation => $styledLocation];
+//
+    //     foreach ($styles as $stylename => $style) {
+    //         $systemLocation = $this->fileSystem->styleFilePath($stylename, $filename);
+    //         $styledLocation = $this->fileSystem->styledFileWebPath($stylename, $filename);
+//
+    //         $paths[$systemLocation] = $styledLocation;
+    //     }
+//
+    //     return $paths;
+    // }
 
     /**
      * @param $filename
@@ -95,6 +110,8 @@ class StyleManager
     // }
 
     /**
+     * Deletes a file.
+     *
      * @param $filename
      */
     public function deleteImageFile($filename) {
@@ -107,6 +124,8 @@ class StyleManager
     }
 
     /**
+     * Deletes all of the files in an image style folder.
+     *
      * @param array $styles
      */
     public function deleteStyledImages(array $styles) {
@@ -117,6 +136,13 @@ class StyleManager
         }
     }
 
+    /**
+     * Checks if a given style name is a defined style.
+     *
+     * @param $styleName
+     *
+     * @return bool
+     */
     public function styleExists($styleName) {
         $style = $this->getStyle($styleName);
 
@@ -124,16 +150,35 @@ class StyleManager
     }
 
     /**
+     * Sets the pictureTag property of a image object.
+     *
      * @param ResponsiveImageInterface $image
      * @param $pictureSetName
+     *
      * @return ResponsiveImageInterface
      */
-    public function generatePictureImage(ResponsiveImageInterface $image, $pictureSetName) {
+    public function setPictureImage(ResponsiveImageInterface $image, $pictureSetName) {
         $filename = $image->getPath();
         $picture = $this->pictureTag($pictureSetName, $filename);
         $image->setPicture($picture);
 
         return $image;
+    }
+
+    /**
+     * @param mixed $displayPathPrefix
+     */
+    public function setDisplayPathPrefix($displayPathPrefix)
+    {
+        $this->displayPathPrefix = $displayPathPrefix;
+    }
+
+    /**
+     * @param mixed $remoteFilePolicy
+     */
+    public function setRemoteFilePolicy($remoteFilePolicy)
+    {
+        $this->remoteFilePolicy = $remoteFilePolicy;
     }
 
     /**
@@ -144,7 +189,10 @@ class StyleManager
     }
 
     /**
+     * Returns a style information array.
+     *
      * @param $stylename
+     *
      * @return bool
      */
     public function getStyle($stylename) {
@@ -156,9 +204,24 @@ class StyleManager
         }
     }
 
-    protected function prefixPath($url) {
-        if (!empty($this->displayPathPrefix)) {
+    /**
+     * Prefixes url string with the displayPathPrefix string, if the style and the config require it.
+     *
+     * @param $url
+     * @param $style
+     *
+     * @return string
+     */
+    public function prefixPath($url , $style = NULL) {
+        // Remote fle policy values ALL, STYLED_ONLY.
+        if (!empty($this->displayPathPrefix) && $style !== NULL) {
             $url = $this->displayPathPrefix . $url;
+        }
+        else if ($this->remoteFilePolicy != 'STYLED_ONLY' && $style == NULL) {
+            $url = $this->displayPathPrefix . $url;
+        }
+        else if ($this->remoteFilePolicy == 'STYLED_ONLY' && $style == NULL) {
+            $url = '/' . $url;
         }
         else {
             $url = '/' . $url;
@@ -168,8 +231,11 @@ class StyleManager
     }
 
     /**
+     * Generates a picture tag for a given picture set and filename.
+     *
      * @param $pictureSetName
      * @param $filename
+     *
      * @return string
      */
     public function pictureTag($pictureSetName, $filename) {
@@ -185,7 +251,7 @@ class StyleManager
                 }
                 $styles_directory = $this->fileSystem->getStylesDir();
                 $path = $styles_directory . '/' . $stylename . '/' . $filename;
-                $path = $this->prefixPath($path);
+                $path = $this->prefixPath($path, $stylename);
 
                 $picture .= '<source srcset="' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
             }
@@ -201,8 +267,11 @@ class StyleManager
     }
 
     /**
+     * Sets the path of a an Image object to the full styled image path.
+     *
      * @param ResponsiveImageInterface $image
      * @param null $styleName
+     *
      * @return ResponsiveImageInterface
      */
     public function setImageStyle(ResponsiveImageInterface $image, $styleName = null) {
@@ -214,7 +283,7 @@ class StyleManager
             $stylePath = $this->fileSystem->getUploadsDir();
         }
         $webPath = $stylePath . '/' . $filename;
-        $webPath = $this->prefixPath($webPath);
+        $webPath = $this->prefixPath($webPath, $styleName);
 
         $image->setStyle($webPath);
 

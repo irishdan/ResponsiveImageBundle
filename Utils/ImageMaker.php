@@ -5,7 +5,7 @@ use Intervention\Image\ImageManager;
 
 
 /**
- * Class Imager
+ * Class ImageMaker
  * @package ResponsiveImageBundle\Utils
  */
 class ImageMaker
@@ -142,6 +142,7 @@ class ImageMaker
      * @param $destination
      * @param array $style
      * @param null $cropFocusCoords
+     *
      * @return string
      */
     public function createImage($source, $destination, array $style = [], $cropFocusCoords = NULL) {
