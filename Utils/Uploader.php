@@ -7,7 +7,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class Uploader
- * @package AppBundle\Utils
+ *
+ * @package ResponsiveImageBundle\Utils
  */
 class Uploader {
 
@@ -37,6 +38,7 @@ class Uploader {
 
     /**
      * Uploader constructor.
+     *
      * @param FileSystem $system
      */
     public function __construct(FileSystem $system)
@@ -65,7 +67,10 @@ class Uploader {
     }
 
     /**
+     * Sanitizes and cleans up filename
+     *
      * @param $str
+     *
      * @return mixed
      */
     private function createFilename($str) {
@@ -86,19 +91,23 @@ class Uploader {
     }
 
     /**
+     * Convert MB/K/G to bytesize
+     *
      * @param $uploadMaxSize
+     *
      * @return int
      */
     public function mToBytes($uploadMaxSize) {
         $uploadMaxSize = trim($uploadMaxSize);
         $last = strtolower($uploadMaxSize[strlen($uploadMaxSize) - 1]);
+
         switch($last) {
             case 'g':
-                $uploadMaxSize *= 1024;
+                $uploadMaxSize *= 1024 * 1000 * 1000;
                 break;
 
             case 'm':
-                $uploadMaxSize *= 1024;
+                $uploadMaxSize *= 1024 * 1000;
                 break;
 
             case 'k':
@@ -110,11 +119,15 @@ class Uploader {
     }
 
     /**
+     * Checks to see if a file name is unique in the storage directory.
+     *
      * @param $name
+     *
      * @return bool
      */
     private function isUniqueFilename($name) {
-        $filePath = $this->fileSystem->getSystemUploadDirectory() . '/' . $name;
+        $storageDirectory = $this->fileSystem->getStorageDirectory();
+        $filePath = $storageDirectory . $name;
         if ($this->fileSystem->directoryExists($filePath)) {
             return FALSE;
         }
@@ -124,6 +137,8 @@ class Uploader {
     }
 
     /**
+     * Tests if mime type is allowed.
+     *
      * @return bool
      */
     public function isAllowedType() {
@@ -140,6 +155,7 @@ class Uploader {
      * Deals with image after uploading it.
      *
      * @param ResponsiveImageInterface $image
+     *
      * @return ResponsiveImageInterface
      */
     public function upload(ResponsiveImageInterface $image)
@@ -152,8 +168,9 @@ class Uploader {
         $this->setFile($image->getFile());
         $messages = array();
         $this->uploadOk = TRUE;
+
+        // Get max file upload in bytes.
         $uploadMaxSize = ini_get('upload_max_filesize');
-        // Convert to bytes.
         $uploadMaxSize = $this->mToBytes($uploadMaxSize);
 
         if (!$this->file instanceof UploadedFile && !empty($image->getFile()->getError())) {
@@ -174,8 +191,9 @@ class Uploader {
             $newFileName = $this->createFilename($fileName);
 
             // Move takes the target directory and then the target filename to move to.
+            $storageDirectory = $this->fileSystem->getStorageDirectory('original');
             $this->file->move(
-                $this->fileSystem->getSystemUploadDirectory(),
+                $storageDirectory,
                 $newFileName
             );
 
@@ -183,7 +201,7 @@ class Uploader {
             $image->setPath($newFileName);
 
             // Set the image dimensions.
-            $imageData = getimagesize('/' . $this->fileSystem->getSystemUploadDirectory() . '/' . $newFileName);
+            $imageData = getimagesize($storageDirectory . $newFileName);
             $image->setWidth($imageData[0]);
             $image->setHeight($imageData[1]);
 

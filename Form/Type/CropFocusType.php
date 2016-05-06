@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 
 /**
  * Class CropFocusType
+ *
  * @package ResponsiveImageBundle\Form\Type
  */
 class CropFocusType extends AbstractType
@@ -27,6 +28,7 @@ class CropFocusType extends AbstractType
 
     /**
      * CropFocusType constructor.
+     * 
      * @param $styleManager
      */
     public function __construct($styleManager, $config)

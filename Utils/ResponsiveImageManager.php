@@ -48,12 +48,8 @@ class ResponsiveImageManager
     private $images = [];
 
     /**
-     * @var bool
-     */
-    private $remoteSource = FALSE;
-
-    /**
      * ImageManager constructor.
+     *
      * @param $imager
      * @param $config
      */
@@ -89,17 +85,16 @@ class ResponsiveImageManager
      *
      * @param $imageObject
      * @param $styleName
+     *
      * @return mixed
      */
     public function createImageDerivative($imageObject, $styleName)
     {
         $system = $this->system;
-
         $filename = $imageObject->getPath();
 
         // Where's the original file? AWS or local?
         // If AWS fetch the file and store in temp directory if there is one, set $this->sourceFetched.
-        // $filePath = $system->uploadedFilePath($imageObject->getPath());
         $filePath = $this->getSourceFile($imageObject);
 
         // $stylePath = $system->styleDirectoryPath($styleName);
@@ -126,6 +121,8 @@ class ResponsiveImageManager
     }
 
     /**
+     * Delete an images styled derivatives.
+     *
      * @param ResponsiveImageInterface $image
      */
     public function deleteAllStyledImages(ResponsiveImageInterface $image)
@@ -140,6 +137,7 @@ class ResponsiveImageManager
      * Returns the location fo the original source file and fetches if it's stored remotely.
      *
      * @param $image
+     *
      * @return string
      */
     public function getSourceFile($image) {
@@ -153,6 +151,13 @@ class ResponsiveImageManager
             // The original file is in difference places depending on the local file policy.
             $directory = $this->system->getStorageDirectory('original');
             $path = $directory . $filename;
+            
+            // @TODO: This check only checks the uploads directory.
+            if (!$this->system->fileExists($filename)) {
+                $fetchFromS3 =  TRUE;
+            }
+
+            // @TODO: This 'tree' thing is used a lot and would be useful as a function.
             $tree = $this->system->getUploadsDir() . '/' . $filename;
 
             // If the policy was set to keep no files, the original should be downloaded from s3.
@@ -192,8 +197,10 @@ class ResponsiveImageManager
     {
         // $file = $image->getPath();
         // $paths = $this->styleManager->createPathsArray($file);
-        // @TODO: toggle according to configs.
-        unset($this->images[0]);
+        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+        if ($local_file_policy != 'KEEP_NONE') {
+            unset($this->images[0]);
+        }
 
         $paths = [];
         foreach ($this->images as $style => $locations) {
@@ -207,7 +214,7 @@ class ResponsiveImageManager
 
         // Delete local files
         $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-        if ($local_file_policy !== 'ALL') {
+        if ($local_file_policy !== 'KEEP_ALL') {
             foreach ($paths as $path => $tree) {
                 $this->system->deleteFile($path);
             }

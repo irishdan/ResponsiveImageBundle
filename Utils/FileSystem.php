@@ -5,6 +5,7 @@ namespace ResponsiveImageBundle\Utils;
 
 /**
  * Class FileSystem
+ *
  * @package ResponsiveImageBundle\Utils
  */
 class FileSystem
@@ -12,7 +13,7 @@ class FileSystem
     /**
      * @var $config
      */
-    private $config;
+    private $awsConfig;
 
     /**
      * @var string
@@ -61,6 +62,7 @@ class FileSystem
 
     /**
      * FileSystem constructor.
+     *
      * @param $rootDir
      * @param $imageConfigs
      */
@@ -78,8 +80,10 @@ class FileSystem
 
         // Set the temp directory.
         if (!empty($imageConfigs['aws_s3'])) {
-            if (!empty($imageConfigs['aws_s3']['temp_directory'])) {
-                $this->tempDirectory = $symfonyDir . '/' . $imageConfigs['aws_s3']['temp_directory'];
+            $this->awsConfig = $imageConfigs['aws_s3'];
+
+            if (!empty($this->awsConfig['temp_directory'])) {
+                $this->tempDirectory = $symfonyDir . '/' . $this->awsConfig['temp_directory'];
             }
         }
     }
@@ -393,12 +397,12 @@ class FileSystem
      *
      * @return string
      */
-    public function getStorageDirectory($operation = 'save', $filename = NULL, $stylename = NULL) {
-        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+    public function getStorageDirectory($operation = 'original', $filename = NULL, $stylename = NULL) {
+        $local_file_policy = $this->awsConfig['local_file_policy'];
 
         switch ($operation) {
             case 'original':
-                if ($local_file_policy == 'NONE') {
+                if ($local_file_policy == 'KEEP_NONE') {
                     $directory = $this->getTempDirectory();
                 }
                 else {
@@ -406,7 +410,7 @@ class FileSystem
                 }
                 break;
             case 'styled':
-                if ($local_file_policy == 'ALL') {
+                if ($local_file_policy == 'KEEP_ALL') {
                     $directory = $this->getSystemUploadDirectory();
                 }
                 else {
@@ -430,6 +434,7 @@ class FileSystem
             $directory .=  $styleTree . '/';
         }
 
+        // Check the trailing slash.
         $directory = $this->trailingSlash($directory, TRUE);
 
         // Add the filename on the end.

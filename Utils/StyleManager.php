@@ -4,10 +4,7 @@ namespace ResponsiveImageBundle\Utils;
 
 /**
  * Class StyleManager
- * @package ResponsiveImageBundle\Utils
- */
-/**
- * Class StyleManager
+ *
  * @package ResponsiveImageBundle\Utils
  */
 class StyleManager
@@ -46,10 +43,12 @@ class StyleManager
     {
         $this->fileSystem = $system;
 
+        // Set the styles array.
         if (!empty($parameters['image_styles'])) {
             $this->styles = $parameters['image_styles'];
         }
 
+        // Set the picture sets array
         if (!empty($parameters['picture_sets'])) {
             $this->pictureSets = $parameters['picture_sets'];
             // Get the any picture set styles and incorporate into the configured styles array.
@@ -62,19 +61,20 @@ class StyleManager
             }
         }
 
+        // Set the breakpoints array.
         if (!empty($parameters['breakpoints'])) {
             $this->breakpoints = $parameters['breakpoints'];
         }
 
+        // Set the prefix.
         if (!empty($parameters['path_prefix'])) {
             $this->displayPathPrefix = $parameters['path_prefix'];
         }
 
         if (!empty($parameters['aws_s3'])) {
-            if (!empty($parameters['aws_s3']['remote_file_policy'])) {
-                $this->remoteFilePolicy = $parameters['aws_s3']['remote_file_policy'];
-            }
-
+           if (!empty($parameters['aws_s3']['remote_file_policy'])) {
+               $this->remoteFilePolicy = $parameters['aws_s3']['remote_file_policy'];
+           }
         }
     }
 
@@ -226,7 +226,7 @@ class StyleManager
         else {
             $url = '/' . $url;
         }
-
+        
         return $url;
     }
 

@@ -124,7 +124,6 @@ class S3Bridge
         foreach ($paths as $systemLocation => $styledLocation) {
             $this->paths[$systemLocation] = $styledLocation;
         }
-        var_dump($paths);
     }
 
     /**
@@ -153,7 +152,6 @@ class S3Bridge
             // Force the pool to complete synchronously
             try {
                 $result = $promise->wait();
-                var_dump($result);
             } catch (AwsException $e) {
                 // handle the error.
             }

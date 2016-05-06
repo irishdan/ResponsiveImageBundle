@@ -21,7 +21,7 @@ class ResponsiveImageExtension extends Extension
             $config = array_merge($config, $subConfig);
         }
         
-        // Set defaults from config.yml.
+        // Set as parameter for easier passing.
         $container->setParameter('responsive_image', $config);
 
         // Create the image directories as parameters for routing.
@@ -37,7 +37,6 @@ class ResponsiveImageExtension extends Extension
 
         // Add the aws_s3 config as a parameter.
         $container->setParameter('responsive_image.aws_s3', $config['aws_s3']);
-
     }
 
     protected function buildPathPrefix($config) {

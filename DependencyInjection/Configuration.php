@@ -7,6 +7,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * Class Configuration
+ *
  * @package ResponsiveImageBundle\DependencyInjection
  */
 class Configuration implements ConfigurationInterface
@@ -75,12 +76,12 @@ class Configuration implements ConfigurationInterface
                     ->defaultFalse()
                 ->end()
                 ->enumNode('local_file_policy')
-                    ->defaultValue('NONE')
-                    ->values(['NONE', 'ALL', 'ORIGINAL_ONLY'])
+                    ->defaultValue('KEEP_NONE')
+                    ->values(['KEEP_ALL', 'KEEP_NONE', 'KEEP_ORIGINAL'])
                 ->end()
                 ->enumNode('remote_file_policy')
-                    ->defaultValue('ALL')
-                    ->values(['ALL', 'STYLED_ONLY'])
+                   ->defaultValue('ALL')
+                   ->values(['ALL', 'STYLED_ONLY'])
                 ->end()
                 ->scalarNode('temp_directory')
                     ->defaultValue(null)
