@@ -13,7 +13,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * The root configuration for repsonsive image bundle.
+     * The root configuration for responsive image bundle.
      *
      * @return TreeBuilder
      */
@@ -31,12 +31,9 @@ class Configuration implements ConfigurationInterface
                 ->variableNode('image_entity_class')
                     ->defaultValue([])
                 ->end()
-                ->scalarNode('image_driver')
+                ->enumNode('image_driver')
                     ->defaultValue('gd')
-                    ->validate()
-                        ->ifNotInArray(array('gd', 'imagemagik'))
-                        ->thenInvalid('In valid PHP image library')
-                    ->end()
+                    ->values(['gd', 'imagick'])
                 ->end()
                 ->integerNode('image_compression')
                     ->defaultValue(90)
@@ -51,8 +48,25 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('breakpoints')
                     ->prototype('scalar')->end()
                 ->end()
-                ->variableNode('image_styles')->end()
-                ->variableNode('picture_sets')->end()
+                ->arrayNode('image_styles')
+                    ->prototype('array')
+                        ->children()
+                            ->integerNode('width')
+                                ->min(1)
+                            ->end()
+                            ->integerNode('height')
+                                ->min(1)
+                            ->end()
+                            ->enumNode('effect')
+                                ->defaultValue('scale')
+                                ->values(['scale', 'crop'])
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('picture_sets')
+                    ->prototype('array')->end()
+                ->end()
                 ->variableNode('crop_focus_widget')->end()
                 ->append($this->addAWSNode())
             ->end()
