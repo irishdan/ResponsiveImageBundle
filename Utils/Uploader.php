@@ -70,7 +70,6 @@ class Uploader {
      * Sanitizes and cleans up filename
      *
      * @param $str
-     *
      * @return mixed
      */
     private function createFilename($str) {
@@ -94,7 +93,6 @@ class Uploader {
      * Convert MB/K/G to bytesize
      *
      * @param $uploadMaxSize
-     *
      * @return int
      */
     public function mToBytes($uploadMaxSize) {
@@ -122,7 +120,6 @@ class Uploader {
      * Checks to see if a file name is unique in the storage directory.
      *
      * @param $name
-     *
      * @return bool
      */
     private function isUniqueFilename($name) {
@@ -152,10 +149,9 @@ class Uploader {
     }
 
     /**
-     * Deals with image after uploading it.
+     * After uploading, this function checks if the image is valid and if so moves it to an appropriate storage location.
      *
-     * @param ResponsiveImageInterface $image
-     *
+     * @param ResponsiveImageInterface $image.
      * @return ResponsiveImageInterface
      */
     public function upload(ResponsiveImageInterface $image)

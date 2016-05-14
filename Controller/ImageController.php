@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class ImageController extends Controller
 {
     /**
+     * Generates a derivative image as a response
+     *
      * @param $stylename
      * @param $filename
      * @return BinaryFileResponse
@@ -31,7 +33,7 @@ class ImageController extends Controller
             $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename, $imageEntityClass[0]);
 
             if (!empty($imageObject)) {
-                $image = $this->get('responsive_image.responsive_image_manager')->createImageDerivative($imageObject, $stylename);
+                $image = $this->get('responsive_image')->createImageDerivative($imageObject, $stylename);
             }
 
             if (!empty($image)) {

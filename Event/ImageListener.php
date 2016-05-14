@@ -6,6 +6,7 @@ use ResponsiveImageBundle\Event\ImageEvent;
 
 /**
  * Class ImageListener
+ *
  * @package ResponsiveImageBundle\Event
  */
 class ImageListener {
@@ -21,6 +22,7 @@ class ImageListener {
 
     /**
      * ImageListener constructor.
+     *
      * @param $config
      */
     public function __construct($config, $imageManager)
@@ -48,7 +50,6 @@ class ImageListener {
         $this->imageManager->createAllStyledImages($image);
 
         $this->imageManager->transferToS3();
-        // $this->imageManager->deleteAllStyledImages($image);
     }
 
     /**
@@ -60,6 +61,5 @@ class ImageListener {
         $this->imageManager->createAllStyledImages($image);
 
         $this->imageManager->transferToS3();
-        // $this->imageManager->deleteAllStyledImages($image);
     }
 }

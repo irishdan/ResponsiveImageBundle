@@ -268,4 +268,11 @@ To set the crop and focus areas of an image in your edit form use the the CropFo
 $form->add('crop_coordinates', CropFocusType::class, array(
     'data' => $image
 ));
+
+// Despatch event to any listeners.
+$event = new ImageEvent($imageObject, $style);
+$this->dispatcher->dispatch(
+    ImageEvents::IMAGE_GENERATED,
+    $event
+);
 ```

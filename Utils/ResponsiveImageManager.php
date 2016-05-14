@@ -3,8 +3,8 @@
 namespace ResponsiveImageBundle\Utils;
 
 
-use ResponsiveImageBundle\Event\ImageEvent;
-use ResponsiveImageBundle\Event\ImageEvents;
+// use ResponsiveImageBundle\Event\ImageEvent;
+// use ResponsiveImageBundle\Event\ImageEvents;
 
 /**
  * Class ImageManager
@@ -23,6 +23,16 @@ class ResponsiveImageManager
     private $imager;
 
     /**
+     * @var array
+     */
+    private $images = [];
+
+    /**
+     * @var array
+     */
+    private $s3;
+
+    /**
      * @var
      */
     private $styleManager;
@@ -35,17 +45,7 @@ class ResponsiveImageManager
     /**
      * @var
      */
-    private $dispatcher;
-
-    /**
-     * @var array
-     */
-    private $s3;
-
-    /**
-     * @var array
-     */
-    private $images = [];
+    private $uploader;
 
     /**
      * ImageManager constructor.
@@ -53,31 +53,14 @@ class ResponsiveImageManager
      * @param $imager
      * @param $config
      */
-    public function __construct($imager, $styleManager, $config, $system, $dispatcher, $s3)
+    public function __construct($imager, $styleManager, $config, $system, $s3, $uploader)
     {
         $this->imager = $imager;
         $this->styleManager = $styleManager;
         $this->config = $config;
         $this->system = $system;
-        $this->dispatcher = $dispatcher;
         $this->s3 = $s3;
-    }
-
-    /**
-     * Creates all styled images for a given image object.
-     *
-     * @param ResponsiveImageInterface $image
-     */
-    public function createAllStyledImages(ResponsiveImageInterface $image)
-    {
-        // $this->imagePaths = [];
-        $filename = $image->getPath();
-        $styles = $this->styleManager->getAllStyles();
-        if (!empty($filename)) {
-            foreach ($styles as $stylename => $style) {
-                $this->createImageDerivative($image, $stylename, TRUE);
-            }
-        }
+        $this->uploader = $uploader;
     }
 
     /**
@@ -85,7 +68,6 @@ class ResponsiveImageManager
      *
      * @param $imageObject
      * @param $styleName
-     *
      * @return mixed
      */
     public function createImageDerivative($imageObject, $styleName)
@@ -108,16 +90,32 @@ class ResponsiveImageManager
         $styleTree = $system->getStyleTree($styleName);
         $this->images[$styleName] = [$stylePath .$filename, $styleTree . '/' . $filename];
 
-        // var_dump($this->images);
-
-        // Despatch event to any listeners.
-        // $event = new ImageEvent($imageObject, $style);
-        // $this->dispatcher->dispatch(
-        //     ImageEvents::IMAGE_GENERATED,
-        //     $event
-        // );
-
         return $image;
+    }
+
+    /**
+     * Creates all styled images for a given image object.
+     *
+     * @param ResponsiveImageInterface $image
+     */
+    public function createStyledImages(ResponsiveImageInterface $image)
+    {
+        $filename = $image->getPath();
+        $styles = $this->styleManager->getAllStyles();
+        if (!empty($filename)) {
+            foreach ($styles as $stylename => $style) {
+                $this->createImageDerivative($image, $stylename, TRUE);
+            }
+        }
+    }
+
+    /**
+     * Deletes all image files associated with an image object
+     *
+     * @param ResponsiveImageInterface $image
+     */
+    public function deleteImageFiles(ResponsiveImageInterface $image) {
+        // $this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
     }
 
     /**
@@ -125,7 +123,17 @@ class ResponsiveImageManager
      *
      * @param ResponsiveImageInterface $image
      */
-    public function deleteAllStyledImages(ResponsiveImageInterface $image)
+    public function deleteOrginalImage(ResponsiveImageInterface $image)
+    {
+        // $this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
+    }
+
+    /**
+     * Delete an images styled derivatives.
+     *
+     * @param ResponsiveImageInterface $image
+     */
+    public function deleteStyledImages(ResponsiveImageInterface $image)
     {
         // $filename = $image->getPath();
         // if (!empty($filename)) {
@@ -134,13 +142,43 @@ class ResponsiveImageManager
     }
 
     /**
+     * Transfer files in the $images array to the configured S3 bucket.
+     */
+    public function doS3Transfer()
+    {
+        // $file = $image->getPath();
+        // $paths = $this->styleManager->createPathsArray($file);
+        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+        if ($local_file_policy != 'KEEP_NONE') {
+            unset($this->images[0]);
+        }
+
+        $paths = [];
+        foreach ($this->images as $style => $locations) {
+            $paths[$locations[0]] = $locations[1];
+        }
+
+        if (!empty($paths)) {
+            $this->s3->setPaths($paths);
+            $this->s3->uploadToS3();
+        }
+
+        // Delete local files
+        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+        if ($local_file_policy !== 'KEEP_ALL') {
+            foreach ($paths as $path => $tree) {
+                $this->system->deleteFile($path);
+            }
+        }
+    }
+
+    /**
      * Returns the location fo the original source file and fetches if it's stored remotely.
      *
      * @param $image
-     *
      * @return string
      */
-    public function getSourceFile($image) {
+    public function findSourceFile($image) {
         $filename = $image->getPath();
         $fetchFromS3 = FALSE;
 
@@ -170,12 +208,12 @@ class ResponsiveImageManager
             $this->images[0] = [$path, $tree];
         }
 
-
         return $path;
     }
 
     /**
      * Delete temporary files.
+     *
      * @TODO: Is this needed?
      *
      * @param ResponsiveImageInterface $image
@@ -189,35 +227,49 @@ class ResponsiveImageManager
     }
 
     /**
-     * Transfer files to S3 bucket
+     * @param ResponsiveImageInterface $image
+     */
+    public function transferSingleImageToS3(ResponsiveImageInterface $image) {
+
+    }
+
+    /**
+     * Sets the image style for image rendering
+     *
+     * @param ResponsiveImageInterface $image
+     * @param $stylename
+     * @return ResponsiveImageInterface
+     */
+    public function setImageStyle(ResponsiveImageInterface $image, $stylename)
+    {
+        // $image = $this->get('responsive_image.style_manager')->setImageStyle($image, 'thumb');
+        $image = $this->styleManager->setImageStyle($image, $stylename);
+
+        return $image;
+    }
+
+    /**
+     * Sets the picture set for image rendering.
+     *
+     * @param ResponsiveImageInterface $image
+     * @param $pictureSet
+     * @return ResponsiveImageInterface
+     */
+    public function setPictureSet(ResponsiveImageInterface $image, $pictureSet)
+    {
+        // $image = $this->get('responsive_image.style_manager')->setPictureImage($image, 'thumb_picture');
+        $image = $this->styleManager->setPictureImage($image, $pictureSet);
+
+        return $image;
+    }
+
+    /**
+     * Uploads an image file
      *
      * @param ResponsiveImageInterface $image
      */
-    public function transferToS3(ResponsiveImageInterface $image = NULL)
+    public function uploadImage(ResponsiveImageInterface $image)
     {
-        // $file = $image->getPath();
-        // $paths = $this->styleManager->createPathsArray($file);
-        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-        if ($local_file_policy != 'KEEP_NONE') {
-            unset($this->images[0]);
-        }
-
-        $paths = [];
-        foreach ($this->images as $style => $locations) {
-            $paths[$locations[0]] = $locations[1];
-        }
-
-        if (!empty($paths)) {
-            $this->s3->setPaths($paths);
-            $this->s3->uploadToS3();
-        }
-
-        // Delete local files
-        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-        if ($local_file_policy !== 'KEEP_ALL') {
-            foreach ($paths as $path => $tree) {
-                $this->system->deleteFile($path);
-            }
-        }
+        // @TODO implement upload functionality from here.
     }
 }
