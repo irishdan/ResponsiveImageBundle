@@ -1,7 +1,7 @@
 services:
   responsive_image:
       class: ResponsiveImageBundle\Utils\ResponsiveImageManager
-      arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@event_dispatcher' , '@responsive_image.s3_bridge' ]
+      arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_system', '@responsive_image.s3_bridge', '@responsive_image.uploader' ]
 
   responsive_image.file_system:
       class: ResponsiveImageBundle\Utils\FileSystem
@@ -40,20 +40,32 @@ services:
       arguments: [ '@responsive_image.style_manager' ]
 
   # Event listeners.
-  responsive_image.listener.image_generated:
+  responsive_image.listener.image_generate_styled:
       class: ResponsiveImageBundle\Event\ImageListener
       arguments: [ '%responsive_image', '@responsive_image' ]
       tags:
-          - { name: kernel.event_listener, event: responsive_image.generated, method: onImageGenerated }
+          - { name: kernel.event_listener, event: responsive_image.image_generate_styled, method: imageGenerateStyled }
 
-  responsive_image.listener.image_created:
+  responsive_image.listener.image_delete_all:
       class: ResponsiveImageBundle\Event\ImageListener
       arguments: [ '%responsive_image', '@responsive_image' ]
       tags:
-          - { name: kernel.event_listener, event: responsive_image.created, method: onImageCreated }
+          - { name: kernel.event_listener, event: responsive_image.image_delete_all, method: imageDeleteAll }
 
-  responsive_image.listener.image_update:
+  responsive_image.listener.image_delete_styled:
       class: ResponsiveImageBundle\Event\ImageListener
       arguments: [ '%responsive_image', '@responsive_image' ]
       tags:
-          - { name: kernel.event_listener, event: responsive_image.updated, method: onImageUpdated }
+          - { name: kernel.event_listener, event: responsive_image.image_delete_styled, method: imageDeleteStyled }
+
+  responsive_image.listener.style_delete_styled:
+      class: ResponsiveImageBundle\Event\ImageListener
+      arguments: [ '%responsive_image', '@responsive_image' ]
+      tags:
+          - { name: kernel.event_listener, event: responsive_image.style_delete_styled, method: styleDeleteStyled }
+
+  responsive_image.listener.style_delete_all:
+      class: ResponsiveImageBundle\Event\ImageListener
+      arguments: [ '%responsive_image', '@responsive_image' ]
+      tags:
+          - { name: kernel.event_listener, event: responsive_image.style_delete_all, method: styleDeleteAll }

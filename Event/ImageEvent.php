@@ -2,12 +2,13 @@
 
 namespace ResponsiveImageBundle\Event;
 
+
 use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
 use Symfony\Component\EventDispatcher\Event;
 
-
 /**
  * Class EnquiryEvent
+ *
  * @package ResponsiveImageBundle\Event
  */
 class ImageEvent extends Event {
@@ -24,12 +25,12 @@ class ImageEvent extends Event {
 
     /**
      * EnquiryEvent constructor.
+     * 
      * @param ResponsiveImageInterface $image
      */
-    public function __construct(ResponsiveImageInterface $image, $style = null)
+    public function __construct(ResponsiveImageInterface $image)
     {
         $this->image = $image;
-        $this->style = $style;
     }
 
     /**

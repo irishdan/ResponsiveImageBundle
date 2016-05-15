@@ -144,13 +144,13 @@ class ResponsiveImageManager
     /**
      * Transfer files in the $images array to the configured S3 bucket.
      */
-    public function doS3Transfer()
+    public function doS3Transfer($transferType = 'default')
     {
-        // $file = $image->getPath();
-        // $paths = $this->styleManager->createPathsArray($file);
-        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-        if ($local_file_policy != 'KEEP_NONE') {
-            unset($this->images[0]);
+        if ($transferType == 'default') {
+            $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+            if ($local_file_policy != 'KEEP_NONE') {
+                unset($this->images[0]);
+            }
         }
 
         $paths = [];
@@ -227,13 +227,6 @@ class ResponsiveImageManager
     }
 
     /**
-     * @param ResponsiveImageInterface $image
-     */
-    public function transferSingleImageToS3(ResponsiveImageInterface $image) {
-
-    }
-
-    /**
      * Sets the image style for image rendering
      *
      * @param ResponsiveImageInterface $image
@@ -242,9 +235,7 @@ class ResponsiveImageManager
      */
     public function setImageStyle(ResponsiveImageInterface $image, $stylename)
     {
-        // $image = $this->get('responsive_image.style_manager')->setImageStyle($image, 'thumb');
-        $image = $this->styleManager->setImageStyle($image, $stylename);
-
+        $this->styleManager->setImageStyle($image, $stylename);
         return $image;
     }
 
@@ -257,19 +248,43 @@ class ResponsiveImageManager
      */
     public function setPictureSet(ResponsiveImageInterface $image, $pictureSet)
     {
-        // $image = $this->get('responsive_image.style_manager')->setPictureImage($image, 'thumb_picture');
-        $image = $this->styleManager->setPictureImage($image, $pictureSet);
-
+        $this->styleManager->setPictureImage($image, $pictureSet);
         return $image;
+    }
+
+    /**
+     * @param ResponsiveImageInterface $image
+     */
+    public function transferSingleImageToS3(ResponsiveImageInterface $image) {
+        $this->findSourceFile($image);
+        $this->doS3Transfer('upload');
     }
 
     /**
      * Uploads an image file
      *
      * @param ResponsiveImageInterface $image
+     * @return ResponsiveImageInterface
      */
     public function uploadImage(ResponsiveImageInterface $image)
     {
-        // @TODO implement upload functionality from here.
+        $image = $this->uploader->upload($image);
+        if (!empty($this->config['aws_s3'])) {
+            if (!empty($this->config['aws_s3']['enabled'])) {
+                // Check remote file policy to see if should be transferred to s3.
+                $remoteFilePolicy = $this->config['aws_s3']['remote_file_policy'];
+                if ($remoteFilePolicy != 'STYLED_ONLY') {
+                    $this->transferSingleImageToS3($image);
+                }
+
+                // Check local file policy to see if it should be deleted.
+                $localFilePolicy = $this->config['aws_s3']['local_file_policy'];
+                if ($localFilePolicy != 'KEEP_NONE') {
+                    // @TODO: Delete the original file
+                }
+            }
+        }
+
+        return $image;
     }
 }

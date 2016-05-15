@@ -34,32 +34,54 @@ class ImageListener {
     /**
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
-    public function onImageGenerated(ImageEvent $event)
-    {
-        if (!empty($this->config['aws_s3'])) {
-            // $this->imageManager->transferToS3($event);
-        }
-
-    }
-
-    /**
-     * @param \ResponsiveImageBundle\Event\ImageEvent $event
-     */
-    public function onImageCreated(ImageEvent $event) {
-        $image = $event->getImage();
-        $this->imageManager->createAllStyledImages($image);
-
-        $this->imageManager->transferToS3();
-    }
+    // public function onImageGenerated(ImageEvent $event)
+    // {
+    //     // if (!empty($this->config['aws_s3'])) {
+    //     //     // $this->imageManager->transferToS3($event);
+    //     // }
+    // }
 
     /**
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
-    public function onImageUpdated(ImageEvent $event) {
-        $image = $event->getImage();
-        $this->imageManager->deleteAllStyledImages($image);
-        $this->imageManager->createAllStyledImages($image);
+    // public function onImageCreated(ImageEvent $event) {
+    //     // $image = $event->getImage();
+    //     // $this->imageManager->createAllStyledImages($image);
+    //     // $this->imageManager->transferToS3();
+    // }
 
-        $this->imageManager->transferToS3();
+    /**
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
+    // public function onImageUpdated(ImageEvent $event) {
+    //     // $image = $event->getImage();
+    //     // $this->imageManager->deleteAllStyledImages($image);
+    //     // $this->imageManager->createAllStyledImages($image);
+    //     // $this->imageManager->transferToS3();
+    // }
+
+    public function imageGenerateStyled(ImageEvent $event) {
+        var_dump($event);
+        // die;
+    }
+
+    public function imageDeleteAll(ImageEvent $event) {
+        var_dump($event);
+        // die;
+    }
+
+    public function imageDeleteStyled(ImageEvent $event) {
+        var_dump($event);
+        // die;
+    }
+
+    public function styleDeleteStyled(ImageEvent $event) {
+        var_dump($event);
+        // die;
+    }
+
+    public function styleDeleteAll(ImageEvent $event) {
+        var_dump($event);
+        // die;
     }
 }
