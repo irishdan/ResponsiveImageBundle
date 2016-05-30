@@ -236,7 +236,6 @@ class FileSystem
      *
      * @param $directory
      * @param bool $create
-     *
      * @return bool
      */
     public function directoryExists($directory, $create = FALSE) {
@@ -253,7 +252,6 @@ class FileSystem
 
     /**
      * @param $fileName
-     *
      * @return mixed
      */
     public function fileExists($fileName) {
@@ -265,7 +263,6 @@ class FileSystem
      * Deletes a directory and its contents or a file.
      *
      * @param $target
-     *
      * @return bool
      */
     public function deleteDirectory($target) {
@@ -293,7 +290,6 @@ class FileSystem
 
     /**
      * @param $path
-     *
      * @return bool
      */
     public function deleteFile($path) {
@@ -305,7 +301,6 @@ class FileSystem
 
     /**
      * @param $filename
-     *
      * @return string
      */
     public function uploadedFilePath($filename) {
@@ -314,7 +309,6 @@ class FileSystem
 
     /**
      * @param $stylename
-     *
      * @return string
      */
     public function styleDirectoryPath($stylename) {
@@ -323,7 +317,6 @@ class FileSystem
 
     /**
      * @param $filename
-     *
      * @return string
      */
     public function uploadedFileWebPath($filename) {
@@ -333,7 +326,6 @@ class FileSystem
     /**
      * @param $stylename
      * @param $filename
-     *
      * @return string
      */
     public function styleFilePath($stylename, $filename) {
@@ -342,7 +334,6 @@ class FileSystem
 
     /**
      * @param $path
-     *
      * @return string
      */
     public function getFilenameFromPath($path) {
@@ -351,7 +342,6 @@ class FileSystem
 
     /**
      * @param $stylename
-     *
      * @return string
      */
     public function styleWebPath($stylename) {
@@ -365,7 +355,6 @@ class FileSystem
      * Returns the web accessible styled file path.
      *
      * @param $stylename
-     *
      * @return string
      */
     public function styledFileWebPath($stylename, $filename) {
@@ -394,7 +383,6 @@ class FileSystem
      * Returns the appropriate local storage directory based on the current operation and config parameters.
      *
      * @param $operation
-     *
      * @return string
      */
     public function getStorageDirectory($operation = 'original', $filename = NULL, $stylename = NULL) {
@@ -450,7 +438,6 @@ class FileSystem
      *
      * @param $path
      * @param bool $slash
-     *
      * @return string
      */
     public function trailingSlash($path, $slash = TRUE) {

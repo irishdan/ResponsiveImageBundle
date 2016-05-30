@@ -24,6 +24,7 @@ class ImageListener {
      * ImageListener constructor.
      *
      * @param $config
+     * @param $imageManager
      */
     public function __construct($config, $imageManager)
     {
@@ -32,56 +33,68 @@ class ImageListener {
     }
 
     /**
+     * Generates styled images of an image object.
+     *
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
-    // public function onImageGenerated(ImageEvent $event)
-    // {
-    //     // if (!empty($this->config['aws_s3'])) {
-    //     //     // $this->imageManager->transferToS3($event);
-    //     // }
-    // }
-
-    /**
-     * @param \ResponsiveImageBundle\Event\ImageEvent $event
-     */
-    // public function onImageCreated(ImageEvent $event) {
-    //     // $image = $event->getImage();
-    //     // $this->imageManager->createAllStyledImages($image);
-    //     // $this->imageManager->transferToS3();
-    // }
-
-    /**
-     * @param \ResponsiveImageBundle\Event\ImageEvent $event
-     */
-    // public function onImageUpdated(ImageEvent $event) {
-    //     // $image = $event->getImage();
-    //     // $this->imageManager->deleteAllStyledImages($image);
-    //     // $this->imageManager->createAllStyledImages($image);
-    //     // $this->imageManager->transferToS3();
-    // }
-
     public function imageGenerateStyled(ImageEvent $event) {
+        $image = $event->getImage();
+        $style = NULL;
+
+        if (method_exists($event, 'getStyle')) {
+            if (!empty($event->getStyle())) {
+                $style = $event->getStyle();
+            }
+        }
         var_dump($event);
-        // die;
+        $this->imageManager->createStyledImages($image, $style);
+        // $this->imageManager->alterImagesArray();
+        // $this->imageManager->doS3Transfer();
     }
 
+    /**
+     * Delete all images including the original.
+     *
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
     public function imageDeleteAll(ImageEvent $event) {
-        var_dump($event);
-        // die;
+        $image = $event->getImage();
+        $this->imageManager->deleteImageFiles($image);
     }
 
+    /**
+     * Delete styled images fof an object.
+     *
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
     public function imageDeleteStyled(ImageEvent $event) {
-        var_dump($event);
-        // die;
+        $image = $event->getImage();
+        $style = NULL;
+
+        if (method_exists($event, 'getStyle')) {
+            if (!empty($event->getStyle())) {
+                $style = $event->getStyle();
+            }
+        }
+
+        $this->imageManager->deleteStyledImages($image, $style);
     }
 
+    /**
+     * Delete all images of given style.
+     *
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
     public function styleDeleteStyled(ImageEvent $event) {
-        var_dump($event);
-        // die;
+        // @TODO: Implement this functionality.
     }
 
+    /**
+     * Delete all styled images for all styles.
+     *
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
     public function styleDeleteAll(ImageEvent $event) {
-        var_dump($event);
-        // die;
+        // @TODO: Implement this functionality.
     }
 }

@@ -2,10 +2,6 @@
 
 namespace ResponsiveImageBundle\Utils;
 
-
-// use ResponsiveImageBundle\Event\ImageEvent;
-// use ResponsiveImageBundle\Event\ImageEvents;
-
 /**
  * Class ImageManager
  * @package ResponsiveImageBundle\Utils
@@ -63,6 +59,13 @@ class ResponsiveImageManager
         $this->uploader = $uploader;
     }
 
+    public function alterImagesArray() {
+        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+        if ($local_file_policy != 'KEEP_NONE') {
+            unset($this->images[0]);
+        }
+    }
+
     /**
      * Creates a single styled image for an image object.
      *
@@ -77,7 +80,7 @@ class ResponsiveImageManager
 
         // Where's the original file? AWS or local?
         // If AWS fetch the file and store in temp directory if there is one, set $this->sourceFetched.
-        $filePath = $this->getSourceFile($imageObject);
+        $filePath = $this->findSourceFile($imageObject);
 
         // $stylePath = $system->styleDirectoryPath($styleName);
         $stylePath = $system->getStorageDirectory('styled', NULL, $styleName);
@@ -95,18 +98,25 @@ class ResponsiveImageManager
 
     /**
      * Creates all styled images for a given image object.
+     * If optional stylename if given only that style will be created.
      *
      * @param ResponsiveImageInterface $image
+     * @paran string $stylename
      */
-    public function createStyledImages(ResponsiveImageInterface $image)
+    public function createStyledImages(ResponsiveImageInterface $image, $stylename = NULL)
     {
         $filename = $image->getPath();
         $styles = $this->styleManager->getAllStyles();
+        var_dump($this->images);
         if (!empty($filename)) {
             foreach ($styles as $stylename => $style) {
                 $this->createImageDerivative($image, $stylename, TRUE);
             }
         }
+        var_dump($this->images);
+        // @TODO: Here should check if needs to transfer.
+        // $this->imageManager->alterImagesArray();
+        // $this->imageManager->doS3Transfer();
     }
 
     /**
@@ -144,15 +154,8 @@ class ResponsiveImageManager
     /**
      * Transfer files in the $images array to the configured S3 bucket.
      */
-    public function doS3Transfer($transferType = 'default')
+    public function doS3Transfer()
     {
-        if ($transferType == 'default') {
-            $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-            if ($local_file_policy != 'KEEP_NONE') {
-                unset($this->images[0]);
-            }
-        }
-
         $paths = [];
         foreach ($this->images as $style => $locations) {
             $paths[$locations[0]] = $locations[1];
@@ -181,7 +184,6 @@ class ResponsiveImageManager
     public function findSourceFile($image) {
         $filename = $image->getPath();
         $fetchFromS3 = FALSE;
-
         if (!empty($this->images[0])) {
             return $this->images[0][0];
         }
@@ -257,7 +259,7 @@ class ResponsiveImageManager
      */
     public function transferSingleImageToS3(ResponsiveImageInterface $image) {
         $this->findSourceFile($image);
-        $this->doS3Transfer('upload');
+        $this->doS3Transfer();
     }
 
     /**
@@ -284,6 +286,7 @@ class ResponsiveImageManager
                 }
             }
         }
+        $this->images = array();
 
         return $image;
     }
