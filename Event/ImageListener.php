@@ -97,6 +97,6 @@ class ImageListener {
      * Delete all styled images for all styles.
      */
     public function styleDeleteAll() {
-
+        $this->imageManager->deleteStyleFiles();
     }
 }

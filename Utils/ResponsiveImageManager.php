@@ -6,6 +6,10 @@ namespace ResponsiveImageBundle\Utils;
  * Class ImageManager
  * @package ResponsiveImageBundle\Utils
  */
+/**
+ * Class ResponsiveImageManager
+ * @package ResponsiveImageBundle\Utils
+ */
 class ResponsiveImageManager
 {
     /**
@@ -69,18 +73,19 @@ class ResponsiveImageManager
         $this->uploader = $uploader;
     }
 
-    public function alterImagesArray() {
-        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-        if ($local_file_policy != 'KEEP_NONE') {
-            unset($this->images[0]);
-        }
-    }
-
     /**
-     * Cleans out any temp files if needed.
+     * Cleans out any temp files if needed after image generation.
      */
     private function cleanUp() {
-        
+        $s3Enabled = $this->s3enabled();
+        if ($s3Enabled) {
+            $local_file_policy = empty($this->config['aws_S3']['local_file_policy']) ? 'KEEP_NONE' : $this->config['aws_S3']['local_file_policy'];
+            if ($local_file_policy !== 'KEEP_ALL') {
+                foreach ($this->images as $key => $pathArray) {
+                    $this->system->deleteFile($pathArray[0]);
+                }
+            }
+        }
     }
 
     /**
@@ -151,6 +156,7 @@ class ResponsiveImageManager
             $this->system->deleteFile($paths[0]);
 
             // @TODO: Remove from S3.
+            $this->s3->removeFromS3();
         }
     }
 
@@ -161,7 +167,6 @@ class ResponsiveImageManager
      */
     public function deleteStyleFiles(array $styles)
     {
-        // @TODO: Implement this.
         if (empty($styles)) {
             // Delete all styled files.
         }
@@ -233,21 +238,6 @@ class ResponsiveImageManager
     }
 
     /**
-     * Delete temporary files.
-     *
-     * @TODO: Is this needed?
-     *
-     * @param ResponsiveImageInterface $image
-     */
-    public function removeFiles(ResponsiveImageInterface $image) {
-        $file = $image->getPath();
-        $paths = $this->styleManager->createPathsArray($file);
-        
-        $this->s3->setPaths($paths);
-        $this->s3->removeFromS3();
-    }
-
-    /**
      * Sets the image style for image rendering
      *
      * @param ResponsiveImageInterface $image
@@ -275,16 +265,16 @@ class ResponsiveImageManager
 
     /**
      * Checks if files should be transferred to S3 bucket or not.
+     *
      * @Param string
      * @return bool
      */
     private function shouldTransferToS3($imageType = 'styled')
     {
-        if (!empty($this->config['aws_s3'])) {
+        $enabled = $this->s3enabled();
+        if ($enabled) {
             $aws_config = $this->config['aws_s3'];
-            $enabled = empty($aws_config['enabled']) ? FALSE : TRUE;
             $remoteFilePolicy = empty($aws_config['remote_file_policy']) ? 'ALL': $aws_config['remote_file_policy'];
-
 
             // If AWS is enabled.
             if ($enabled) {
@@ -301,6 +291,18 @@ class ResponsiveImageManager
             }
         }
         return FALSE;
+    }
+
+    /**
+     * @return bool
+     */
+    private function s3enabled() {
+        $enabled = FALSE;
+        if (!empty($this->config['aws_s3'])) {
+            $enabled = empty($this->config['aws_s3']['enabled']) ? FALSE : TRUE;
+        }
+
+        return $enabled;
     }
 
     /**
@@ -321,30 +323,21 @@ class ResponsiveImageManager
     {
         $image = $this->uploader->upload($image);
 
+        // Transfer to S3 if needed.
         if ($this->shouldTransferToS3('original')) {
             $this->transferSingleImageToS3($image);
         }
 
-        if (!empty($this->config['aws_s3'])) {
-            if (!empty($this->config['aws_s3']['enabled'])) {
-                // Check remote file policy to see if should be transferred to s3.
-                $remoteFilePolicy = $this->config['aws_s3']['remote_file_policy'];
-                if ($remoteFilePolicy != 'STYLED_ONLY') {
-                    $this->transferSingleImageToS3($image);
-                }
-
-                // Check local file policy to see if it should be deleted.
-                $localFilePolicy = $this->config['aws_s3']['local_file_policy'];
-                if ($localFilePolicy != 'KEEP_NONE') {
-                    // @TODO: Delete the original file
-                }
-            }
-        }
         $this->images = array();
 
         return $image;
     }
 
+    /**
+     * @param $image
+     * @param bool $original
+     * @param bool $styled
+     */
     private function setImages($image, $original = TRUE, $styled = TRUE) {
         $filename = $image->getPath();
         $styles = $this->styleManager->getAllStyles();
