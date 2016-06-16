@@ -39,17 +39,7 @@ class ImageListener {
      */
     public function imageGenerateStyled(ImageEvent $event) {
         $image = $event->getImage();
-        $style = NULL;
-
-        if (method_exists($event, 'getStyle')) {
-            if (!empty($event->getStyle())) {
-                $style = $event->getStyle();
-            }
-        }
-        
-        $this->imageManager->createStyledImages($image, $style);
-        // $this->imageManager->alterImagesArray();
-        // $this->imageManager->doS3Transfer();
+        $this->imageManager->createStyledImages($image);
     }
 
     /**

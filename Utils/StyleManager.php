@@ -21,7 +21,7 @@ class StyleManager
     /**
      * @var
      */
-    private $displayPathPrefix;
+    private $displayPathPrefix = '/';
 
     /**
      * @var

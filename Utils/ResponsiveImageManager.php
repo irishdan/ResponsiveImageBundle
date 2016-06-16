@@ -20,6 +20,16 @@ class ResponsiveImageManager
 
     /**
      * @var array
+     *
+     * 0 => [
+     *     0 => 'Acutal/path/to/the/file',
+     *     1 => documents/filename.jpg
+     * ]
+     * 'full => [
+     *     0 => 'Acutal/path/to/the/file',
+     *     1 => docuaments/styles/full/filename.jpg
+     * ]
+     *
      */
     private $images = [];
 
@@ -66,7 +76,10 @@ class ResponsiveImageManager
         }
     }
 
-    public function cleanUp() {
+    /**
+     * Cleans out any temp files if needed.
+     */
+    private function cleanUp() {
         
     }
 
@@ -114,10 +127,13 @@ class ResponsiveImageManager
                 $this->createImageDerivative($image, $stylename, TRUE);
             }
         }
-        
-        // @TODO: Here should check if needs to transfer.
-        // $this->imageManager->alterImagesArray();
-        // $this->imageManager->doS3Transfer();
+        // Do the the transfer if required.
+        if ($this->shouldTransferToS3('styled')) {
+            $this->doS3Transfer();
+        }
+
+        // Cleanup any temp files.
+        $this->cleanUp();
     }
 
     /**
@@ -126,7 +142,25 @@ class ResponsiveImageManager
      * @param ResponsiveImageInterface $image
      */
     public function deleteImageAllFiles(ResponsiveImageInterface $image) {
-        // $this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
+        $filename = $image->getPath();
+        $styles = $this->styleManager->getAllStyles();
+        // This adds the orginal path and style tree to the $images array.
+        $this->findSourceFile($image);
+
+        // Create an array of paths.
+        if (!empty($filename)) {
+            foreach ($styles as $stylename => $style) {
+                $stylePath = $this->system->getStorageDirectory('styled', NULL, $stylename);
+                $styleTree = $this->system->getStyleTree($stylename);
+                $this->images[$stylename] = [$stylePath . $filename, $styleTree . '/' . $filename];
+            }
+        }
+
+        // Delete all files in the path.
+        foreach ($this->images as $paths) {
+            // Delete the local files.
+            $this->system->deleteFile($paths[0]);
+        }
     }
 
     /**
@@ -183,7 +217,7 @@ class ResponsiveImageManager
             $this->s3->uploadToS3();
         }
 
-        // Delete local files
+        // @TODO: This should be moved to the cleanUp function.
         $local_file_policy = $this->config['aws_s3']['local_file_policy'];
         if ($local_file_policy !== 'KEEP_ALL') {
             foreach ($paths as $path => $tree) {
@@ -272,6 +306,36 @@ class ResponsiveImageManager
     }
 
     /**
+     * Checks if files should be transferred to S3 bucket or not.
+     * @Param string
+     * @return bool
+     */
+    private function shouldTransferToS3($imageType = 'styled')
+    {
+        if (!empty($this->config['aws_s3'])) {
+            $aws_config = $this->config['aws_s3'];
+            $enabled = empty($aws_config['enabled']) ? FALSE : TRUE;
+            $remoteFilePolicy = empty($aws_config['remote_file_policy']) ? 'ALL': $aws_config['remote_file_policy'];
+
+
+            // If AWS is enabled.
+            if ($enabled) {
+                // Styled images are always transferred.
+                if ($imageType == 'styled') {
+                    return TRUE;
+                }
+                // Originals are only transferred if remote_file_policy is set to ALL.
+                else if ($imageType == 'original') {
+                    if ($remoteFilePolicy == 'ALL') {
+                        return TRUE;
+                    }
+                }
+            }
+        }
+        return FALSE;
+    }
+
+    /**
      * @param ResponsiveImageInterface $image
      */
     public function transferSingleImageToS3(ResponsiveImageInterface $image) {
@@ -288,6 +352,11 @@ class ResponsiveImageManager
     public function uploadImage(ResponsiveImageInterface $image)
     {
         $image = $this->uploader->upload($image);
+
+        if ($this->shouldTransferToS3('original')) {
+            $this->transferSingleImageToS3($image);
+        }
+
         if (!empty($this->config['aws_s3'])) {
             if (!empty($this->config['aws_s3']['enabled'])) {
                 // Check remote file policy to see if should be transferred to s3.
