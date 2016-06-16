@@ -51,7 +51,7 @@ class ImageListener {
     {
         $image = $event->getImage();
         if (!empty($image)) {
-            $this->imageManager->deleteImageAllFiles($image);
+            $this->imageManager->deleteImageFiles($image, TRUE, TRUE);
         }
     }
 
@@ -64,7 +64,7 @@ class ImageListener {
     {
         $image = $event->getImage();
         if (!empty($image)) {
-            $this->imageManager->deleteImageOriginalFiles($image);
+            $this->imageManager->deleteImageFiles($image, TRUE, FALSE);
         }
     }
 
@@ -77,7 +77,7 @@ class ImageListener {
     {
         $image = $event->getImage();
         if (!empty($image)) {
-            $this->imageManager->deleteImageStyledFiles($image);
+            $this->imageManager->deleteImageFiles($image, FALSE, TRUE);
         }
     }
 

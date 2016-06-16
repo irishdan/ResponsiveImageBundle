@@ -137,53 +137,21 @@ class ResponsiveImageManager
     }
 
     /**
-     * Deletes all image files associated with an image object
+     * Deletes images files associated with an image object
      *
      * @param ResponsiveImageInterface $image
+     * @param bool
+     * @param bool
      */
-    public function deleteImageAllFiles(ResponsiveImageInterface $image) {
-        $filename = $image->getPath();
-        $styles = $this->styleManager->getAllStyles();
-        // This adds the orginal path and style tree to the $images array.
-        $this->findSourceFile($image);
-
-        // Create an array of paths.
-        if (!empty($filename)) {
-            foreach ($styles as $stylename => $style) {
-                $stylePath = $this->system->getStorageDirectory('styled', NULL, $stylename);
-                $styleTree = $this->system->getStyleTree($stylename);
-                $this->images[$stylename] = [$stylePath . $filename, $styleTree . '/' . $filename];
-            }
-        }
-
-        // Delete all files in the path.
+    public function deleteImageFiles(ResponsiveImageInterface $image, $deleteOriginal = TRUE, $deleteStyled = TRUE) {
+        // Create an array of images to work,
+        $this->setImages($image, $deleteOriginal, $deleteStyled);
         foreach ($this->images as $paths) {
             // Delete the local files.
             $this->system->deleteFile($paths[0]);
+
+            // @TODO: Remove from S3.
         }
-    }
-
-    /**
-     * Delete an images styled derivatives.
-     *
-     * @param ResponsiveImageInterface $image
-     */
-    public function deleteImageOriginalFile(ResponsiveImageInterface $image)
-    {
-        // $this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
-    }
-
-    /**
-     * Delete an images styled derivatives.
-     *
-     * @param ResponsiveImageInterface $image
-     */
-    public function deleteImageStyledFiles(ResponsiveImageInterface $image)
-    {
-        // $filename = $image->getPath();
-        // if (!empty($filename)) {
-        //     $this->styleManager->deleteImageStyledFiles($filename);
-        // }
     }
 
     /**
@@ -193,7 +161,7 @@ class ResponsiveImageManager
      */
     public function deleteStyleFiles(array $styles)
     {
-        dump($styles);
+        // @TODO: Implement this.
         if (empty($styles)) {
             // Delete all styled files.
         }
@@ -375,5 +343,25 @@ class ResponsiveImageManager
         $this->images = array();
 
         return $image;
+    }
+
+    private function setImages($image, $original = TRUE, $styled = TRUE) {
+        $filename = $image->getPath();
+        $styles = $this->styleManager->getAllStyles();
+
+        // This adds the orginal path and style tree to the $images array.
+        if ($original) {
+            $this->findSourceFile($image);
+        }
+
+        // Create an array of paths and styles trees
+        if (!empty($filename) && $styled) {
+            foreach ($styles as $stylename => $style) {
+                $stylePath = $this->system->getStorageDirectory('styled', NULL, $stylename);
+                $styleTree = $this->system->getStyleTree($stylename);
+
+                $this->images[$stylename] = [$stylePath . $filename, $styleTree . '/' . $filename];
+            }
+        }
     }
 }
