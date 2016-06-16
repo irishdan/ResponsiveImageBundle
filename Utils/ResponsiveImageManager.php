@@ -107,13 +107,13 @@ class ResponsiveImageManager
     {
         $filename = $image->getPath();
         $styles = $this->styleManager->getAllStyles();
-        var_dump($this->images);
+        dump($this->images);
         if (!empty($filename)) {
             foreach ($styles as $stylename => $style) {
                 $this->createImageDerivative($image, $stylename, TRUE);
             }
         }
-        var_dump($this->images);
+        dump($this->images);
         // @TODO: Here should check if needs to transfer.
         // $this->imageManager->alterImagesArray();
         // $this->imageManager->doS3Transfer();

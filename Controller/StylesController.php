@@ -20,8 +20,12 @@ class StylesController extends Controller
             // Handle failed form submission.
         }
 
+        // Get the image list from s3.
+        $s3Images = $this->get('responsive_image.s3_bridge')->listImages();
+
         return $this->render('ResponsiveImageBundle:Settings:index.html.twig', array(
             'image_settings_form' => $form->createView(),
+            's3_images' => $s3Images,
         ));
 
     }

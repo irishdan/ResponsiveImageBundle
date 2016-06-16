@@ -46,7 +46,7 @@ class ImageListener {
                 $style = $event->getStyle();
             }
         }
-        var_dump($event);
+        
         $this->imageManager->createStyledImages($image, $style);
         // $this->imageManager->alterImagesArray();
         // $this->imageManager->doS3Transfer();

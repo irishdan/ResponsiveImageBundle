@@ -11,10 +11,9 @@ use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
  * Image
  *
  * @ORM\Table(name="image")
- * @ORM\Entity(repositoryClass="ResponsiveImageBundle\Repository\ImageRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Image implements ResponsiveImageInterface
+class ResponsiveImage implements ResponsiveImageInterface
 {
     /**
      * @var int

@@ -157,4 +157,19 @@ class S3Bridge
             }
         }
     }
+
+    public function listImages() {
+        $this->getClient();
+        $images = [];
+
+        $iterator = $this->s3->getIterator('ListObjects', array(
+            'Bucket' => $this->bucket
+        ));
+
+        foreach ($iterator as $object) {
+            $images[] = $object;
+        }
+
+        return $images;
+    }
 }
