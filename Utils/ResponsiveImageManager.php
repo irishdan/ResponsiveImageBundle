@@ -66,6 +66,10 @@ class ResponsiveImageManager
         }
     }
 
+    public function cleanUp() {
+        
+    }
+
     /**
      * Creates a single styled image for an image object.
      *
@@ -82,16 +86,14 @@ class ResponsiveImageManager
         // If AWS fetch the file and store in temp directory if there is one, set $this->sourceFetched.
         $filePath = $this->findSourceFile($imageObject);
 
-        // $stylePath = $system->styleDirectoryPath($styleName);
         $stylePath = $system->getStorageDirectory('styled', NULL, $styleName);
         $style = $this->styleManager->getStyle($styleName);
         $crop = empty($imageObject) ? null : $imageObject->getCropCoordinates();
-
         $image = $this->imager->createImage($filePath, $stylePath, $style, $crop);
 
         // Store this here for postprocessing.
         $styleTree = $system->getStyleTree($styleName);
-        $this->images[$styleName] = [$stylePath .$filename, $styleTree . '/' . $filename];
+        $this->images[$styleName] = [$stylePath . $filename, $styleTree . '/' . $filename];
 
         return $image;
     }
@@ -107,13 +109,12 @@ class ResponsiveImageManager
     {
         $filename = $image->getPath();
         $styles = $this->styleManager->getAllStyles();
-        dump($this->images);
         if (!empty($filename)) {
             foreach ($styles as $stylename => $style) {
                 $this->createImageDerivative($image, $stylename, TRUE);
             }
         }
-        dump($this->images);
+        
         // @TODO: Here should check if needs to transfer.
         // $this->imageManager->alterImagesArray();
         // $this->imageManager->doS3Transfer();
@@ -124,7 +125,7 @@ class ResponsiveImageManager
      *
      * @param ResponsiveImageInterface $image
      */
-    public function deleteImageFiles(ResponsiveImageInterface $image) {
+    public function deleteImageAllFiles(ResponsiveImageInterface $image) {
         // $this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
     }
 
@@ -133,7 +134,7 @@ class ResponsiveImageManager
      *
      * @param ResponsiveImageInterface $image
      */
-    public function deleteOrginalImage(ResponsiveImageInterface $image)
+    public function deleteImageOriginalFile(ResponsiveImageInterface $image)
     {
         // $this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
     }
@@ -143,12 +144,28 @@ class ResponsiveImageManager
      *
      * @param ResponsiveImageInterface $image
      */
-    public function deleteStyledImages(ResponsiveImageInterface $image)
+    public function deleteImageStyledFiles(ResponsiveImageInterface $image)
     {
         // $filename = $image->getPath();
         // if (!empty($filename)) {
         //     $this->styleManager->deleteImageStyledFiles($filename);
         // }
+    }
+
+    /**
+     * Delete an images styled derivatives.
+     *
+     * @param array $styles
+     */
+    public function deleteStyleFiles(array $styles)
+    {
+        dump($styles);
+        if (empty($styles)) {
+            // Delete all styled files.
+        }
+        else {
+            // Delete files for the given files.
+        }
     }
 
     /**

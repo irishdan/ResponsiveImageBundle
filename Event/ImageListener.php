@@ -57,9 +57,25 @@ class ImageListener {
      *
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
-    public function imageDeleteAll(ImageEvent $event) {
+    public function imageDeleteAll(ImageEvent $event)
+    {
         $image = $event->getImage();
-        $this->imageManager->deleteImageFiles($image);
+        if (!empty($image)) {
+            $this->imageManager->deleteImageAllFiles($image);
+        }
+    }
+
+    /**
+     * Delete the original.
+     *
+     * @param \ResponsiveImageBundle\Event\ImageEvent $event
+     */
+    public function imageDeleteOriginal(ImageEvent $event)
+    {
+        $image = $event->getImage();
+        if (!empty($image)) {
+            $this->imageManager->deleteImageOriginalFiles($image);
+        }
     }
 
     /**
@@ -67,17 +83,12 @@ class ImageListener {
      *
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
-    public function imageDeleteStyled(ImageEvent $event) {
+    public function imageDeleteStyled(ImageEvent $event)
+    {
         $image = $event->getImage();
-        $style = NULL;
-
-        if (method_exists($event, 'getStyle')) {
-            if (!empty($event->getStyle())) {
-                $style = $event->getStyle();
-            }
+        if (!empty($image)) {
+            $this->imageManager->deleteImageStyledFiles($image);
         }
-
-        $this->imageManager->deleteStyledImages($image, $style);
     }
 
     /**
@@ -86,15 +97,16 @@ class ImageListener {
      * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
     public function styleDeleteStyled(ImageEvent $event) {
-        // @TODO: Implement this functionality.
+        $styles = $event->getStyles();
+        if (!empty($styles)) {
+            $this->imageManager->deleteStyleFiles($styles);
+        }
     }
 
     /**
      * Delete all styled images for all styles.
-     *
-     * @param \ResponsiveImageBundle\Event\ImageEvent $event
      */
-    public function styleDeleteAll(ImageEvent $event) {
-        // @TODO: Implement this functionality.
+    public function styleDeleteAll() {
+
     }
 }

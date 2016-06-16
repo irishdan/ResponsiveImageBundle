@@ -37,7 +37,7 @@ services:
   # Form handlers.
   responsive_image.styles_form_handler:
       class: ResponsiveImageBundle\Form\Handler\StylesFormHandler
-      arguments: [ '@responsive_image.style_manager' ]
+      arguments: [ '@responsive_image.style_manager', '@event_dispatcher' ]
 
   # Event listeners.
   responsive_image.listener.image_generate_styled:

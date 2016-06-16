@@ -78,12 +78,14 @@ class FileSystem
         $this->setSystemUploadPath($this->systemPath . '/' . $this->uploadsDir);
         $this->setSystemStylesPath($this->systemUploadPath . '/' . $stylesDir);
 
-        // Set the temp directory.
+        // Set the temp directory if aws is enabled.
         if (!empty($imageConfigs['aws_s3'])) {
-            $this->awsConfig = $imageConfigs['aws_s3'];
-
-            if (!empty($this->awsConfig['temp_directory'])) {
-                $this->tempDirectory = $symfonyDir . '/' . $this->awsConfig['temp_directory'];
+            if (!empty($imageConfigs['aws_s3']['enabled'])) {
+                dump($imageConfigs);
+                $this->awsConfig = $imageConfigs['aws_s3'];
+                if (!empty($this->awsConfig['temp_directory'])) {
+                    $this->tempDirectory = $symfonyDir . '/' . $this->awsConfig['temp_directory'];
+                }
             }
         }
     }
@@ -386,35 +388,45 @@ class FileSystem
      * @return string
      */
     public function getStorageDirectory($operation = 'original', $filename = NULL, $stylename = NULL) {
-        $local_file_policy = $this->awsConfig['local_file_policy'];
+        // If AWS is not enabled the directory is the image_directory directory
+        if (!empty($this->awsConfig)) {
+            $local_file_policy = $this->awsConfig['local_file_policy'];
+            switch ($operation) {
+                case 'original':
+                    if ($local_file_policy == 'KEEP_NONE') {
+                        $directory = $this->getTempDirectory();
+                    }
+                    else {
+                        $directory = $this->getSystemUploadDirectory();
+                    }
+                    break;
+                case 'styled':
+                    if ($local_file_policy == 'KEEP_ALL') {
+                        $directory = $this->getSystemUploadDirectory();
+                    }
+                    else {
+                        $directory = $this->getTempDirectory();
+                    }
+                    break;
 
-        switch ($operation) {
-            case 'original':
-                if ($local_file_policy == 'KEEP_NONE') {
+                case 'temporary':
+                    // Use the temporary directory.
                     $directory = $this->getTempDirectory();
-                }
-                else {
-                    $directory = $this->getSystemUploadDirectory();
-                }
-                break;
-            case 'styled':
-                if ($local_file_policy == 'KEEP_ALL') {
-                    $directory = $this->getSystemUploadDirectory();
-                }
-                else {
-                    $directory = $this->getTempDirectory();
-                }
-                break;
+                    break;
 
-            case 'temporary':
-                // Use the temporary directory.
-                $directory = $this->getTempDirectory();
-                break;
-
-            default:
-                // Use the web directory by default.
+                default:
+                    // Use the web directory by default.
+                    $directory = $this->getSystemUploadDirectory();
+                    break;
+            }
+        }
+        else {
+            if (empty($stylename)) {
                 $directory = $this->getSystemUploadDirectory();
-                break;
+            }
+            else {
+                $directory = $this->getSystemPath() . '/';
+            }
         }
 
         if ($stylename !== NULL) {

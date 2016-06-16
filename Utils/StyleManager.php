@@ -7,6 +7,10 @@ namespace ResponsiveImageBundle\Utils;
  *
  * @package ResponsiveImageBundle\Utils
  */
+/**
+ * Class StyleManager
+ * @package ResponsiveImageBundle\Utils
+ */
 class StyleManager
 {
     /**
@@ -14,8 +18,14 @@ class StyleManager
      */
     private $breakpoints = [];
 
+    /**
+     * @var
+     */
     private $displayPathPrefix;
 
+    /**
+     * @var
+     */
     private $remoteFilePolicy;
 
     /**
@@ -154,7 +164,6 @@ class StyleManager
      *
      * @param ResponsiveImageInterface $image
      * @param $pictureSetName
-     *
      * @return ResponsiveImageInterface
      */
     public function setPictureImage(ResponsiveImageInterface $image, $pictureSetName) {
@@ -192,7 +201,6 @@ class StyleManager
      * Returns a style information array.
      *
      * @param $stylename
-     *
      * @return bool
      */
     public function getStyle($stylename) {
@@ -209,7 +217,6 @@ class StyleManager
      *
      * @param $url
      * @param $style
-     *
      * @return string
      */
     public function prefixPath($url , $style = NULL) {
@@ -235,7 +242,6 @@ class StyleManager
      *
      * @param $pictureSetName
      * @param $filename
-     *
      * @return string
      */
     public function pictureTag($pictureSetName, $filename) {
@@ -271,7 +277,6 @@ class StyleManager
      *
      * @param ResponsiveImageInterface $image
      * @param null $styleName
-     *
      * @return ResponsiveImageInterface
      */
     public function setImageStyle(ResponsiveImageInterface $image, $styleName = null) {

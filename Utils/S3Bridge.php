@@ -159,9 +159,9 @@ class S3Bridge
     }
 
     public function listImages() {
-        $this->getClient();
         $images = [];
-
+        $this->getClient();
+        
         $iterator = $this->s3->getIterator('ListObjects', array(
             'Bucket' => $this->bucket
         ));
@@ -169,7 +169,7 @@ class S3Bridge
         foreach ($iterator as $object) {
             $images[] = $object;
         }
-
+    
         return $images;
     }
 }

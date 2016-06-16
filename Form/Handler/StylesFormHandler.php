@@ -2,6 +2,8 @@
 
 namespace ResponsiveImageBundle\Form\Handler;
 
+use ResponsiveImageBundle\Event\ImageEvent;
+use ResponsiveImageBundle\Event\ImageEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,14 +16,20 @@ class StylesFormHandler
     /**
      * @var
      */
+    private $dispatcher;
+
+    /**
+     * @var
+     */
     private $styleManager;
 
     /**
      * StylesFormHandler constructor.
      * @param $styleManager
      */
-    public function __construct($styleManager) {
+    public function __construct($styleManager, $dispatcher) {
         $this->styleManager = $styleManager;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -47,7 +55,13 @@ class StylesFormHandler
         }
 
         if (!empty($data)) {
-            $this->styleManager->deleteStyledImages(array_keys($data));
+            $event = new ImageEvent(NULL, $data);
+            // Dispatch event to delete the original and styled images.
+            $this->dispatcher->dispatch(
+                ImageEvents::STYLE_DELETE_STYLED,
+                $event
+            );
+
         }
 
         return TRUE;
