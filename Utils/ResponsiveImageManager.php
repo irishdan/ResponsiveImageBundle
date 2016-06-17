@@ -82,6 +82,7 @@ class ResponsiveImageManager
             $local_file_policy = empty($this->config['aws_S3']['local_file_policy']) ? 'KEEP_NONE' : $this->config['aws_S3']['local_file_policy'];
             if ($local_file_policy !== 'KEEP_ALL') {
                 foreach ($this->images as $key => $pathArray) {
+                    dump($pathArray);
                     $this->system->deleteFile($pathArray[0]);
                 }
             }

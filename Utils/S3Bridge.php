@@ -133,7 +133,6 @@ class S3Bridge
     {
         $this->getClient();
         $commands = array();
-        dump($paths);
         foreach ($this->paths as $path => $file) {
             $commands[] = $this->s3->getCommand(
                 'PutObject', array(

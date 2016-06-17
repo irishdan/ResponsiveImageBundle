@@ -289,7 +289,6 @@ class StyleManager
         }
         $webPath = $stylePath . '/' . $filename;
         $webPath = $this->prefixPath($webPath, $styleName);
-
         $image->setStyle($webPath);
 
         return $image;

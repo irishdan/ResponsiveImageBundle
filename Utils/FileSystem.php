@@ -257,7 +257,8 @@ class FileSystem
      * @return mixed
      */
     public function fileExists($fileName) {
-        $originalPath = $this->uploadedFilePath($fileName);
+        $originalPath = $this->getStorageDirectory('original', $fileName);
+        // $originalPath = $this->uploadedFilePath($fileName);
         return file_exists($originalPath);
     }
 
