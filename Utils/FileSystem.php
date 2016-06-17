@@ -390,11 +390,13 @@ class FileSystem
      */
     public function getStorageDirectory($operation = 'original', $filename = NULL, $stylename = NULL) {
         // If AWS is not enabled the directory is the image_directory directory
-        if (!empty($this->awsConfig)) {
-            $local_file_policy = $this->awsConfig['local_file_policy'];
+        if (!empty($this->awsConfig) && !empty($this->awsConfig['enabled'])) {
+
+            // $local_file_policy = $this->awsConfig['local_file_policy'];
+            $remote_file_policy = $this->awsConfig['remote_file_policy'];
             switch ($operation) {
                 case 'original':
-                    if ($local_file_policy == 'KEEP_NONE') {
+                    if ($remote_file_policy == 'ALL') {
                         $directory = $this->getTempDirectory();
                     }
                     else {
@@ -402,12 +404,7 @@ class FileSystem
                     }
                     break;
                 case 'styled':
-                    if ($local_file_policy == 'KEEP_ALL') {
-                        $directory = $this->getSystemUploadDirectory();
-                    }
-                    else {
-                        $directory = $this->getTempDirectory();
-                    }
+                    $directory = $this->getTempDirectory();
                     break;
 
                 case 'temporary':

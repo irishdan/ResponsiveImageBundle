@@ -79,13 +79,16 @@ class ResponsiveImageManager
     private function cleanUp() {
         $s3Enabled = $this->s3enabled();
         if ($s3Enabled) {
-            $local_file_policy = empty($this->config['aws_S3']['local_file_policy']) ? 'KEEP_NONE' : $this->config['aws_S3']['local_file_policy'];
-            if ($local_file_policy !== 'KEEP_ALL') {
-                foreach ($this->images as $key => $pathArray) {
-                    dump($pathArray);
-                    $this->system->deleteFile($pathArray[0]);
+            $remote_file_policy = empty($this->config['aws_S3']['remote_file_policy']) ? 'ALL' : $this->config['aws_S3']['remote_file_policy'];
+            if ($remote_file_policy == 'ALL') {
+                if (!empty($this->images[0])) {
+                    unset ($this->images[0]);
                 }
             }
+            foreach ($this->images as $key => $pathArray) {
+                $this->system->deleteFile($pathArray[0]);
+            }
+
         }
     }
 
@@ -126,6 +129,8 @@ class ResponsiveImageManager
      */
     public function createStyledImages(ResponsiveImageInterface $image, $stylename = NULL)
     {
+        // @TODO: Can we change this function to use the ->setIMages method in the same way the delete functionality does.
+
         $filename = $image->getPath();
         $styles = $this->styleManager->getAllStyles();
         if (!empty($filename)) {
@@ -133,6 +138,13 @@ class ResponsiveImageManager
                 $this->createImageDerivative($image, $stylename, TRUE);
             }
         }
+        // Unset the the
+        if ($this->shouldTransferToS3('original')) {
+            if (!empty($this->images[0])) {
+                unset($this->images[0]);
+            }
+        }
+
         // Do the the transfer if required.
         if ($this->shouldTransferToS3('styled')) {
             $this->doS3Transfer();
@@ -200,14 +212,8 @@ class ResponsiveImageManager
             $this->s3->uploadToS3();
         }
 
-        // @TODO: This should be moved to the cleanUp function.
+        // Detel temp files.
         $this->cleanUp();
-        // $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-        // if ($local_file_policy !== 'KEEP_ALL') {
-        //     foreach ($paths as $path => $tree) {
-        //         $this->system->deleteFile($path);
-        //     }
-        // }
     }
 
     /**
