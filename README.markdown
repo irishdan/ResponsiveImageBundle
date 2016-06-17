@@ -77,6 +77,8 @@ The black area will always be cropped out for all image styles. The inner rectan
 There are some combinations of styles dimensions and focus dimensions where its just not possible include the whole focus rectangle. 
 In this case the largest possible portion of the focus rectangle is included.
 
+1: Crop Focus example
+---------------------------
 For example the image below has a crop and focus applied to it using the widget:
 
 <img src="/docs/images/gougou-widget.jpg" />
@@ -89,7 +91,7 @@ If no focus or cropped were applied the images would be like this:
 
 <img src="/docs/images/gougou-nocrop-focus.jpg" />
 
-1: Installation
+2: Installation
 ---------------------------
 
 Clone the bundle repo to your src directory.
@@ -116,7 +118,7 @@ To use AWS the, the AWS PHP sdk is also required.
 }
 ```
 
-2: Enable the Bundle
+3: Enable the Bundle
 -------------------------
 
 Enable the bundle by adding it to the list of registered bundles
@@ -157,7 +159,7 @@ responsive_image:
 ```
 
 
-3: Configuration
+4: Configuration
 ---------------------------
 
 All of the available configuration:
@@ -235,7 +237,7 @@ Most Browsers do not yet support the <picture> tag. Therefore a polyfil is neede
 and is also included in the bundle at Resources/public/js/vendor/picturefill.js.
 
 
-4: Usage
+5: Usage
 ---------------------------
 
 For image objects you can use your own entity, as long as it implements the ResponsiveImageInterface
