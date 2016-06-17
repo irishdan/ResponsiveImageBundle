@@ -100,7 +100,7 @@ class S3Bridge
     public function removeFromS3()
     {
         $this->getClient();
-
+        dump($this->paths);
         $objects = [];
         foreach ($this->paths as $path => $file) {
             $objects[] = ['Key' => $this->directory . $file];
@@ -133,7 +133,7 @@ class S3Bridge
     {
         $this->getClient();
         $commands = array();
-
+        dump($paths);
         foreach ($this->paths as $path => $file) {
             $commands[] = $this->s3->getCommand(
                 'PutObject', array(

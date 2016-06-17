@@ -156,7 +156,16 @@ class ResponsiveImageManager
             $this->system->deleteFile($paths[0]);
 
             // @TODO: Remove from S3.
-            $this->s3->removeFromS3();
+            // @TODO: Check if we should remove.
+            $paths = [];
+            foreach ($this->images as $style => $locations) {
+                $paths[$locations[0]] = $locations[1];
+            }
+
+            if (!empty($paths)) {
+                $this->s3->setPaths($paths);
+                $this->s3->removeFromS3();
+            }
         }
     }
 
@@ -191,12 +200,13 @@ class ResponsiveImageManager
         }
 
         // @TODO: This should be moved to the cleanUp function.
-        $local_file_policy = $this->config['aws_s3']['local_file_policy'];
-        if ($local_file_policy !== 'KEEP_ALL') {
-            foreach ($paths as $path => $tree) {
-                $this->system->deleteFile($path);
-            }
-        }
+        $this->cleanUp();
+        // $local_file_policy = $this->config['aws_s3']['local_file_policy'];
+        // if ($local_file_policy !== 'KEEP_ALL') {
+        //     foreach ($paths as $path => $tree) {
+        //         $this->system->deleteFile($path);
+        //     }
+        // }
     }
 
     /**
@@ -306,14 +316,6 @@ class ResponsiveImageManager
     }
 
     /**
-     * @param ResponsiveImageInterface $image
-     */
-    public function transferSingleImageToS3(ResponsiveImageInterface $image) {
-        $this->findSourceFile($image);
-        $this->doS3Transfer();
-    }
-
-    /**
      * Uploads an image file
      *
      * @param ResponsiveImageInterface $image
@@ -325,7 +327,8 @@ class ResponsiveImageManager
 
         // Transfer to S3 if needed.
         if ($this->shouldTransferToS3('original')) {
-            $this->transferSingleImageToS3($image);
+            $this->setImages($image, TRUE, FALSE);
+            $this->doS3Transfer();
         }
 
         $this->images = array();
@@ -334,6 +337,8 @@ class ResponsiveImageManager
     }
 
     /**
+     *
+     *
      * @param $image
      * @param bool $original
      * @param bool $styled

@@ -77,6 +77,17 @@ The black area will always be cropped out for all image styles. The inner rectan
 There are some combinations of styles dimensions and focus dimensions where its just not possible include the whole focus rectangle. 
 In this case the largest possible portion of the focus rectangle is included.
 
+For example the image below has a crop and focus applied to it using the widget:
+
+<img src="/docs/images/gougou-widget.jpg" />
+
+Images that have been cropped and scaled with various styles might look like this:
+
+<img src="/docs/images/gougou-focus-cropped.jpg" />
+
+If no focus or cropped were applied the images would be like this:
+
+<img src="/docs/images/gougou-nocrop-focus.jpg" />
 
 1: Installation
 ---------------------------
@@ -224,7 +235,7 @@ Most Browsers do not yet support the <picture> tag. Therefore a polyfil is neede
 and is also included in the bundle at Resources/public/js/vendor/picturefill.js.
 
 
-4:Usage
+4: Usage
 ---------------------------
 
 For image objects you can use your own entity, as long as it implements the ResponsiveImageInterface
