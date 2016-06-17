@@ -93,29 +93,33 @@ class ResponsiveImageManager
     }
 
     /**
-     * Creates a single styled image for an image object.
+     * Creates styled images for an image object.
+     * Handles generation from the controller or the form.
      *
      * @param $imageObject
      * @param $styleName
      * @return mixed
      */
-    public function createImageDerivative($imageObject, $styleName)
+    public function createImageDerivative($imageObject, $styleName = NULL)
     {
-        $system = $this->system;
-        $filename = $imageObject->getPath();
-
-        // Where's the original file? AWS or local?
-        // If AWS fetch the file and store in temp directory if there is one, set $this->sourceFetched.
-        $filePath = $this->findSourceFile($imageObject);
-
-        $stylePath = $system->getStorageDirectory('styled', NULL, $styleName);
-        $style = $this->styleManager->getStyle($styleName);
+        $paths = $this->images;
+        $original = $paths[0];
+        $filePath = $original[0];
         $crop = empty($imageObject) ? null : $imageObject->getCropCoordinates();
-        $image = $this->imager->createImage($filePath, $stylePath, $style, $crop);
 
-        // Store this here for postprocessing.
-        $styleTree = $system->getStyleTree($styleName);
-        $this->images[$styleName] = [$stylePath . $filename, $styleTree . '/' . $filename];
+        if (!empty($styleName)) {
+            // $paths = [];
+            $paths = [$styleName => $paths[$styleName]];
+        }
+        else {
+            unset($paths[0]);
+        }
+
+        foreach ($paths as $styleKey => $files) {
+            $style = $this->styleManager->getStyle($styleKey);
+            $stylePath = $this->system->getStorageDirectory('styled', NULL, $styleKey);
+            $image = $this->imager->createImage($filePath, $stylePath, $style, $crop);
+        }
 
         return $image;
     }
@@ -129,21 +133,16 @@ class ResponsiveImageManager
      */
     public function createStyledImages(ResponsiveImageInterface $image, $stylename = NULL)
     {
-        // @TODO: Can we change this function to use the ->setIMages method in the same way the delete functionality does.
+        $this->setImages($image);
+        $image = $this->createImageDerivative($image, $stylename);
 
-        $filename = $image->getPath();
-        $styles = $this->styleManager->getAllStyles();
-        if (!empty($filename)) {
-            foreach ($styles as $stylename => $style) {
-                $this->createImageDerivative($image, $stylename, TRUE);
-            }
-        }
-        // Unset the the
-        if ($this->shouldTransferToS3('original')) {
-            if (!empty($this->images[0])) {
-                unset($this->images[0]);
-            }
-        }
+        // $filename = $image->getPath();
+        // $styles = $this->styleManager->getAllStyles();
+        // if (!empty($filename)) {
+        //     foreach ($styles as $stylename => $style) {
+        //         $this->createImageDerivative($image, $stylename);
+        //     }
+        // }
 
         // Do the the transfer if required.
         if ($this->shouldTransferToS3('styled')) {
@@ -152,6 +151,8 @@ class ResponsiveImageManager
 
         // Cleanup any temp files.
         $this->cleanUp();
+
+        return $image;
     }
 
     /**
@@ -261,11 +262,11 @@ class ResponsiveImageManager
      * @param $stylename
      * @return ResponsiveImageInterface
      */
-    public function setImageStyle(ResponsiveImageInterface $image, $stylename)
-    {
-        $this->styleManager->setImageStyle($image, $stylename);
-        return $image;
-    }
+    // public function setImageStyle(ResponsiveImageInterface $image, $stylename)
+    // {
+    //     $this->styleManager->setImageStyle($image, $stylename);
+    //     return $image;
+    // }
 
     /**
      * Sets the picture set for image rendering.
@@ -364,7 +365,6 @@ class ResponsiveImageManager
             foreach ($styles as $stylename => $style) {
                 $stylePath = $this->system->getStorageDirectory('styled', NULL, $stylename);
                 $styleTree = $this->system->getStyleTree($stylename);
-
                 $this->images[$stylename] = [$stylePath . $filename, $styleTree . '/' . $filename];
             }
         }
