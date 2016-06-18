@@ -130,22 +130,20 @@ class ResponsiveImageManager
      *
      * @param ResponsiveImageInterface $image
      * @paran string $stylename
+     * @return image
      */
     public function createStyledImages(ResponsiveImageInterface $image, $stylename = NULL)
     {
         $this->setImages($image);
         $image = $this->createImageDerivative($image, $stylename);
 
-        // $filename = $image->getPath();
-        // $styles = $this->styleManager->getAllStyles();
-        // if (!empty($filename)) {
-        //     foreach ($styles as $stylename => $style) {
-        //         $this->createImageDerivative($image, $stylename);
-        //     }
-        // }
-
         // Do the the transfer if required.
         if ($this->shouldTransferToS3('styled')) {
+            if (!$this->shouldTransferToS3('original')) {
+                if (!empty($this->images[0])) {
+                    unset($this->images[0]);
+                }
+            }
             $this->doS3Transfer();
         }
 
@@ -207,13 +205,12 @@ class ResponsiveImageManager
         foreach ($this->images as $style => $locations) {
             $paths[$locations[0]] = $locations[1];
         }
-
         if (!empty($paths)) {
             $this->s3->setPaths($paths);
             $this->s3->uploadToS3();
         }
 
-        // Detel temp files.
+        // Delete temp files.
         $this->cleanUp();
     }
 

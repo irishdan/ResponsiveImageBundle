@@ -208,8 +208,6 @@ class StyleManager
             return FALSE;
         }
         else {
-            // var_dump($stylename);
-            // var_dump($this->styles[$stylename]);
             return $this->styles[$stylename];
         }
     }

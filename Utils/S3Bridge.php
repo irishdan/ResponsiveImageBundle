@@ -100,7 +100,6 @@ class S3Bridge
     public function removeFromS3()
     {
         $this->getClient();
-        dump($this->paths);
         $objects = [];
         foreach ($this->paths as $path => $file) {
             $objects[] = ['Key' => $this->directory . $file];
@@ -152,11 +151,14 @@ class S3Bridge
             try {
                 $result = $promise->wait();
             } catch (AwsException $e) {
-                // handle the error.
+                // @TODO: Handle the error.
             }
         }
     }
 
+    /**
+     * @return array
+     */
     public function listImages() {
         $images = [];
         $this->getClient();

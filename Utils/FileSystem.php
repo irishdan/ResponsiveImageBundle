@@ -81,7 +81,6 @@ class FileSystem
         // Set the temp directory if aws is enabled.
         if (!empty($imageConfigs['aws_s3'])) {
             if (!empty($imageConfigs['aws_s3']['enabled'])) {
-                dump($imageConfigs);
                 $this->awsConfig = $imageConfigs['aws_s3'];
                 if (!empty($this->awsConfig['temp_directory'])) {
                     $this->tempDirectory = $symfonyDir . '/' . $this->awsConfig['temp_directory'];
