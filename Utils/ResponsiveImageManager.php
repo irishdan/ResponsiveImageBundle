@@ -3,10 +3,6 @@
 namespace ResponsiveImageBundle\Utils;
 
 /**
- * Class ImageManager
- * @package ResponsiveImageBundle\Utils
- */
-/**
  * Class ResponsiveImageManager
  * @package ResponsiveImageBundle\Utils
  */
@@ -24,16 +20,6 @@ class ResponsiveImageManager
 
     /**
      * @var array
-     *
-     * 0 => [
-     *     0 => 'Acutal/path/to/the/file',
-     *     1 => documents/filename.jpg
-     * ]
-     * 'full => [
-     *     0 => 'Acutal/path/to/the/file',
-     *     1 => docuaments/styles/full/filename.jpg
-     * ]
-     *
      */
     private $images = [];
 
@@ -100,7 +86,7 @@ class ResponsiveImageManager
      * @param $styleName
      * @return mixed
      */
-    public function createImageDerivative($imageObject, $styleName = NULL)
+    private function createImageDerivative($imageObject, $styleName = NULL)
     {
         $paths = $this->images;
         $original = $paths[0];
@@ -138,8 +124,8 @@ class ResponsiveImageManager
         $image = $this->createImageDerivative($image, $stylename);
 
         // Do the the transfer if required.
-        if ($this->shouldTransferToS3('styled')) {
-            if (!$this->shouldTransferToS3('original')) {
+        if ($this->belongsOnS3('styled')) {
+            if (!$this->belongsOnS3('original')) {
                 if (!empty($this->images[0])) {
                     unset($this->images[0]);
                 }
@@ -163,17 +149,15 @@ class ResponsiveImageManager
     public function deleteImageFiles(ResponsiveImageInterface $image, $deleteOriginal = TRUE, $deleteStyled = TRUE) {
         // Create an array of images to work,
         $this->setImages($image, $deleteOriginal, $deleteStyled);
+
+        // Delete the local files.
         foreach ($this->images as $paths) {
-            // Delete the local files.
             $this->system->deleteFile($paths[0]);
+        }
 
-            // @TODO: Remove from S3.
-            // @TODO: Check if we should remove.
-            $paths = [];
-            foreach ($this->images as $style => $locations) {
-                $paths[$locations[0]] = $locations[1];
-            }
-
+        // Delete S3 files.
+        if ($this->belongsOnS3()) {
+            $paths = $this->getS3ObjectKeys();
             if (!empty($paths)) {
                 $this->s3->setPaths($paths);
                 $this->s3->removeFromS3();
@@ -188,6 +172,7 @@ class ResponsiveImageManager
      */
     public function deleteStyleFiles(array $styles)
     {
+        // @TODO: Implement this.
         if (empty($styles)) {
             // Delete all styled files.
         }
@@ -199,12 +184,9 @@ class ResponsiveImageManager
     /**
      * Transfer files in the $images array to the configured S3 bucket.
      */
-    public function doS3Transfer()
+    private function doS3Transfer()
     {
-        $paths = [];
-        foreach ($this->images as $style => $locations) {
-            $paths[$locations[0]] = $locations[1];
-        }
+        $paths = $this->getS3ObjectKeys();
         if (!empty($paths)) {
             $this->s3->setPaths($paths);
             $this->s3->uploadToS3();
@@ -215,12 +197,24 @@ class ResponsiveImageManager
     }
 
     /**
+     * Returns an array of keys and locations for S3 transfers.
+     */
+    private function getS3ObjectKeys() {
+        $keys = [];
+        foreach ($this->images as $style => $locations) {
+            $keys[$locations[0]] = $locations[1];
+        }
+
+        return $keys;
+    }
+
+    /**
      * Returns the location fo the original source file and fetches if it's stored remotely.
      *
      * @param $image
      * @return string
      */
-    public function findSourceFile($image) {
+    private function findSourceFile($image) {
         $filename = $image->getPath();
         $fetchFromS3 = FALSE;
         if (!empty($this->images[0])) {
@@ -231,15 +225,12 @@ class ResponsiveImageManager
             $directory = $this->system->getStorageDirectory('original');
             $path = $directory . $filename;
             
-            // @TODO: This check only checks the uploads directory.
+            // Check if the file exists on the server.
             if (!$this->system->fileExists($filename)) {
                 $fetchFromS3 =  TRUE;
             }
-
-            // @TODO: This 'tree' thing is used a lot and would be useful as a function.
             $tree = $this->system->getUploadsDir() . '/' . $filename;
-
-            // If the policy was set to keep no files, the original should be downloaded from s3.
+            // If the policy was set to keep no files locally, then original should be downloaded from s3.
             if (!empty($fetchFromS3)) {
                 $s3key = empty($this->config['aws_s3']['directory']) ? $tree :  $this->config['aws_s3']['directory'] . '/' . $tree;
                 $this->system->directoryExists($directory , TRUE);
@@ -253,29 +244,15 @@ class ResponsiveImageManager
     }
 
     /**
-     * Sets the image style for image rendering
-     *
-     * @param ResponsiveImageInterface $image
-     * @param $stylename
-     * @return ResponsiveImageInterface
+     * @return bool
      */
-    // public function setImageStyle(ResponsiveImageInterface $image, $stylename)
-    // {
-    //     $this->styleManager->setImageStyle($image, $stylename);
-    //     return $image;
-    // }
+    private function s3enabled() {
+        $enabled = FALSE;
+        if (!empty($this->config['aws_s3'])) {
+            $enabled = empty($this->config['aws_s3']['enabled']) ? FALSE : TRUE;
+        }
 
-    /**
-     * Sets the picture set for image rendering.
-     *
-     * @param ResponsiveImageInterface $image
-     * @param $pictureSet
-     * @return ResponsiveImageInterface
-     */
-    public function setPictureSet(ResponsiveImageInterface $image, $pictureSet)
-    {
-        $this->styleManager->setPictureImage($image, $pictureSet);
-        return $image;
+        return $enabled;
     }
 
     /**
@@ -284,7 +261,7 @@ class ResponsiveImageManager
      * @Param string
      * @return bool
      */
-    private function shouldTransferToS3($imageType = 'styled')
+    private function belongsOnS3($imageType = 'styled')
     {
         $enabled = $this->s3enabled();
         if ($enabled) {
@@ -309,40 +286,7 @@ class ResponsiveImageManager
     }
 
     /**
-     * @return bool
-     */
-    private function s3enabled() {
-        $enabled = FALSE;
-        if (!empty($this->config['aws_s3'])) {
-            $enabled = empty($this->config['aws_s3']['enabled']) ? FALSE : TRUE;
-        }
-
-        return $enabled;
-    }
-
-    /**
-     * Uploads an image file
-     *
-     * @param ResponsiveImageInterface $image
-     * @return ResponsiveImageInterface
-     */
-    public function uploadImage(ResponsiveImageInterface $image)
-    {
-        $image = $this->uploader->upload($image);
-
-        // Transfer to S3 if needed.
-        if ($this->shouldTransferToS3('original')) {
-            $this->setImages($image, TRUE, FALSE);
-            $this->doS3Transfer();
-        }
-
-        $this->images = array();
-
-        return $image;
-    }
-
-    /**
-     *
+     * Builds an array of image paths needed for image creation. deletion and transferring.
      *
      * @param $image
      * @param bool $original
@@ -365,5 +309,51 @@ class ResponsiveImageManager
                 $this->images[$stylename] = [$stylePath . $filename, $styleTree . '/' . $filename];
             }
         }
+    }
+
+    /**
+     * Sets the image style for image rendering.
+     *
+     * @param ResponsiveImageInterface $image
+     * @param $styleName
+     * @return ResponsiveImageInterface
+     */
+    public function setImageStyle(ResponsiveImageInterface $image, $styleName) {
+        $this->styleManager->setImageStyle($image, $styleName);
+        return $image;
+    }
+
+    /**
+     * Sets the picture set for image rendering.
+     *
+     * @param ResponsiveImageInterface $image
+     * @param $pictureSet
+     * @return ResponsiveImageInterface
+     */
+    public function setPictureSet(ResponsiveImageInterface $image, $pictureSet)
+    {
+        $this->styleManager->setPictureImage($image, $pictureSet);
+        return $image;
+    }
+
+    /**
+     * Uploads an image file
+     *
+     * @param ResponsiveImageInterface $image
+     * @return ResponsiveImageInterface
+     */
+    public function uploadImage(ResponsiveImageInterface $image)
+    {
+        $image = $this->uploader->upload($image);
+
+        // Transfer to S3 if needed.
+        if ($this->belongsOnS3('original')) {
+            $this->setImages($image, TRUE, FALSE);
+            $this->doS3Transfer();
+        }
+
+        $this->images = array();
+
+        return $image;
     }
 }
