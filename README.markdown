@@ -1,10 +1,17 @@
 # ResponsiveImageBundle
 
-For those familiar with Drupal, this bundle combines Drupal's image styles, picture module's and image field focus module's functionality 
-into a single bundle.
+The ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped) in Symfony3. 
 
-For those not familiar with Drupal, this bundle allows you to easily configure image formats and generate styled images and responsive images. For example an image format called 'thumbnail'
-can easily be created in config.yml like so: 
+Features include:
+
+- Image objects are stored via Doctrine ORM
+- Handles uploading images to a configurable directory or an s3 bucket. 
+- Allows for images styles to be defined in configuration.
+- Allows breakpoints and pictures sets to be configured
+- Handles creation of styled images on the fly (as they are viewed) or viw events listeners
+- Includes a widget to define an images crop and focus areas giving art direction to styled images.
+
+Image styles can be defined easily:
 
 ```
 thumbnail:
@@ -69,6 +76,9 @@ The generated picture element would be like:
 </picture>
 ```
 
+1: Crop Focus
+---------------------------
+
 A custom formType is included which creates a 'crop and focus widget'. This widget allows users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
 
 <img src="/docs/images/cropfocuswidget.jpg" />
@@ -77,8 +87,6 @@ The black area will always be cropped out for all image styles. The inner rectan
 There are some combinations of styles dimensions and focus dimensions where its just not possible include the whole focus rectangle. 
 In this case the largest possible portion of the focus rectangle is included.
 
-1: Crop Focus example
----------------------------
 For example the image below has a crop and focus applied to it using the widget:
 
 <img src="/docs/images/gougou-widget.jpg" />
@@ -167,7 +175,7 @@ All of the available configuration:
 responsive_image:
     debug: FALSE                        # If true debug info is printed on generated images
     image_compression: 80               # The compression quality of the generated images
-    image_directory:                    # '%uploads_directory%' # The directory where uploaded images are saved
+    image_directory: 'uploads/images'   # '%uploads_directory%' # The directory where uploaded images are saved
     image_styles_directory: 'styles'    # The directory within the uploads directory where generated images are saved
     image_entity_class: [ 'ResponsiveImageBundle:Image' ] # The image entity
     image_driver: gd                    # The php image library
@@ -217,20 +225,19 @@ responsive_image:
                 width: 300
                 height: 500
     crop_focus_widget:                  # Crop focus widget settings
-            include_js_css: TRUE        # If true widget js css is included in the field html. Otherwise add it manually.
-            display_coordinates: TRUE   # Toggles between a text field or hidden field.
+        include_js_css: TRUE        # If true widget js css is included in the field html. Otherwise add it manually.
+        display_coordinates: TRUE   # Toggles between a text field or hidden field.
     aws_s3:
-            enabled: TRUE               # Enable or disable AWS support
-            local_file_policy: NONE      # NONE ALL ORIGINAL
-            move_to_bucket: ALL         # ALL STYLED_ONLY
-            temp_directory: '/tmp'      # NULL
-            protocol: 'http'            # The protocol used for S3 images 'http' or 'https'
-            bucket: 'bucketname'        # The S3 bucket name
-            region: 'eu-west-1'         # The S3 region
-            version: 'latest'           # The sdk version
-            directory: 'buck-folder'    # The directory top store images on the S3 bucket
-            access_key_id: KEY_ID
-            secret_access_key: ACCESS_SECRET
+        enabled: FALSE
+        remote_file_policy: STYLED_ONLY # STYLED_ONLY, ALL
+        temp_directory: 'tmp/' # will be created within the symfony directory
+        protocol: 'http'
+        bucket: 'bucket_name'
+        region: 'eu-west-1'
+        version: 'latest'
+        directory: 'directory_name'
+        access_key_id: KEY_ID
+        secret_access_key: ACCESS_SECRET
 ```
 
 Most Browsers do not yet support the <picture> tag. Therefore a polyfil is needed. This is available here http://scottjehl.github.io/picturefill
@@ -246,7 +253,7 @@ ResponsiveImageBundle\Utils\ResponsiveImageInterface.
 ```
 There's also a working image object included, Image.php, that you can use directly or modify.
 ```
-ResponsiveImageBundle\Entity\Image.php
+ResponsiveImageBundle\Entity\ResponsiveImage.php
 ```
 
 When creating a new image the responsive_image.uploader service handles uploading and saving the image file to the server.
@@ -256,8 +263,9 @@ $this->get('responsive_image.uploader')->upload($image);
 
 To generate a styled image tag, simply set the image style using the responsive_image.style_manager service.
 ```
-$this->get('responsive_image.style_manager')->setImageStyle($image, 'thumb');
+$this->get('responsive_image')->setImageStyle($image, 'thumb');
 ```
+
 Or you can simply use the setStyle method on the $image object directly. In your template file, printing invokes the _toString method to generate the img tag.
 
 ```
@@ -266,14 +274,10 @@ Or you can simply use the setStyle method on the $image object directly. In your
 
 To generate a picture element the style manager service is used.
 ```
-$this->get('responsive_image.style_manager')->generatePictureImage($image, 'thumb_picture');
+$this->get('responsive_image')->setPictureSet($image, 'thumb_picture');
 ```
 Again, printing the object will generate the picture element html. If the style and the picture properties are both set the picture takes precedence.
 
-After editing an image it may be useful to delete all of the styled images so that they will be regenerated.
-In your CRUD logic:
-```
-$this->get('responsive_image.style_manager')->deleteImageFile($image->getPath());
 ```
 
 To set the crop and focus areas of an image in your edit form use the the CropFocusType in the form builder.
@@ -281,11 +285,39 @@ To set the crop and focus areas of an image in your edit form use the the CropFo
 $form->add('crop_coordinates', CropFocusType::class, array(
     'data' => $image
 ));
+```
 
-// Despatch event to any listeners.
-$event = new ImageEvent($imageObject, $style);
+If not using AWS are generated on the fly if an image url is visited the and the styled file is not present. Visiting the url below will generate the image the first time.
+On subsequent visits the file is served.
+
+www.example.com/uploads/images/styles/thumb/example.jpg
+
+note: 'uploads/images' can be set as image_directory in your configuration and 'styles' can be set as image_styles_directory in your configuration.
+
+Events listeners are provided to allow image generation with your CRUD logic. 
+For example if you wanted to generate all of the styled images after an edit form is submitted, you could use an event dispatcher:
+
+```
+// Dispatch style generate event to the listeners.
+$event = new ImageEvent($image);
 $this->dispatcher->dispatch(
-    ImageEvents::IMAGE_GENERATED,
+    ImageEvents::IMAGE_GENERATE_STYLED,
     $event
 );
+```
+
+Available listeners are:
+```
+// Generate styled images.
+IMAGE_GENERATE_STYLED = 'responsive_image.image_generate_styled';
+
+// Delete original and styled images for a given image object.
+IMAGE_DELETE_ALL = 'responsive_image.image_delete_all';
+
+//Delete original and styled images for a given image object.
+IMAGE_DELETE_ORIGINAL = 'responsive_image.image_delete_original';
+
+// Delete styled images for a given image object.
+IMAGE_DELETE_STYLED = 'responsive_image.image_delete_styled';
+
 ```

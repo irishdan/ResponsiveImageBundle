@@ -172,12 +172,12 @@ class ResponsiveImageManager
      */
     public function deleteStyleFiles(array $styles)
     {
-        // @TODO: Implement this.
+        // @TODO: at yet implemented.
         if (empty($styles)) {
             // Delete all styled files.
         }
         else {
-            // Delete files for the given files.
+            // Delete files for the given style.
         }
     }
 
