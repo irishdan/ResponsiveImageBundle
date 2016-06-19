@@ -278,8 +278,6 @@ $this->get('responsive_image')->setPictureSet($image, 'thumb_picture');
 ```
 Again, printing the object will generate the picture element html. If the style and the picture properties are both set the picture takes precedence.
 
-```
-
 To set the crop and focus areas of an image in your edit form use the the CropFocusType in the form builder.
 ```
 $form->add('crop_coordinates', CropFocusType::class, array(
