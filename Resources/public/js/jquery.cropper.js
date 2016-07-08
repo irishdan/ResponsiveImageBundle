@@ -72,7 +72,6 @@
 
                 // Initialize the image
                 this.$image = $(object);
-
                 // Initialize an image holder
                 this.$holder = $('<div></div>')
                     .css({
@@ -778,6 +777,6 @@
     };
 }) (jQuery);
 
-jQuery(document).ready(function($) {
-    $('.crop-focus-image img').imageCrop();
+jQuery(window).load(function($) {
+    jQuery('.crop-focus-image img').imageCrop();
 });

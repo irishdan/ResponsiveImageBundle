@@ -132,6 +132,7 @@ class ImageMaker
         $this->styleData['effect'] =  empty($style['effect']) ? null : $style['effect'];
         $this->styleData['width'] =  empty($style['width']) ? null : $style['width'];
         $this->styleData['height'] =  empty($style['height']) ? null : $style['height'];
+        $this->styleData['greyscale'] =  empty($style['greyscale']) ? null : $style['greyscale'];
     }
 
     /**
@@ -231,6 +232,11 @@ class ImageMaker
                     $constraint->upsize();
                 });
                 break;
+        }
+
+        // Do greyscale.
+        if (!empty($this->styleData['greyscale'])) {
+            $this->img->greyscale();
         }
 
         // Add debug info.

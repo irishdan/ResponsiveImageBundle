@@ -177,7 +177,7 @@ responsive_image:
     image_compression: 80               # The compression quality of the generated images
     image_directory: 'uploads/images'   # '%uploads_directory%' # The directory where uploaded images are saved
     image_styles_directory: 'styles'    # The directory within the uploads directory where generated images are saved
-    image_entity_class: [ 'ResponsiveImageBundle:Image' ] # The image entity
+    image_entity_class: [ 'ResponsiveImageBundle:ResponsiveImage' ] # The image entity
     image_driver: gd                    # The php image library
     breakpoints:                        # Breakpoint definitions
         base: 'min-width: 0px'
