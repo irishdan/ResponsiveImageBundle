@@ -1,6 +1,6 @@
 # ResponsiveImageBundle
 
-The ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped) in Symfony3. 
+The ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped, greyscale) in Symfony3. 
 
 Features include:
 
@@ -43,6 +43,7 @@ thumb_picture:
         effect: crop
         width: 300
         height: 600
+        greyscale: TRUE
     mobile:
         effect: crop
         width: 480
