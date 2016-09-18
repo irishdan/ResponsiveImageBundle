@@ -73,7 +73,7 @@ The generated picture element would be like:
     <source srcset="/uploads/documents/styles/thumb_picture-tablet/example.jpg" media="(min-width: 480px)">
     <source srcset="/uploads/documents/styles/thumb_picture-mobile/example.jpg" media="(min-width: 300px)">
     <source srcset="/uploads/documents/styles/thumb_picture-base/example.jpg" media="(min-width: 0px)">
-    <img srcset="/uploads/documents/styles/thumb_picture-base/example.jpg">
+    <img srcset="/uploads/documents/styles/thumb_picture-base/example.jpg" alt="Your alt text" title="Your title">
 </picture>
 ```
 

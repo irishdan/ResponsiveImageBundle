@@ -156,7 +156,10 @@ class StyleManager
      */
     public function setPictureImage(ResponsiveImageInterface $image, $pictureSetName) {
         $filename = $image->getPath();
-        $picture = $this->pictureTag($pictureSetName, $filename);
+        $alt = $image->getAlt();
+        $title = $image->getTitle();
+
+        $picture = $this->pictureTag($pictureSetName, $filename, $alt, $alt, $title);
         $image->setPicture($picture);
 
         return $image;
@@ -232,7 +235,7 @@ class StyleManager
      * @param $filename
      * @return string
      */
-    public function pictureTag($pictureSetName, $filename) {
+    public function pictureTag($pictureSetName, $filename, $alt = '', $title = '') {
         if (!empty($this->pictureSets[$pictureSetName])) {
             $set = $this->pictureSets[$pictureSetName];
 
@@ -250,7 +253,7 @@ class StyleManager
                 $picture .= '<source srcset="' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
             }
 
-            $picture .= '<img srcset="' . $path . '">';
+            $picture .= '<img srcset="' . $path . '" alt="'. $alt .' " title="'. $title .'">';
             $picture .= '</picture>';
 
             return $picture;
@@ -271,7 +274,7 @@ class StyleManager
         if (!empty($this->pictureSets[$pictureSetName])) {
             $set = $this->pictureSets[$pictureSetName];
             $css = '';
-            foreach (array_reverse($set) as $break => $style) {
+            foreach ($set as $break => $style) {
                 if (is_array($style)) {
                     $stylename = $pictureSetName . '-' . $break;
                 } else {
@@ -281,11 +284,11 @@ class StyleManager
                 $path = $styles_directory . '/' . $stylename . '/' . $filename;
                 $path = $this->prefixPath($path, $stylename);
 
-                $css .= '@media( ' . $this->breakpoints[$break] . ') {';
-                $css .= $selector . ' {';
-                $css .= 'background-image: url(' . $path . ');';
-                $css .= '}';
-                $css .= '}';
+                $css .= "@media( " . $this->breakpoints[$break] . ") {\n";
+                $css .= $selector . " {\n";
+                $css .= "background-image: url(" . $path . ");\n";
+                $css .= "}\n";
+                $css .= "}\n";
             }
 
             return $css;
