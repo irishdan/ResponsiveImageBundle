@@ -263,12 +263,19 @@ $this->get('responsive_image.uploader')->upload($image);
 ```
 The easiest way tot generate styled images is to use the twig extensions in your templates.
 ```
-{{ styled_image(image, 'project_full') }}
-{{ picture_image(image, 'thumb_picture') }}
+{{ styled_image(image, 'image_style_name') }}
+{{ picture_image(image, 'picture_set_name') }}
 ```
+You can also generate background image css with media queries for each brak point in a picture set.
+```
+<style>
+   {{ background_reponsive_image(content.article.imageField.image, 'picture_set_name', '#header') }}
+</style>
+```
+
 To generate a styled image tag elsewhere, simply set the image style using the responsive_image.style_manager service.
 ```
-$this->get('responsive_image')->setImageStyle($image, 'thumb');
+$this->get('responsive_image')->setImageStyle($image, 'image_style_name');
 ```
 Or you can simply use the setStyle method on the $image object directly. In your template file, printing invokes the _toString method to generate the img tag.
 
@@ -278,7 +285,7 @@ Or you can simply use the setStyle method on the $image object directly. In your
 
 To generate a picture element the style manager service is used.
 ```
-$this->get('responsive_image')->setPictureSet($image, 'thumb_picture');
+$this->get('responsive_image')->setPictureSet($image, 'picture_set_name');
 ```
 Again, printing the object will generate the picture element html. If the style and the picture properties are both set the picture takes precedence.
 

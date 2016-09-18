@@ -11,6 +11,10 @@ namespace ResponsiveImageBundle\Utils;
  * Class StyleManager
  * @package ResponsiveImageBundle\Utils
  */
+/**
+ * Class StyleManager
+ * @package ResponsiveImageBundle\Utils
+ */
 class StyleManager
 {
     /**
@@ -128,10 +132,18 @@ class StyleManager
         return !empty($style);
     }
 
+    /**
+     * Generate background image CSS with media queries.
+     *
+     * @param ResponsiveImageInterface $image
+     * @param $pictureSetName
+     * @param $selector
+     * @return string
+     */
     public function createBackgroundImageCSS(ResponsiveImageInterface $image, $pictureSetName, $selector) {
         $filename = $image->getPath();
         $css = $this->css($pictureSetName, $filename, $selector);
-        dump($css);
+
         return $css;
     }
 
@@ -258,7 +270,6 @@ class StyleManager
     public function css($pictureSetName, $filename, $selector) {
         if (!empty($this->pictureSets[$pictureSetName])) {
             $set = $this->pictureSets[$pictureSetName];
-            dump($set);
             $css = '';
             foreach (array_reverse($set) as $break => $style) {
                 if (is_array($style)) {
@@ -275,12 +286,7 @@ class StyleManager
                 $css .= 'background-image: url(' . $path . ');';
                 $css .= '}';
                 $css .= '}';
-
-                // $picture .= '<source srcset="' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
             }
-
-            // $picture .= '<img srcset="' . $path . '">';
-            // $picture .= '</picture>';
 
             return $css;
         }
