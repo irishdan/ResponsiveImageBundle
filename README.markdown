@@ -261,12 +261,15 @@ When creating a new image the responsive_image.uploader service handles uploadin
 ```
 $this->get('responsive_image.uploader')->upload($image);
 ```
-
-To generate a styled image tag, simply set the image style using the responsive_image.style_manager service.
+The easiest way tot generate styled images is to use the twig extensions in your templates.
+```
+{{ styled_image(image, 'project_full') }}
+{{ picture_image(image, 'thumb_picture') }}
+```
+To generate a styled image tag elsewhere, simply set the image style using the responsive_image.style_manager service.
 ```
 $this->get('responsive_image')->setImageStyle($image, 'thumb');
 ```
-
 Or you can simply use the setStyle method on the $image object directly. In your template file, printing invokes the _toString method to generate the img tag.
 
 ```

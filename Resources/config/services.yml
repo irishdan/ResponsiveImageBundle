@@ -69,3 +69,11 @@ services:
       arguments: [ '%responsive_image', '@responsive_image' ]
       tags:
           - { name: kernel.event_listener, event: responsive_image.style_delete_all, method: styleDeleteAll }
+
+  # Twig extensions
+  responsive_image.twig_extension:
+      class: ResponsiveImageBundle\Twig\ResponsiveImageExtension
+      public: false
+      arguments: [ '@responsive_image' ]
+      tags:
+          - { name: twig.extension }
