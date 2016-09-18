@@ -6,6 +6,10 @@ namespace ResponsiveImageBundle\Utils;
  * Class ResponsiveImageManager
  * @package ResponsiveImageBundle\Utils
  */
+/**
+ * Class ResponsiveImageManager
+ * @package ResponsiveImageBundle\Utils
+ */
 class ResponsiveImageManager
 {
     /**
@@ -286,7 +290,19 @@ class ResponsiveImageManager
     }
 
     /**
-     * Builds an array of image paths needed for image creation. deletion and transferring.
+     * Generates CSS for a background image with media queries.
+     *
+     * @param ResponsiveImageInterface $image
+     * @param $pictureSet
+     * @param $selector
+     * @return string
+     */
+    public function createCSS(ResponsiveImageInterface $image, $pictureSet, $selector) {
+        return $this->styleManager->createBackgroundImageCSS($image, $pictureSet, $selector);
+    }
+
+    /**
+     * Builds an array of image paths needed for image creation, deletion and transferring.
      *
      * @param $image
      * @param bool $original

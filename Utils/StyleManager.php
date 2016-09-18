@@ -88,37 +88,6 @@ class StyleManager
         }
     }
 
-    // public function createPathsArray($filename) {
-    //     // @TODO: This is similar to another function.
-    //     $styles = $this->getAllStyles();
-    //     $systemLocation = $this->fileSystem->uploadedFilePath($filename);
-    //     $styledLocation = $this->fileSystem->uploadedFileWebPath($filename);
-//
-    //     // Add the original file to the array.
-    //     $paths = [$systemLocation => $styledLocation];
-//
-    //     foreach ($styles as $stylename => $style) {
-    //         $systemLocation = $this->fileSystem->styleFilePath($stylename, $filename);
-    //         $styledLocation = $this->fileSystem->styledFileWebPath($stylename, $filename);
-//
-    //         $paths[$systemLocation] = $styledLocation;
-    //     }
-//
-    //     return $paths;
-    // }
-
-    /**
-     * @param $filename
-     */
-    // public function deleteImageStyledFiles($filename) {
-    //     // For all styles append the style to the filename eg 'stylename/filename.jpg';
-    //     foreach ($this->styles as $styleName => $styleData) {
-    //         $styles_path = $this->fileSystem->getSystemStylesPath();
-    //         $path = $styles_path . '/' . $styleName . '/' . $filename;
-    //         $this->fileSystem->deleteFile($path);
-    //     }
-    // }
-
     /**
      * Deletes a file.
      *
@@ -157,6 +126,13 @@ class StyleManager
         $style = $this->getStyle($styleName);
 
         return !empty($style);
+    }
+
+    public function createBackgroundImageCSS(ResponsiveImageInterface $image, $pictureSetName, $selector) {
+        $filename = $image->getPath();
+        $css = $this->css($pictureSetName, $filename, $selector);
+        dump($css);
+        return $css;
     }
 
     /**
@@ -269,6 +245,47 @@ class StyleManager
         }
         else {
             return FALSE;
+        }
+    }
+
+    /**
+     * Generates a picture tag for a given picture set and filename.
+     *
+     * @param $pictureSetName
+     * @param $filename
+     * @return string
+     */
+    public function css($pictureSetName, $filename, $selector) {
+        if (!empty($this->pictureSets[$pictureSetName])) {
+            $set = $this->pictureSets[$pictureSetName];
+            dump($set);
+            $css = '';
+            foreach (array_reverse($set) as $break => $style) {
+                if (is_array($style)) {
+                    $stylename = $pictureSetName . '-' . $break;
+                } else {
+                    $stylename = $style;
+                }
+                $styles_directory = $this->fileSystem->getStylesDir();
+                $path = $styles_directory . '/' . $stylename . '/' . $filename;
+                $path = $this->prefixPath($path, $stylename);
+
+                $css .= '@media( ' . $this->breakpoints[$break] . ') {';
+                $css .= $selector . ' {';
+                $css .= 'background-image: url(' . $path . ');';
+                $css .= '}';
+                $css .= '}';
+
+                // $picture .= '<source srcset="' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
+            }
+
+            // $picture .= '<img srcset="' . $path . '">';
+            // $picture .= '</picture>';
+
+            return $css;
+        }
+        else {
+            return '';
         }
     }
 
