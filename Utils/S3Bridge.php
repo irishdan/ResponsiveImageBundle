@@ -2,7 +2,6 @@
 
 namespace ResponsiveImageBundle\Utils;
 
-
 use Aws\CommandPool;
 use Aws\Exception\AwsException;
 use Aws\S3\S3Client;
@@ -162,15 +161,20 @@ class S3Bridge
     public function listImages() {
         $images = [];
         $this->getClient();
-        
-        $iterator = $this->s3->getIterator('ListObjects', array(
-            'Bucket' => $this->bucket
-        ));
 
-        foreach ($iterator as $object) {
-            $images[] = $object;
+        try {
+            $iterator = $this->s3->getIterator('ListObjects', array(
+                'Bucket' => $this->bucket
+            ));
+
+            foreach ($iterator as $object) {
+                $images[] = $object;
+            }
         }
-    
+        catch (AwsException $exception) {
+            // @TODO: Improve exceptions handling.
+        }
+
         return $images;
     }
 }
