@@ -20,7 +20,7 @@ class ResponsiveImageExtension extends Extension
         foreach ($configs as $subConfig) {
             $config = array_merge($config, $subConfig);
         }
-        
+
         // Set as parameter for easier passing.
         $container->setParameter('responsive_image', $config);
 
@@ -33,15 +33,18 @@ class ResponsiveImageExtension extends Extension
 
         // Add the cropfocus.html.twig to form resources
         $resources = $container->getParameter('twig.form.resources');
-        $container->setParameter('twig.form.resources', array_merge(array('ResponsiveImageBundle::cropfocus.html.twig'), $resources));
+        $container->setParameter('twig.form.resources', array_merge(['ResponsiveImageBundle::cropfocus.html.twig'], $resources));
 
         // Add the aws_s3 config as a parameter.
-        $container->setParameter('responsive_image.aws_s3', $config['aws_s3']);
+        if (!empty($config['aws_s3'])) {
+            $container->setParameter('responsive_image.aws_s3', $config['aws_s3']);
+        }
     }
 
-    protected function buildPathPrefix($config) {
+    protected function buildPathPrefix($config)
+    {
         $pathPrefix = null;
-        if (!empty($config['aws_s3']['enabled'])) {
+        if (!empty($config['aws_s3']) && !empty($config['aws_s3']['enabled'])) {
             $url = $config['aws_s3']['protocol'] . '://s3-' . $config['aws_s3']['region'] . '.amazonaws.com/' . $config['aws_s3']['bucket'] . '/' . $config['aws_s3']['directory'] . '/';
             $pathPrefix = $url;
         }
