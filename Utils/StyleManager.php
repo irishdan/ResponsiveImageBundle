@@ -4,15 +4,6 @@ namespace ResponsiveImageBundle\Utils;
 
 /**
  * Class StyleManager
- *
- * @package ResponsiveImageBundle\Utils
- */
-/**
- * Class StyleManager
- * @package ResponsiveImageBundle\Utils
- */
-/**
- * Class StyleManager
  * @package ResponsiveImageBundle\Utils
  */
 class StyleManager

@@ -2,16 +2,13 @@
 
 namespace ResponsiveImageBundle\Tests\Utils;
 
-
+use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 use ResponsiveImageBundle\Utils\FileSystem;
 use ResponsiveImageBundle\Utils\Uploader;
 
-class UploaderTest extends \PHPUnit_Framework_TestCase
+class UploaderTest extends ResponsiveImageTestCase
 {
-    use \ResponsiveImageBundle\Tests\Traits\Parameters;
-
     private $fileSystem;
-
     private $uploader;
 
     public function setUp()

@@ -1,12 +1,14 @@
 <?php
 
-namespace ResponsiveImageBundle\Tests\Traits;
+namespace ResponsiveImageBundle\Tests;
+
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 
-trait Parameters
+class ResponsiveImageTestCase extends WebTestCase
 {
-    public $parameters = [
-        'debug' => FALSE,
+    protected $parameters = [
+        'debug' => false,
         'image_compression' => 90,
         'image_directory' => 'uploads/documents',
         'image_driver' => 'gd',

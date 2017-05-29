@@ -3,24 +3,20 @@
 namespace ResponsiveImageBundle\Tests\Utils;
 
 
-use ResponsiveImageBundle\Entity\Image;
+use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+use ResponsiveImageBundle\Tests\Entity\TestImage;
 use ResponsiveImageBundle\Utils\FileSystem;
 use ResponsiveImageBundle\Utils\StyleManager;
 
-class StyleManagerTest extends \PHPUnit_Framework_TestCase
+class StyleManagerTest extends ResponsiveImageTestCase
 {
-    
-    use \ResponsiveImageBundle\Tests\Traits\Parameters;
-    
     private $image;
-
     private $fileSystem;
-
     private $styleManager;
 
     public function setUp()
     {
-        $this->image = new Image();
+        $this->image = new TestImage();
         $this->image->setPath('dummy.jpg');
 
         $this->fileSystem = New FileSystem('root_directory', $this->parameters);
@@ -30,7 +26,7 @@ class StyleManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testSetImageStyle()
     {
-        $this->image = $this->styleManager->setImageStyle($this->image , 'thumb');
+        $this->image = $this->styleManager->setImageStyle($this->image, 'thumb');
 
         // Assert that the web path is correct
         $expectedPath = '/uploads/documents/styles/thumb/dummy.jpg';
@@ -75,20 +71,22 @@ class StyleManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $style);
     }
 
-    public function prefixProvider() {
-        return array(
-            array('path', 'style', 'http://prefix.', 'ALL', 'http://prefix.path'),
-            array('path', 'style', '', 'ALL', '/path'),
-            array('path', 'style', '', 'STYLED_ONLY', '/path'),
-            array('path', NULL, 'http://prefix.', 'ALL', 'http://prefix.path'),
-            array('path', NULL, 'http://prefix.', 'STYLED_ONLY', '/path'),
-        );
+    public function prefixProvider()
+    {
+        return [
+            ['path', 'style', 'http://prefix.', 'ALL', 'http://prefix.path'],
+            ['path', 'style', '', 'ALL', '/path'],
+            ['path', 'style', '', 'STYLED_ONLY', '/path'],
+            ['path', null, 'http://prefix.', 'ALL', 'http://prefix.path'],
+            ['path', null, 'http://prefix.', 'STYLED_ONLY', '/path'],
+        ];
     }
 
     /**
      * @dataProvider prefixProvider
      */
-    public function testPrefixPath($path, $style, $prefix, $policy, $expected) {
+    public function testPrefixPath($path, $style, $prefix, $policy, $expected)
+    {
         $this->styleManager->setDisplayPathPrefix($prefix);
         $this->styleManager->setRemoteFilePolicy($policy);
 

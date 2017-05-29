@@ -11,12 +11,16 @@
     ],
     "require": {
         "php": ">=5.6.4",
-        "symfony/framework-bundle": "^3.0"
+        "symfony/framework-bundle": "^3.0",
+        "intervention/image": "^2.3"
     },
     "autoload": {
         "psr-4": {
-            "Irishdan\\ResponsiveImageBundle\\": ""
+            "IrishDan\\ResponsiveImageBundle\\": ""
         }
+    },
+    "suggest": {
+        "aws/aws-sdk-php": "^3.18"
     },
     "config": {
         "sort-packages": true

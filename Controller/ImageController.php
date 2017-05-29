@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * Class ImageController
+ *
  * @package ResponsiveImageBundle\Controller
  */
 class ImageController extends Controller
@@ -38,12 +39,10 @@ class ImageController extends Controller
 
             if (!empty($image)) {
                 $response = new BinaryFileResponse($image);
-            }
-            else {
+            } else {
                 throw $this->createNotFoundException('Derived image could not be created');
             }
-        }
-        else {
+        } else {
             throw $this->createNotFoundException('The file does not exist');
         }
 

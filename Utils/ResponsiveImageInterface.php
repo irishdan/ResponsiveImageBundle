@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Interface ResponsiveImageInterface
+ *
  * @package ResponsiveImageBundle\Utils
  */
 Interface ResponsiveImageInterface
@@ -82,6 +83,8 @@ Interface ResponsiveImageInterface
      */
     public function setStyle($style);
 
+    public function getStyle();
+
     /**
      * @param UploadedFile $file
      * @return mixed
@@ -92,4 +95,8 @@ Interface ResponsiveImageInterface
      * @return mixed
      */
     public function getFile();
+
+    public function getPicture();
+
+    public function setCropCoordinates($cords);
 }
