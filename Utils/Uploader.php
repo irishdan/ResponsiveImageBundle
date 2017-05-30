@@ -10,38 +10,35 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *
  * @package ResponsiveImageBundle\Utils
  */
-class Uploader {
-
+class Uploader
+{
     /**
      * @var array
      */
-    public $allowedTypes = array(
+    public $allowedTypes = [
         'jpg',
         'jpeg',
         'png',
-    );
-
+    ];
     /**
-     * @var FileSystem
+     * @var FileManager
      */
     private $fileSystem;
-
     /**
      * @var
      */
     private $file;
-
     /**
      * @var
      */
-    private $uploadOk = FALSE;
+    private $uploadOk = false;
 
     /**
      * Uploader constructor.
      *
-     * @param FileSystem $system
+     * @param FileManager $system
      */
-    public function __construct(FileSystem $system)
+    public function __construct(FileManager $system)
     {
         $this->fileSystem = $system;
     }
@@ -72,11 +69,12 @@ class Uploader {
      * @param $str
      * @return mixed
      */
-    private function createFilename($str) {
+    private function createFilename($str)
+    {
         // Sanitize and transliterate
         $str = strtolower($str);
         $str = strip_tags($str);
-        $safeName = preg_replace('/[^a-z0-9-_\.]/','', $str);
+        $safeName = preg_replace('/[^a-z0-9-_\.]/', '', $str);
 
         // Create unique filename.
         $i = 1;
@@ -95,11 +93,12 @@ class Uploader {
      * @param $uploadMaxSize
      * @return int
      */
-    public function mToBytes($uploadMaxSize) {
+    public function mToBytes($uploadMaxSize)
+    {
         $uploadMaxSize = trim($uploadMaxSize);
         $last = strtolower($uploadMaxSize[strlen($uploadMaxSize) - 1]);
 
-        switch($last) {
+        switch ($last) {
             case 'g':
                 $uploadMaxSize *= 1024 * 1000 * 1000;
                 break;
@@ -122,14 +121,14 @@ class Uploader {
      * @param $name
      * @return bool
      */
-    private function isUniqueFilename($name) {
+    private function isUniqueFilename($name)
+    {
         $storageDirectory = $this->fileSystem->getStorageDirectory();
         $filePath = $storageDirectory . $name;
         if ($this->fileSystem->directoryExists($filePath)) {
-            return FALSE;
-        }
-        else {
-            return TRUE;
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -138,32 +137,33 @@ class Uploader {
      *
      * @return bool
      */
-    public function isAllowedType() {
+    public function isAllowedType()
+    {
         $extension = $this->getFile()->guessExtension();
         if (in_array($extension, $this->allowedTypes)) {
-            return TRUE;
-        }
-        else {
-            return FALSE;
+            return true;
+        } else {
+            return false;
         }
     }
 
     /**
-     * After uploading, this function checks if the image is valid and if so moves it to an appropriate storage location.
+     * After uploading, this function checks if the image is valid and if so moves it to an appropriate storage
+     * location.
      *
-     * @param ResponsiveImageInterface $image.
+     * @param ResponsiveImageInterface $image .
      * @return ResponsiveImageInterface
      */
     public function upload(ResponsiveImageInterface $image)
     {
         // The file property can be empty if the field is not required.
         if (null === $image->getFile()) {
-            return FALSE;
+            return false;
         }
 
         $this->setFile($image->getFile());
-        $messages = array();
-        $this->uploadOk = TRUE;
+        $messages = [];
+        $this->uploadOk = true;
 
         // Get max file upload in bytes.
         $uploadMaxSize = ini_get('upload_max_filesize');
@@ -171,17 +171,14 @@ class Uploader {
 
         if (!$this->file instanceof UploadedFile && !empty($image->getFile()->getError())) {
             $messages[] = 'Uploaded file should be an instance of \'UploadedFile\'';
-            $this->uploadOk = FALSE;
-        }
-        elseif ($this->file->getSize() > $uploadMaxSize) {
+            $this->uploadOk = false;
+        } elseif ($this->file->getSize() > $uploadMaxSize) {
             $messages[] = sprintf('%s: File size cannot be larger than %s', $this->file->getSize(), $uploadMaxSize);
-            $this->uploadOk = FALSE;
-        }
-        elseif (!$this->isAllowedType()) {
+            $this->uploadOk = false;
+        } elseif (!$this->isAllowedType()) {
             $messages[] = 'File type is not allowed';
-            $this->uploadOk = FALSE;
-        }
-        else {
+            $this->uploadOk = false;
+        } else {
             // Sanitize it at least to avoid any security issues.
             $fileName = $this->file->getClientOriginalName();
             $newFileName = $this->createFilename($fileName);
@@ -208,8 +205,7 @@ class Uploader {
 
         if ($this->uploadOk) {
             return $image;
-        }
-        else {
+        } else {
             throw new FileException($messages[0]);
         }
     }

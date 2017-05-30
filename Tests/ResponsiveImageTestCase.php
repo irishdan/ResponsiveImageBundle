@@ -5,7 +5,7 @@ namespace ResponsiveImageBundle\Tests;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Yaml\Yaml;
 
-class ResponsiveImageTestCase extends WebTestCase
+class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
 {
     private $testKernel;
     private $parameters = [];
@@ -16,6 +16,25 @@ class ResponsiveImageTestCase extends WebTestCase
 
         $this->testKernel = new \AppKernel('test', true);
         $this->testKernel->boot();
+    }
+
+    protected function deleteDirectory($directory)
+    {
+        if (!is_dir($directory)) {
+            throw new \InvalidArgumentException("$directory must be a directory");
+        }
+        if (substr($directory, strlen($directory) - 1, 1) != '/') {
+            $directory .= '/';
+        }
+        $files = glob($directory . '*', GLOB_MARK);
+        foreach ($files as $file) {
+            if (is_dir($file)) {
+                self::deleteDirectory($file);
+            } else {
+                unlink($file);
+            }
+        }
+        rmdir($directory);
     }
 
     protected function getService($serviceName)

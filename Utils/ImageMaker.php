@@ -130,6 +130,14 @@ class ImageMaker
         $this->styleData['greyscale'] = empty($style['greyscale']) ? null : $style['greyscale'];
     }
 
+    public function setImg($source, $driver = 'gd')
+    {
+        if (empty($this->manager)) {
+            $this->manager = new ImageManager(['driver' => $driver]);
+        }
+        $this->img = $this->manager->make($source);
+    }
+
     /**
      * Performs the image manipulation using current style information
      * and user defined crop and focus rectangles.
@@ -142,8 +150,7 @@ class ImageMaker
      */
     public function createImage($source, $destination, array $style = [], $cropFocusCoords = null)
     {
-        $this->manager = new ImageManager(['driver' => $this->driver]);
-        $this->img = $this->manager->make($source);
+        $this->setImg($source, $this->driver);
 
         // Set style data.
         $this->setStyleData($style);
@@ -348,22 +355,19 @@ class ImageMaker
 
     /**
      * Tests if a given offset is valid.
-     * Valid offsets cropped images will include the focus rectangle and will not fall outside of the orginal image.
+     * Valid offsets cropped images will include the focus rectangle and will not fall outside of the original image.
      *
-     * @param $i
+     * @param $point
      * @param $cropLength
      * @param $imageLength
      * @param $focusNear
      * @param $focusFar
      * @return bool
      */
-    public function isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar)
+    public function isInBounds($point, $cropLength, $imageLength, $focusNear, $focusFar)
     {
         $inBounds = false;
-        if ($i + $cropLength <= $imageLength &&
-            $i <= $focusNear &&
-            $i + $cropLength >= $focusFar
-        ) {
+        if ($point + $cropLength <= $imageLength && $point <= $focusNear && $point + $cropLength >= $focusFar) {
             $inBounds = true;
         }
 
