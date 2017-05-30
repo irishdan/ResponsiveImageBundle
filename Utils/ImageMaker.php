@@ -24,10 +24,6 @@ class ImageMaker
      */
     private $debug = false;
     /**
-     * @var array
-     */
-    private $debugData = [];
-    /**
      * @var
      */
     private $driver;
@@ -71,36 +67,6 @@ class ImageMaker
         }
         if (!empty($responsiveImageConfig['image_compression'])) {
             $this->compression = $responsiveImageConfig['image_compression'];
-        }
-    }
-
-    /**
-     *  Adds the data stored in debugData array to the image as text for debugging.
-     */
-    public function addDebugInfo()
-    {
-        $y = 10;
-
-        foreach ($this->debugData as $key => $value) {
-            $x = 10;
-
-            if (!is_array($value)) {
-                $text = $key . ': ' . $value;
-                $this->img->text($text, $x, $y);
-                $y = $y + 10;
-            } else {
-                $text = $key;
-                $this->img->text($text, $x, $y);
-                $y = $y + 10;
-                foreach ($value as $key1 => $value1) {
-                    if (!is_array($value1)) {
-                        $x = 20;
-                        $text = $key1 . ': ' . $value1;
-                        $this->img->text($text, $x, $y);
-                        $y = $y + 10;
-                    }
-                }
-            }
         }
     }
 
@@ -241,11 +207,6 @@ class ImageMaker
             $this->img->greyscale();
         }
 
-        // Add debug info.
-        if (!empty($this->debug) && !empty($this->debugData)) {
-            $this->addDebugInfo();
-        }
-
         return $this->saveImage($destination, $source);
     }
 
@@ -269,27 +230,10 @@ class ImageMaker
         }
     }
 
-    /**
-     * Calculates the offset needed to keep focus rectangle in view with opimal position.
-     *
-     * @param string $axis
-     * @param        $cropLength
-     * @return mixed
-     */
-    public function findFocusOffset($axis = 'x', $cropLength)
+    public function getFocusPointForAccess($axis, $type = 'near')
     {
-        $axis = ucfirst($axis);
-
-        // Get the crop information.
         $cropCoords = $this->getCoordinates('crop');
-        $imageLength = $this->getLength($axis, $cropCoords);
-
-        // Get the focus information.
         $focusCoords = $this->getCoordinates('focus');
-        if (empty($focusCoords)) {
-            // There are no focus coords so image should be cropped from center.
-            return ($imageLength - $cropLength) / 2;
-        }
 
         $cropX1 = $cropCoords[0];
         $cropY1 = $cropCoords[1];
@@ -301,56 +245,107 @@ class ImageMaker
         $focusX2 = $focusCoords[2];
         $focusY2 = $focusCoords[3];
 
+        if ($type == 'near') {
+            $point = ${'focus' . $axis . '1'} - ${'crop' . $axis . '1'};
+        } else {
+            $point = ${'focus' . $axis . '2'} - ${'crop' . $axis . '1'};
+        }
+
+        return $point;
+    }
+
+    /**
+     * Calculates the offset needed to keep focus rectangle in view with opimal position.
+     *
+     * @param string $axis
+     * @param        $cropLength
+     * @return mixed
+     */
+    public function findFocusOffset($axis = 'x', $cropLength)
+    {
+        $axis = ucfirst($axis);
+
+        // Get the crop and focus information,
+        // and the length.
+        $cropCoords = $this->getCoordinates('crop');
+        $focusCoords = $this->getCoordinates('focus');
+        $imageLength = $this->getLength($axis, $cropCoords);
+
+        // If there are no focus coordinates the image should be cropped from center.
+        if (empty($focusCoords)) {
+            return ($imageLength - $cropLength) / 2;
+        }
+
         // Offsetting on either the x or the y axis.
         // Subtract the crop rectangle.
-        $focusNear = ${'focus' . $axis . '1'} - ${'crop' . $axis . '1'};
-        $focusFar = ${'focus' . $axis . '2'} - ${'crop' . $axis . '1'};
+        $focusNear = $this->getFocusPointForAccess($axis, 'near');
+        $focusFar = $this->getFocusPointForAccess($axis, 'far');
+
         $focusLength = $focusFar - $focusNear;
         $focusCenter = round(($focusNear + $focusFar) / 2);
 
-        // Is some cases keeping 100% of the focus rectangle is view is just not possible.
+        // There are two possibilities.
+        // 1: The focus area is longer then the desired crop length.
+        //    In this case we simple center ont he crop area on the the center of the focus area.
+        //    Both sides of the image will be clipped, and both sides of the crop area will be missing a piece.
+        // 2: In most cases the focus rectangle will fit nicely within the crop area.
+        //    We must find the optimal position to crop from.
         $focusType = $focusLength >= $cropLength ? 'in' : 'out';
+
+        // First case.
         if ($focusType == 'in') {
-            // Its not possible to keep focus rectangle fully in view.
-            // In this case center the crop area.
-            $offset = $focusCenter - ($cropLength / 2);
-        } else {
-            // The entire focus rectangle can be preserved.
-            $nearGap = $focusNear;
-            $farGap = $imageLength - $focusFar;
-            $offFactor = $nearGap / $farGap;
+            return $focusCenter - ($cropLength / 2);
+        } // Second case.
+        else {
+            // We will find a range of valid offsets,
+            $validOffsets = $this->getValidOffsets($focusNear, $focusFar, $cropLength, $imageLength);
 
-            // Find the maximum and minimum offset.
-            $maxOffset = $imageLength - $cropLength;
-            $minOffset = 0;
+            // Return the most optimal offset.
+            return $this->getOptimalOffset($validOffsets);
+        }
+    }
 
-            $validOffsets = [];
-            for ($i = $minOffset; $i <= $maxOffset; $i++) {
-                if ($this->isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar)) {
-                    // Need a factor of near / far to compare to offFactor.
-                    // Closest to that wins.
-                    $near = $focusNear - $i;
-                    $far = ($i + $cropLength) - $focusFar;
-                    if ($near != 0 && $far != 0) {
-                        $theShizzleFactor = ($near / $far) / $offFactor;
-                        $theShizzleFactor = abs($theShizzleFactor);
+    public function getOptimalOffset(array $validOffsets)
+    {
+        $offset = 0;
 
-                        $theTest = abs($theShizzleFactor - 1);
-                        $validOffsets[$i] = $theTest;
-                    }
-                }
-            }
-
-            if (!empty($validOffsets)) {
-                asort($validOffsets);
-                $offsets = array_keys($validOffsets);
-                $offset = reset($offsets);
-            } else {
-                $offset = 0;
-            }
+        if (!empty($validOffsets)) {
+            asort($validOffsets);
+            $offsets = array_keys($validOffsets);
+            $offset = reset($offsets);
         }
 
         return $offset;
+    }
+
+    public function getValidOffsets($focusNear, $focusFar, $cropLength, $imageLength)
+    {
+        $nearGap = $focusNear;
+        $farGap = $imageLength - $focusFar;
+        $offFactor = $nearGap / $farGap;
+
+        // Will need the maximum and minimum offset also.
+        $maxOffset = $imageLength - $cropLength;
+        $minOffset = 0;
+
+        $validOffsets = [];
+        for ($i = $minOffset; $i <= $maxOffset; $i++) {
+            if ($this->isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar)) {
+                // Need a factor of near / far to compare to offFactor.
+                // Closest to that wins.
+                $near = $focusNear - $i;
+                $far = ($i + $cropLength) - $focusFar;
+                if ($near != 0 && $far != 0) {
+                    $optimalFactor = ($near / $far) / $offFactor;
+                    $optimalFactor = abs($optimalFactor);
+
+                    $theTest = abs($optimalFactor - 1);
+                    $validOffsets[$i] = $theTest;
+                }
+            }
+        }
+
+        return $validOffsets;
     }
 
     /**

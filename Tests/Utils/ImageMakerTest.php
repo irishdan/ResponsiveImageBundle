@@ -30,6 +30,11 @@ class ImageMakerTest extends ResponsiveImageTestCase
         $this->assertEquals(1894.0, $yLength);
     }
 
+    public function testGetFocusPointForAccess()
+    {
+        // @TODO: Create tests.
+    }
+
     public function testIsInBounds()
     {
         $point = 20;
@@ -41,6 +46,7 @@ class ImageMakerTest extends ResponsiveImageTestCase
         $valid = $this->imager->isInBounds($point, $cropLength, $imageLength, $focusNear, $focusFar);
 
         $this->assertTrue($valid);
+        // @TODO: Add test for out of bounds.
     }
 
     public function testSaveImage()
