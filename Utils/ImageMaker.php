@@ -20,10 +20,6 @@ class ImageMaker
      */
     private $cropCoordinates = [];
     /**
-     * @var bool
-     */
-    private $debug = false;
-    /**
      * @var
      */
     private $driver;
@@ -71,7 +67,7 @@ class ImageMaker
     }
 
     /**
-     * Separates the crop and focus cordinates from the image object and stores them.
+     * Separates the crop and focus coordinates from the image object and stores them.
      *
      * @param $cropFocusCoords
      */
@@ -96,6 +92,13 @@ class ImageMaker
         $this->styleData['greyscale'] = empty($style['greyscale']) ? null : $style['greyscale'];
     }
 
+    protected function scaleImage($width, $height)
+    {
+        $this->img->resize($width, $height, function ($constraint) {
+            $constraint->aspectRatio();
+        });
+    }
+
     public function setImg($source, $driver = 'gd')
     {
         if (empty($this->manager)) {
@@ -117,33 +120,45 @@ class ImageMaker
     public function createImage($source, $destination, array $style = [], $cropFocusCoords = null)
     {
         $this->setImg($source, $this->driver);
-
-        // Set style data.
         $this->setStyleData($style);
 
-        // Set Crop and focus Co-ordinates.
         if (!empty($cropFocusCoords)) {
             $this->setCoordinateGroups($cropFocusCoords);
         }
 
-        if (empty($this->getCoordinates('focus')) || $style['effect'] == 'scale') {
-            $this->doCropRectangle();
-        }
-
         switch ($this->styleData['effect']) {
             case 'scale':
-                // Simply scale the according to style data.
-                $this->img->resize($this->styleData['width'], $this->styleData['height'], function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-
+                // Do the crop rectangle first
+                // then scale the image
+                $this->doCropRectangle();
+                $this->scaleImage($this->styleData['width'], $this->styleData['height']);
                 break;
+
             case 'crop':
-                // For cropped images the least amount of area should be cropped out.
-                // The top and bottom can be cropped, or the left and right sides can be cropped.
-                // To determine which type of cropping should be used, the aspect ratios of the image ($outerAspectRatio)
-                // and the style ($innerAspectRatio) are compared.
-                if (!empty($this->getCoordinates('focus'))) {
+                // If there's no focus rectangle,
+                // just cut out the crop rectangle.
+                if (empty($this->getCoordinates('focus'))) {
+                    $this->doCropRectangle();
+                }
+                // If there is a crop rectangle,
+                // We have the image shape (or crop rectangle),
+                // and we have the the final image style rectangle.
+                // 
+                // The image style shape should be as large as possible so,
+                // there are three possibilities:
+                // 1: The style rectangle fits inside the crop rectangle vertically.
+                //    The sides of the image will be cropped.
+                // 2: The style rectangle fits inside the crop rectangle horizontally.
+                //    The top and bottom of the image will be cropped.
+                // 3: The style rectangle fits inside the crop rectangle exactly.
+                //    no cropping in required
+                //
+                // To determine which type of cropping should be used, the aspect-ratio of the image/crop rectangle ($imageAspectRatio)
+                // and the aspect-ratio of the style ($styleAspectRatio) are compared.
+                // 1: $imageAspectRatio > $styleAspectRatio
+                // 2: $imageAspectRatio < $styleAspectRatio
+                // 3: $imageAspectRatio === $styleAspectRatio
+                else {
                     $doCrop = true;
 
                     $cropCoords = $this->getCoordinates('crop');
@@ -153,32 +168,33 @@ class ImageMaker
                     $styleHeight = $this->styleData['height'];
 
                     // Find out what type of style crop we are dealing with.
-                    $outerAspectRatio = $newWidth / $newHeight;
-                    $innerAspectRatio = $styleWidth / $styleHeight;
+                    $imageAspectRatio = $newWidth / $newHeight;
+                    $styleAspectRatio = $styleWidth / $styleHeight;
 
-                    if ($outerAspectRatio > $innerAspectRatio) {
+                    if ($imageAspectRatio > $styleAspectRatio) {
                         // Inner height is 100% of the outer.
                         // Width is scaled.
                         $cropHeight = $newHeight;
                         $cropYOffset = $cropCoords[1];
+                        $cropWidth = $newHeight * $styleAspectRatio;
 
-                        $cropWidth = $newHeight * $innerAspectRatio;
                         // The X position should be offset to include the focus rectangle.
-
                         $cropXOffset = $this->findFocusOffset('x', $cropWidth);
-                        // The initial crop was not performed so and that to the offset.
+
+                        // The initial crop was not performed so add that to the offset.
                         $cropXOffset = $cropCoords[0] + $cropXOffset;
                     } else {
-                        if ($outerAspectRatio < $innerAspectRatio) {
+                        if ($imageAspectRatio < $styleAspectRatio) {
                             // Inner width is 100% of the outer.
                             // Height is scaled.
                             $cropWidth = $newWidth;
                             $cropXOffset = $cropCoords[0];
+                            $cropHeight = $newWidth / $styleAspectRatio;
 
-                            $cropHeight = $newWidth / $innerAspectRatio;
                             // The Y position should be offset to include the focus rectangle.
                             $cropYOffset = $this->findFocusOffset('y', $cropHeight);
-                            // The initial crop was not performed so and that to the offset.
+
+                            // The initial crop was not performed so aff that to the offset.
                             $cropYOffset = $cropCoords[1] + $cropYOffset;
                         } else {
                             // Aspect ratios match, do nothing.
@@ -199,6 +215,7 @@ class ImageMaker
                 $this->img->fit($this->styleData['width'], $this->styleData['height'], function ($constraint) {
                     $constraint->upsize();
                 });
+
                 break;
         }
 
@@ -255,7 +272,7 @@ class ImageMaker
     }
 
     /**
-     * Calculates the offset needed to keep focus rectangle in view with opimal position.
+     * Calculates the offset needed to keep focus rectangle in view with optimal position.
      *
      * @param string $axis
      * @param        $cropLength
