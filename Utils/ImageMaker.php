@@ -159,8 +159,6 @@ class ImageMaker
                 // 2: $imageAspectRatio < $styleAspectRatio
                 // 3: $imageAspectRatio === $styleAspectRatio
                 else {
-                    $doCrop = true;
-
                     $cropCoords = $this->getCoordinates('crop');
                     $newWidth = $this->getLength('x', $cropCoords);
                     $newHeight = $this->getLength('y', $cropCoords);
@@ -172,43 +170,13 @@ class ImageMaker
                     $styleAspectRatio = $styleWidth / $styleHeight;
 
                     if ($imageAspectRatio > $styleAspectRatio) {
-                        // Inner height is 100% of the outer.
-                        // Width is scaled.
-                        $cropHeight = $newHeight;
-                        $cropYOffset = $cropCoords[1];
-                        $cropWidth = $newHeight * $styleAspectRatio;
-
-                        // The X position should be offset to include the focus rectangle.
-                        $cropXOffset = $this->findFocusOffset('x', $cropWidth);
-
-                        // The initial crop was not performed so add that to the offset.
-                        $cropXOffset = $cropCoords[0] + $cropXOffset;
+                        $axis = 'x';
                     } else {
-                        if ($imageAspectRatio < $styleAspectRatio) {
-                            // Inner width is 100% of the outer.
-                            // Height is scaled.
-                            $cropWidth = $newWidth;
-                            $cropXOffset = $cropCoords[0];
-                            $cropHeight = $newWidth / $styleAspectRatio;
-
-                            // The Y position should be offset to include the focus rectangle.
-                            $cropYOffset = $this->findFocusOffset('y', $cropHeight);
-
-                            // The initial crop was not performed so aff that to the offset.
-                            $cropYOffset = $cropCoords[1] + $cropYOffset;
-                        } else {
-                            // Aspect ratios match, do nothing.
-                            $doCrop = false;
-                        }
+                        $axis = 'y';
                     }
 
-                    if ($doCrop) {
-                        $this->img->crop(
-                            round($cropWidth),
-                            round($cropHeight),
-                            round($cropXOffset),
-                            round($cropYOffset)
-                        );
+                    if (!empty($axis)) {
+                        $this->calculateAxisOffsetAndCrop($axis, $cropCoords, $styleAspectRatio, $newWidth, $newHeight);
                     }
                 }
 
@@ -225,6 +193,40 @@ class ImageMaker
         }
 
         return $this->saveImage($destination, $source);
+    }
+
+    protected function calculateAxisOffsetAndCrop($axis = 'x', $cropCoordinates, $aspectRatio, $newWidth, $newHeight)
+    {
+        // Check axis if not x or y throw invalidExceptionError.
+        if ($axis !== 'x' || $axis !== 'y') {
+            // @TODO: Throw invalid exception.
+        }
+
+        $cropWidth = ($axis == 'y') ? $newWidth : $newHeight * $aspectRatio;
+        $cropHeight = ($axis == 'y') ? $newWidth / $aspectRatio : $newHeight;
+
+        $cropXOffset = ($axis == 'y') ? $cropCoordinates[0] : $this->getFloatingOffset('x', $cropWidth, $cropCoordinates[0]);
+        $cropYOffset = ($axis == 'y') ? $this->getFloatingOffset('y', $cropHeight, $cropCoordinates[1]) : $cropCoordinates[1];
+
+        $this->cropImage($cropWidth, $cropHeight, $cropXOffset, $cropYOffset);
+    }
+
+    protected function getFloatingOffset($axis = 'y', $point, $start)
+    {
+        $offset = $this->findFocusOffset($axis, $point);
+        $offset = $offset + $start;
+
+        return $offset;
+    }
+
+    protected function cropImage($width, $height, $xOffset, $yOffset)
+    {
+        $this->img->crop(
+            round($width),
+            round($height),
+            round($xOffset),
+            round($yOffset)
+        );
     }
 
     /**
