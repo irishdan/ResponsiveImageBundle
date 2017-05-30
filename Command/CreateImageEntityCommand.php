@@ -12,16 +12,8 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 
-class CreateNotificationCommand extends GeneratorCommand
+class CreateImageEntityCommand extends GeneratorCommand
 {
-    private $channels;
-    private $channelTemplates = [];
-
-    public function setEnabledChannels(array $channels)
-    {
-        $this->channels = $channels;
-    }
-
     protected function configure()
     {
         $this
@@ -42,7 +34,7 @@ class CreateNotificationCommand extends GeneratorCommand
         $output->writeln([
             'This command helps you generate a doctrine image entity class',
             '',
-            'First, give the name of the bundle to generate the notification in (eg <comment>AppBundle</comment>)',
+            'First, give the name of the bundle to generate the image in (eg <comment>AppBundle</comment>)',
         ]);
 
         $question = new Question($questionHelper->getQuestion('The bundle name', $input->getOption('bundle')), $input->getOption('bundle'));

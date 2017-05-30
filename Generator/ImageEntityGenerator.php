@@ -31,38 +31,26 @@ class ImageEntityGenerator extends Generator
     public function generate(BundleInterface $bundle, $name)
     {
         $bundleDir = $bundle->getPath();
-        $notificationDir = $bundleDir . '/Notification';
+        $notificationDir = $bundleDir . '/Entity';
         self::mkdir($notificationDir);
 
-        $notificationClassName = $name . 'Notification';
+        $notificationClassName = $name;
         $notificationFile = $notificationDir . '/' . $notificationClassName . '.php';
 
         $parameters = [
             'namespace' => $bundle->getNamespace(),
             'class_name' => $notificationClassName,
             'name' => $name,
+            'table' => strtolower($name), // @TODO: Use the tablize function
         ];
 
         // Build an array of files to be created
         $filesArray = [];
         $filesArray[] = [
-            'notification/Notification.php.twig',
+            'entity/Image.php.twig',
             $notificationFile,
             $parameters,
         ];
-
-        // Generate the templates for each channel.
-        $templateDir = $this->rootDirectory . '/Resources/NotificationBundle/views/' . $name . '/';
-        foreach ($this->channels as $channel) {
-            $channel = explode('_', $channel)[0];
-            $destination = $templateDir . $channel . '.message.html.twig';
-
-            $filesArray[] = [
-                'message/' . $channel . '.message.html.twig',
-                $destination,
-                [],
-            ];
-        }
 
         if (!empty($filesArray)) {
             $this->generateFiles($filesArray);

@@ -6,10 +6,6 @@ namespace ResponsiveImageBundle\Utils;
  * Class ResponsiveImageManager
  * @package ResponsiveImageBundle\Utils
  */
-/**
- * Class ResponsiveImageManager
- * @package ResponsiveImageBundle\Utils
- */
 class ResponsiveImageManager
 {
     /**

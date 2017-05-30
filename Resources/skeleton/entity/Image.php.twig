@@ -1,21 +1,107 @@
 <?php
 
-namespace ResponsiveImageBundle\Tests\Entity;
+namespace {{ namespace }}\Entity;
 
+{% block use_statements %}
 use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+{% endblock use_statements %}
 
-class TestImage implements ResponsiveImageInterface
+{% block class_definition %}
+/**
+ * Class {{ class_name }}
+ *
+ * @package {{ namespace }}\Entity
+ * @ORM\Table(name="{{ table }}")
+ * @ORM\Entity(repositoryClass="ResponsiveImageBundle\Repository\ImageRepository")
+ * @ORM\HasLifecycleCallbacks()
+ */
+class {{ class_name }} implements ResponsiveImageInterface
+{% endblock class_definition %}
 {
-    private $id = 1;
-    private $title = 'Test image';
-    private $path = 'dummy.jpg';
-    private $alt = 'Test image alt text';
-    private $width = 1000;
-    private $height = 1600;
+{% block class_body %}
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255)
+     */
+    private $title;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="alt", type="string", length=255, nullable=true)
+     */
+    private $alt;
+
+    /**
+     * @ORM\Column(name="width", type="integer", nullable=true)
+     */
+    private $width;
+
+    /**
+     * @ORM\Column(name="height", type="integer", nullable=true)
+     */
+    private $height;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="path", type="string", length=255, unique=true)
+     */
+    private $path;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="weight", type="integer", nullable=true)
+     */
+    private $weight;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created", type="datetime")
+     */
+    private $created;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated", type="datetime")
+     */
+    private $updated;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="crop_coordinations", type="string", nullable=true)
+     */
+    private $cropCoordinates;
+
+    /**
+     * @Assert\File(maxSize="6000000")
+     */
     private $file;
-    private $cropCoordinates = '200, 3, 800, 1400:310, 145, 750, 617';
-    private $style;
-    private $picture;
+
+    /**
+     * @var null
+     */
+    private $style = null;
+
+    /**
+     * @var null
+     */
+    public $picture = null;
 
     public function getId()
     {
@@ -64,7 +150,6 @@ class TestImage implements ResponsiveImageInterface
 
     public function getPicture()
     {
-        // TODO: Looks at implementation
         return $this->picture;
     }
 
@@ -104,7 +189,7 @@ class TestImage implements ResponsiveImageInterface
     }
 
     // @TODO: Only used during upload review if needed after move to flysystem
-    public function setFile(\Symfony\Component\HttpFoundation\File\UploadedFile $file)
+    public function setFile(UploadedFile $file)
     {
         $this->file = $file;
     }
@@ -157,4 +242,5 @@ class TestImage implements ResponsiveImageInterface
 
         return $this->picture;
     }
+{% endblock class_body %}
 }

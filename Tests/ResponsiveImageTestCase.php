@@ -4,13 +4,13 @@ namespace ResponsiveImageBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-
 class ResponsiveImageTestCase extends WebTestCase
 {
+    // @TODO: move to config_test.yml
     protected $parameters = [
         'debug' => false,
         'image_compression' => 90,
-        'image_directory' => 'uploads/documents',
+        'image_directory' => 'test/images',
         'image_driver' => 'gd',
         'image_styles_directory' => 'styles',
         'breakpoints' => [
