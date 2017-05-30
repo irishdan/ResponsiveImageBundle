@@ -5,13 +5,14 @@ namespace ResponsiveImageBundle\Tests\Utils;
 
 use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 use ResponsiveImageBundle\Tests\Entity\TestImage;
+use ResponsiveImageBundle\Utils\FileManager;
 use ResponsiveImageBundle\Utils\FileSystem;
 use ResponsiveImageBundle\Utils\StyleManager;
 
 class StyleManagerTest extends ResponsiveImageTestCase
 {
     private $image;
-    private $fileSystem;
+    private $fileManager;
     private $styleManager;
 
     public function setUp()
@@ -19,10 +20,8 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->image = new TestImage();
         $this->image->setPath('dummy.jpg');
 
-        $parameters = $this->getParameters('responsive_image');
-
-        $this->fileSystem = New FileSystem('root_directory', $parameters);
-        $this->styleManager = New StyleManager($this->fileSystem, $parameters);
+        $this->fileManager = $this->getService('responsive_image.file_manager');
+        $this->styleManager = $this->getService('responsive_image.style_manager');
     }
 
     public function testSetImageStyle()
@@ -68,7 +67,9 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->assertTrue(is_array($style));
 
         // Style info.
-        $expected = $this->parameters['image_styles']['thumb'];
+        $parameters = $this->getParameters('responsive_image');
+
+        $expected = $parameters['image_styles']['thumb'];
         $this->assertEquals($expected, $style);
     }
 

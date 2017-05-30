@@ -38,6 +38,8 @@ class ResponsiveImageExtension extends Extension
         // Add the aws_s3 config as a parameter.
         if (!empty($config['aws_s3'])) {
             $container->setParameter('responsive_image.aws_s3', $config['aws_s3']);
+        } else {
+            $container->setParameter('responsive_image.aws_s3', []);
         }
     }
 

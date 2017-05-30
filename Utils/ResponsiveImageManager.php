@@ -229,7 +229,7 @@ class ResponsiveImageManager
             if (!$this->system->fileExists($filename)) {
                 $fetchFromS3 =  TRUE;
             }
-            $tree = $this->system->getUploadsDir() . '/' . $filename;
+            $tree = $this->system->getUploadsDirectory() . '/' . $filename;
             // If the policy was set to keep no files locally, then original should be downloaded from s3.
             if (!empty($fetchFromS3)) {
                 $s3key = empty($this->config['aws_s3']['directory']) ? $tree :  $this->config['aws_s3']['directory'] . '/' . $tree;

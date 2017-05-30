@@ -7,26 +7,26 @@ use Symfony\Component\Yaml\Yaml;
 
 class ResponsiveImageTestCase extends WebTestCase
 {
-    private $kernel;
+    private $testKernel;
     private $parameters = [];
-    private $service;
 
     protected function bootSymfony()
     {
-        require_once __DIR__ . 'AppKernel.php';
+        require_once __DIR__ . '/AppKernel.php';
 
-        $this->kernel = new \AppKernel('test', true);
-        $this->kernel->boot();
+        $this->testKernel = new \AppKernel('test', true);
+        $this->testKernel->boot();
     }
 
-    protected function setService($serviceName)
+    protected function getService($serviceName)
     {
-        if (empty($this->kernel)) {
+        if (empty($this->testKernel)) {
             $this->bootSymfony();
         }
 
-        $container = $this->kernel->getContainer();
-        $this->service = $container->get($serviceName);
+        $container = $this->testKernel->getContainer();
+
+        return $container->get($serviceName);
     }
 
     protected function getParameters($key = '')

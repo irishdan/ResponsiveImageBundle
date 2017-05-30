@@ -1,11 +1,12 @@
 <?php
 
 namespace ResponsiveImageBundle\Utils;
-use Intervention\Image\ImageManager;
 
+use Intervention\Image\ImageManager;
 
 /**
  * Class ImageMaker
+ *
  * @package ResponsiveImageBundle\Utils
  */
 class ImageMaker
@@ -14,47 +15,38 @@ class ImageMaker
      * @var
      */
     private $compression;
-
     /**
      * @var
      */
     private $cropCoordinates = [];
-
     /**
      * @var bool
      */
-    private $debug = FALSE;
-
+    private $debug = false;
     /**
      * @var array
      */
     private $debugData = [];
-
     /**
      * @var
      */
     private $driver;
-
     /**
-     * @var FileSystem
+     * @var FileManager
      */
-    private $fileSystem;
-
+    private $fileManager;
     /**
      * @var
      */
     private $focusCoordinates = [];
-
     /**
      * @var
      */
     private $img;
-
     /**
      * @var
      */
     private $manager;
-
     /**
      * @var array
      */
@@ -63,13 +55,14 @@ class ImageMaker
     /**
      * Imager constructor.
      *
-     * @param FileSystem $system
-     * @param array $responsiveImageConfig
+     * @param FileManager $system
+     * @param array       $responsiveImageConfig
      * @internal param $driver
      * @internal param $compression
      */
-    public function __construct(FileSystem $system, $responsiveImageConfig = []) {
-        $this->fileSystem = $system;
+    public function __construct(FileManager $system, $responsiveImageConfig = [])
+    {
+        $this->fileManager = $system;
         if (!empty($responsiveImageConfig['debug'])) {
             $this->debug = $responsiveImageConfig['debug'];
         }
@@ -77,14 +70,15 @@ class ImageMaker
             $this->driver = $responsiveImageConfig['image_driver'];
         }
         if (!empty($responsiveImageConfig['image_compression'])) {
-            $this->compression =  $responsiveImageConfig['image_compression'];
+            $this->compression = $responsiveImageConfig['image_compression'];
         }
     }
 
     /**
      *  Adds the data stored in debugData array to the image as text for debugging.
      */
-    public function addDebugInfo() {
+    public function addDebugInfo()
+    {
         $y = 10;
 
         foreach ($this->debugData as $key => $value) {
@@ -94,8 +88,7 @@ class ImageMaker
                 $text = $key . ': ' . $value;
                 $this->img->text($text, $x, $y);
                 $y = $y + 10;
-            }
-            else {
+            } else {
                 $text = $key;
                 $this->img->text($text, $x, $y);
                 $y = $y + 10;
@@ -116,7 +109,8 @@ class ImageMaker
      *
      * @param $cropFocusCoords
      */
-    public function setCoordinateGroups($cropFocusCoords) {
+    public function setCoordinateGroups($cropFocusCoords)
+    {
         // x1, y1, x2, y2:x3, y3, x4, y4
         $coordsSets = explode(':', $cropFocusCoords);
         $this->cropCoordinates = explode(', ', $coordsSets[0]);
@@ -128,26 +122,27 @@ class ImageMaker
      *
      * @param array $style
      */
-    public function setStyleData($style = []) {
-        $this->styleData['effect'] =  empty($style['effect']) ? null : $style['effect'];
-        $this->styleData['width'] =  empty($style['width']) ? null : $style['width'];
-        $this->styleData['height'] =  empty($style['height']) ? null : $style['height'];
-        $this->styleData['greyscale'] =  empty($style['greyscale']) ? null : $style['greyscale'];
+    public function setStyleData($style = [])
+    {
+        $this->styleData['effect'] = empty($style['effect']) ? null : $style['effect'];
+        $this->styleData['width'] = empty($style['width']) ? null : $style['width'];
+        $this->styleData['height'] = empty($style['height']) ? null : $style['height'];
+        $this->styleData['greyscale'] = empty($style['greyscale']) ? null : $style['greyscale'];
     }
 
     /**
      * Performs the image manipulation using current style information
      * and user defined crop and focus rectangles.
      *
-     * @param $source
-     * @param $destination
+     * @param       $source
+     * @param       $destination
      * @param array $style
-     * @param null $cropFocusCoords
-     *
+     * @param null  $cropFocusCoords
      * @return string
      */
-    public function createImage($source, $destination, array $style = [], $cropFocusCoords = NULL) {
-        $this->manager = new ImageManager(array('driver' => $this->driver));
+    public function createImage($source, $destination, array $style = [], $cropFocusCoords = null)
+    {
+        $this->manager = new ImageManager(['driver' => $this->driver]);
         $this->img = $this->manager->make($source);
 
         // Set style data.
@@ -162,10 +157,10 @@ class ImageMaker
             $this->doCropRectangle();
         }
 
-        switch($this->styleData['effect']) {
+        switch ($this->styleData['effect']) {
             case 'scale':
                 // Simply scale the according to style data.
-                $this->img->resize($this->styleData['width'], $this->styleData['height'], function($constraint) {
+                $this->img->resize($this->styleData['width'], $this->styleData['height'], function ($constraint) {
                     $constraint->aspectRatio();
                 });
 
@@ -176,17 +171,17 @@ class ImageMaker
                 // To determine which type of cropping should be used, the aspect ratios of the image ($outerAspectRatio)
                 // and the style ($innerAspectRatio) are compared.
                 if (!empty($this->getCoordinates('focus'))) {
-                    $doCrop = TRUE;
+                    $doCrop = true;
 
                     $cropCoords = $this->getCoordinates('crop');
                     $newWidth = $this->getLength('x', $cropCoords);
                     $newHeight = $this->getLength('y', $cropCoords);
-                    $styleWidth =  $this->styleData['width'];
+                    $styleWidth = $this->styleData['width'];
                     $styleHeight = $this->styleData['height'];
 
                     // Find out what type of style crop we are dealing with.
-                    $outerAspectRatio = $newWidth/$newHeight;
-                    $innerAspectRatio = $styleWidth/$styleHeight;
+                    $outerAspectRatio = $newWidth / $newHeight;
+                    $innerAspectRatio = $styleWidth / $styleHeight;
 
                     if ($outerAspectRatio > $innerAspectRatio) {
                         // Inner height is 100% of the outer.
@@ -199,23 +194,23 @@ class ImageMaker
 
                         $cropXOffset = $this->findFocusOffset('x', $cropWidth);
                         // The initial crop was not performed so and that to the offset.
-                        $cropXOffset =$cropCoords[0] + $cropXOffset;
-                    }
-                    else if ($outerAspectRatio < $innerAspectRatio) {
-                        // Inner width is 100% of the outer.
-                        // Height is scaled.
-                        $cropWidth = $newWidth;
-                        $cropXOffset = $cropCoords[0];
+                        $cropXOffset = $cropCoords[0] + $cropXOffset;
+                    } else {
+                        if ($outerAspectRatio < $innerAspectRatio) {
+                            // Inner width is 100% of the outer.
+                            // Height is scaled.
+                            $cropWidth = $newWidth;
+                            $cropXOffset = $cropCoords[0];
 
-                        $cropHeight = $newWidth / $innerAspectRatio;
-                        // The Y position should be offset to include the focus rectangle.
-                        $cropYOffset = $this->findFocusOffset('y', $cropHeight);
-                        // The initial crop was not performed so and that to the offset.
-                        $cropYOffset = $cropCoords[1] + $cropYOffset;
-                    }
-                    else {
-                        // Aspect ratios match, do nothing.
-                        $doCrop = FALSE;
+                            $cropHeight = $newWidth / $innerAspectRatio;
+                            // The Y position should be offset to include the focus rectangle.
+                            $cropYOffset = $this->findFocusOffset('y', $cropHeight);
+                            // The initial crop was not performed so and that to the offset.
+                            $cropYOffset = $cropCoords[1] + $cropYOffset;
+                        } else {
+                            // Aspect ratios match, do nothing.
+                            $doCrop = false;
+                        }
                     }
 
                     if ($doCrop) {
@@ -250,7 +245,8 @@ class ImageMaker
     /**
      *  Crops out defined crop area.
      */
-    public function doCropRectangle() {
+    public function doCropRectangle()
+    {
         // Get the offset.
         $cropCoords = $this->getCoordinates('crop');
         if (!empty($cropCoords)) {
@@ -270,10 +266,11 @@ class ImageMaker
      * Calculates the offset needed to keep focus rectangle in view with opimal position.
      *
      * @param string $axis
-     * @param $cropLength
+     * @param        $cropLength
      * @return mixed
      */
-    public function findFocusOffset($axis = 'x', $cropLength) {
+    public function findFocusOffset($axis = 'x', $cropLength)
+    {
         $axis = ucfirst($axis);
 
         // Get the crop information.
@@ -310,8 +307,7 @@ class ImageMaker
             // Its not possible to keep focus rectangle fully in view.
             // In this case center the crop area.
             $offset = $focusCenter - ($cropLength / 2);
-        }
-        else {
+        } else {
             // The entire focus rectangle can be preserved.
             $nearGap = $focusNear;
             $farGap = $imageLength - $focusFar;
@@ -326,7 +322,7 @@ class ImageMaker
                 if ($this->isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar)) {
                     // Need a factor of near / far to compare to offFactor.
                     // Closest to that wins.
-                    $near =  $focusNear - $i;
+                    $near = $focusNear - $i;
                     $far = ($i + $cropLength) - $focusFar;
                     if ($near != 0 && $far != 0) {
                         $theShizzleFactor = ($near / $far) / $offFactor;
@@ -342,8 +338,7 @@ class ImageMaker
                 asort($validOffsets);
                 $offsets = array_keys($validOffsets);
                 $offset = reset($offsets);
-            }
-            else {
+            } else {
                 $offset = 0;
             }
         }
@@ -362,13 +357,16 @@ class ImageMaker
      * @param $focusFar
      * @return bool
      */
-    public function isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar) {
-        $inBounds = FALSE;
+    public function isInBounds($i, $cropLength, $imageLength, $focusNear, $focusFar)
+    {
+        $inBounds = false;
         if ($i + $cropLength <= $imageLength &&
             $i <= $focusNear &&
-            $i + $cropLength >= $focusFar) {
-            $inBounds = TRUE;
+            $i + $cropLength >= $focusFar
+        ) {
+            $inBounds = true;
         }
+
         return $inBounds;
     }
 
@@ -378,7 +376,8 @@ class ImageMaker
      * @param string $type
      * @return mixed
      */
-    public function getCoordinates($type = 'crop') {
+    public function getCoordinates($type = 'crop')
+    {
         $coords = $this->{$type . 'Coordinates'};
         $valid = 0;
         foreach ($coords as $id => $coord) {
@@ -389,7 +388,7 @@ class ImageMaker
         }
 
         if ($valid == 0) {
-            return FALSE;
+            return false;
         }
 
         return $coords;
@@ -399,33 +398,35 @@ class ImageMaker
      * Gets vertical or horizontal length between two coordinates (x, y, x2, y2).
      *
      * @param string $type
-     * @param array $coords
+     * @param array  $coords
      * @return mixed
      */
-    public function getLength($type = 'x', array $coords) {
+    public function getLength($type = 'x', array $coords)
+    {
         $type = strtolower($type);
         if ($type == 'x') {
             return $coords[2] - $coords[0];
-        }
-        else {
+        } else {
             return $coords[3] - $coords[1];
         }
     }
 
     /**
      * Saves the new image.
-     * @TODO: Allow for the desintation to be overridden, eg for temporary directory.
      *
      * @param $destination
      * @param $source
      * @return string
      */
-    public function saveImage($destination, $source) {
+    public function saveImage($destination, $source)
+    {
+        // @TODO: Allow for the destination to be overridden, eg for temporary directory.
+
         // Check if directory exists and if not create it.
-        $this->fileSystem->directoryExists($destination, TRUE);
+        $this->fileManager->directoryExists($destination, true);
 
         // Get the file name from source path.
-        $filename = $this->fileSystem->getFilenameFromPath($source);
+        $filename = $this->fileManager->getFilenameFromPath($source);
         $fullPath = $destination . '/' . $filename;
 
         $this->img->save($fullPath, $this->compression);
