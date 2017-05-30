@@ -19,9 +19,10 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->image = new TestImage();
         $this->image->setPath('dummy.jpg');
 
-        $this->fileSystem = New FileSystem('root_directory', $this->parameters);
+        $parameters = $this->getParameters('responsive_image');
 
-        $this->styleManager = New StyleManager($this->fileSystem, $this->parameters);
+        $this->fileSystem = New FileSystem('root_directory', $parameters);
+        $this->styleManager = New StyleManager($this->fileSystem, $parameters);
     }
 
     public function testSetImageStyle()

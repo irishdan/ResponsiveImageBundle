@@ -3,37 +3,43 @@
 namespace ResponsiveImageBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Yaml\Yaml;
 
 class ResponsiveImageTestCase extends WebTestCase
 {
-    // @TODO: move to config_test.yml
-    protected $parameters = [
-        'debug' => false,
-        'image_compression' => 90,
-        'image_directory' => 'test/images',
-        'image_driver' => 'gd',
-        'image_styles_directory' => 'styles',
-        'breakpoints' => [
-            'base' => 'min-width: 0px',
-            'desktop' => 'min-width: 1100px',
-            'tv' => 'min-width: 1800px',
-        ],
-        'image_styles' => [
-            'thumb' => [
-                'effect' => 'crop',
-                'width' => 180,
-                'height' => 180,
-            ],
-        ],
-        'picture_sets' => [
-            'thumb_picture' => [
-                'base' => [
-                    'effect' => 'crop',
-                    'width' => 300,
-                    'height' => 600,
-                ],
-                'desktop' => 'thumb',
-            ],
-        ],
-    ];
+    private $kernel;
+    private $parameters = [];
+    private $service;
+
+    protected function bootSymfony()
+    {
+        require_once __DIR__ . 'AppKernel.php';
+
+        $this->kernel = new \AppKernel('test', true);
+        $this->kernel->boot();
+    }
+
+    protected function setService($serviceName)
+    {
+        if (empty($this->kernel)) {
+            $this->bootSymfony();
+        }
+
+        $container = $this->kernel->getContainer();
+        $this->service = $container->get($serviceName);
+    }
+
+    protected function getParameters($key = '')
+    {
+        if (empty($this->parameters)) {
+            $path = __DIR__ . '/config_test.yml';
+            $this->parameters = Yaml::parse(file_get_contents($path));
+        }
+
+        if (empty($key)) {
+            return $this->parameters;
+        }
+
+        return empty($this->parameters[$key]) ? [] : $this->parameters[$key];
+    }
 }

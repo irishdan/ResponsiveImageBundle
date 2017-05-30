@@ -1,3 +1,18 @@
+imports:
+    - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
+
+parameters:
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: responsive_image_test
+    database_user: root
+    database_password: root
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    secret: 'secretThing'
+
 framework:
     test: ~
     session:
@@ -11,3 +26,26 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+responsive_image:
+    debug: false
+    image_compression: 90
+    image_directory: 'test/images'
+    image_driver: 'gd'
+    image_styles_directory: 'styles'
+    breakpoints:
+        base: 'min-width: 0px'
+        desktop: 'min-width: 1100px'
+        tv: 'min-width: 1800px'
+    image_styles:
+        thumb:
+            effect: 'crop'
+            width: 180
+            height: 180
+    picture_sets:
+        thumb_picture:
+            base:
+                effect:  'crop'
+                width:  300
+                height:  600
+            desktop: 'thumb'
