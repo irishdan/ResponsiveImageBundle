@@ -99,7 +99,7 @@ class ImageMaker
         });
     }
 
-    public function setImage($source, $driver = 'gd')
+    protected function setImage($source, $driver = 'gd')
     {
         if (empty($this->manager)) {
             $this->manager = new ImageManager(['driver' => $driver]);
@@ -120,50 +120,56 @@ class ImageMaker
     public function createImage($source, $destination, array $style = [], $cropFocusCoords = null)
     {
         $this->setImage($source, $this->driver);
-        $this->setStyleData($style);
+
+        if (!empty($style)) {
+            // @TODO: What should happen if not style is set?? perhaps just copy the file??
+            $this->setStyleData($style);
+        }
 
         if (!empty($cropFocusCoords)) {
             $this->setCoordinateGroups($cropFocusCoords);
         }
 
-        switch ($this->styleData['effect']) {
-            case 'scale':
-                // Do the crop rectangle first
-                // then scale the image
-                $this->doCropRectangle();
-                $this->scaleImage($this->styleData['width'], $this->styleData['height']);
-                break;
-
-            case 'crop':
-                // If there's no focus rectangle,
-                // just cut out the crop rectangle.
-                if (empty($this->getCoordinates('focus'))) {
+        if (!empty($this->styleData)) {
+            switch ($this->styleData['effect']) {
+                case 'scale':
+                    // Do the crop rectangle first
+                    // then scale the image
                     $this->doCropRectangle();
-                } else {
+                    $this->scaleImage($this->styleData['width'], $this->styleData['height']);
+                    break;
 
-                    $focusOffsetFinder = new FocusCropDataCalculator(
-                        $this->getCoordinates('crop'),
-                        $this->getCoordinates('focus'),
-                        $this->styleData['width'],
-                        $this->styleData['height']
-                    );
+                case 'crop':
+                    // If there's no focus rectangle,
+                    // just cut out the crop rectangle.
+                    if (empty($this->getCoordinates('focus'))) {
+                        $this->doCropRectangle();
+                    } else {
 
-                    $focusCropData = $focusOffsetFinder->getFocusCropData();
-                    if (!empty($focusCropData)) {
-                        $this->cropImage($focusCropData['width'], $focusCropData['height'], $focusCropData['x'], $focusCropData['y']);
+                        $focusOffsetFinder = new FocusCropDataCalculator(
+                            $this->getCoordinates('crop'),
+                            $this->getCoordinates('focus'),
+                            $this->styleData['width'],
+                            $this->styleData['height']
+                        );
+
+                        $focusCropData = $focusOffsetFinder->getFocusCropData();
+                        if (!empty($focusCropData)) {
+                            $this->cropImage($focusCropData['width'], $focusCropData['height'], $focusCropData['x'], $focusCropData['y']);
+                        }
                     }
-                }
 
-                $this->img->fit($this->styleData['width'], $this->styleData['height'], function ($constraint) {
-                    $constraint->upsize();
-                });
+                    $this->img->fit($this->styleData['width'], $this->styleData['height'], function ($constraint) {
+                        $constraint->upsize();
+                    });
 
-                break;
-        }
+                    break;
+            }
 
-        // Do greyscale.
-        if (!empty($this->styleData['greyscale'])) {
-            $this->img->greyscale();
+            // Do greyscale.
+            if (!empty($this->styleData['greyscale'])) {
+                $this->img->greyscale();
+            }
         }
 
         return $this->saveImage($destination, $source);
@@ -182,7 +188,7 @@ class ImageMaker
     /**
      *  Crops out defined crop area.
      */
-    public function doCropRectangle()
+    protected function doCropRectangle()
     {
         // Get the offset.
         $cropCoords = $this->getCoordinates('crop');
@@ -205,7 +211,7 @@ class ImageMaker
      * @param string $type
      * @return mixed
      */
-    public function getCoordinates($type = 'crop')
+    protected function getCoordinates($type = 'crop')
     {
         $coords = $this->{$type . 'Coordinates'};
         $valid = 0;
@@ -230,10 +236,8 @@ class ImageMaker
      * @param $source
      * @return string
      */
-    public function saveImage($destination, $source)
+    protected function saveImage($destination, $source)
     {
-        // @TODO: Allow for the destination to be overridden, eg for temporary directory.
-
         // Check if directory exists and if not create it.
         $this->fileManager->directoryExists($destination, true);
 

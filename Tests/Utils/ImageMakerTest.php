@@ -7,55 +7,83 @@ use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 class ImageMakerTest extends ResponsiveImageTestCase
 {
     private $imager;
+    private $testImagePath = __DIR__ . '/../Resources/dummy.jpg';
     private $generatedDirectory = __DIR__ . '/../Resources/generated/';
-    private $coordinates = [
-        '280, 396, 3719, 2290:1977, 1311, 2470, 1717',
-    ];
+    private $coordinates = '100, 100, 900, 900:400, 500, 700, 800';
 
     public function setUp()
     {
         $this->imager = $this->getService('responsive_image.image_maker');
     }
 
-    // public function testGetLength()
-    // {
-    //     $this->imager->setCoordinateGroups($this->coordinates[0]);
-//
-    //     $coords = $this->imager->getCoordinates();
-//
-    //     $xLength = $this->imager->getLength('x', $coords);
-    //     $this->assertEquals(3439.0, $xLength);
-//
-    //     $yLength = $this->imager->getLength('y', $coords);
-    //     $this->assertEquals(1894.0, $yLength);
-    // }
-
-    // public function testIsInBounds()
-    // {
-    //     $point = 20;
-    //     $cropLength = 80;
-    //     $imageLength = 100;
-    //     $focusNear = 40;
-    //     $focusFar = 80;
-//
-    //     $valid = $this->imager->isInBounds($point, $cropLength, $imageLength, $focusNear, $focusFar);
-//
-    //     $this->assertTrue($valid);
-    //     // @TODO: Add test for out of bounds.
-    // }
-
-    public function testSaveImage()
+    public function tearDown()
     {
-        $testImageSource = __DIR__ . '/../Resources/dummy.jpg';
-
-        $this->imager->setImg($testImageSource);
-
-        $this->imager->saveImage($this->generatedDirectory, $testImageSource);
-
-        // Assert that image has been created.
-        $this->assertFileExists($this->generatedDirectory . 'dummy.jpg');
-        // @TODO: Assert more about file type etc etc.
-
+        parent::tearDown();
         $this->deleteDirectory($this->generatedDirectory);
+    }
+
+    public function testCreateImage()
+    {
+        $style = [
+            'effect' => 'scale',
+            'width' => 200,
+        ];
+
+        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
+
+        $generateImage = $this->generatedDirectory . 'dummy.jpg';
+
+        $this->assertFileExists($generateImage);
+        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
+    }
+
+    public function testCreateImageWithScale()
+    {
+        $style = [
+            'effect' => 'scale',
+            'width' => 200,
+        ];
+
+        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
+
+        $generateImage = $this->generatedDirectory . 'dummy.jpg';
+
+        $this->assertFileExists($generateImage);
+        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
+        $this->assertTrue(filesize($this->testImagePath) > filesize($generateImage));
+    }
+
+    public function testCreateImageWithCrop()
+    {
+        $style = [
+            'effect' => 'crop',
+            'width' => 200,
+            'height' => 200,
+        ];
+
+        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
+
+        $generateImage = $this->generatedDirectory . 'dummy.jpg';
+
+        $this->assertFileExists($generateImage);
+        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
+        $this->assertTrue(filesize($this->testImagePath) > filesize($generateImage));
+    }
+
+    public function testCreateImageWithCoordinates()
+    {
+        $style = [
+            'effect' => 'crop',
+            'width' => 200,
+            'height' => 200,
+        ];
+
+        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style, $this->coordinates);
+
+        $generateImage = $this->generatedDirectory . 'dummy.jpg';
+
+        $this->assertFileExists($generateImage);
+        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
+        $this->assertTrue(filesize($this->testImagePath) > filesize($generateImage));
     }
 }
