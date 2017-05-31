@@ -48,14 +48,19 @@ class FocusCropDataCalculator
         if ($imageAspectRatio > $styleAspectRatio) {
             $axis = 'x';
         } else {
-            $axis = 'y';
+            if ($imageAspectRatio < $styleAspectRatio) {
+                $axis = 'y';
+            } else {
+                return [
+                    'width' => $newWidth,
+                    'height' => $newHeight,
+                    'x' => $this->cropCoordinates[0],
+                    'y' => $this->cropCoordinates[1],
+                ];
+            }
         }
 
-        if (!empty($axis)) {
-            $this->calculateAxisCropData($axis, $this->cropCoordinates, $styleAspectRatio, $newWidth, $newHeight);
-        }
-
-        return [];
+        return $this->calculateAxisCropData($axis, $this->cropCoordinates, $styleAspectRatio, $newWidth, $newHeight);
     }
 
     protected function calculateAxisCropData($axis = 'x', $cropCoordinates, $aspectRatio, $newWidth, $newHeight)

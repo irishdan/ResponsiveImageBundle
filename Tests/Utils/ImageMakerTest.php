@@ -17,37 +17,32 @@ class ImageMakerTest extends ResponsiveImageTestCase
         $this->imager = $this->getService('responsive_image.image_maker');
     }
 
-    public function testGetLength()
-    {
-        $this->imager->setCoordinateGroups($this->coordinates[0]);
+    // public function testGetLength()
+    // {
+    //     $this->imager->setCoordinateGroups($this->coordinates[0]);
+//
+    //     $coords = $this->imager->getCoordinates();
+//
+    //     $xLength = $this->imager->getLength('x', $coords);
+    //     $this->assertEquals(3439.0, $xLength);
+//
+    //     $yLength = $this->imager->getLength('y', $coords);
+    //     $this->assertEquals(1894.0, $yLength);
+    // }
 
-        $coords = $this->imager->getCoordinates();
-
-        $xLength = $this->imager->getLength('x', $coords);
-        $this->assertEquals(3439.0, $xLength);
-
-        $yLength = $this->imager->getLength('y', $coords);
-        $this->assertEquals(1894.0, $yLength);
-    }
-
-    public function testGetFocusPointForAccess()
-    {
-        // @TODO: Create tests.
-    }
-
-    public function testIsInBounds()
-    {
-        $point = 20;
-        $cropLength = 80;
-        $imageLength = 100;
-        $focusNear = 40;
-        $focusFar = 80;
-
-        $valid = $this->imager->isInBounds($point, $cropLength, $imageLength, $focusNear, $focusFar);
-
-        $this->assertTrue($valid);
-        // @TODO: Add test for out of bounds.
-    }
+    // public function testIsInBounds()
+    // {
+    //     $point = 20;
+    //     $cropLength = 80;
+    //     $imageLength = 100;
+    //     $focusNear = 40;
+    //     $focusFar = 80;
+//
+    //     $valid = $this->imager->isInBounds($point, $cropLength, $imageLength, $focusNear, $focusFar);
+//
+    //     $this->assertTrue($valid);
+    //     // @TODO: Add test for out of bounds.
+    // }
 
     public function testSaveImage()
     {
