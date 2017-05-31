@@ -29,7 +29,7 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->image = $this->styleManager->setImageStyle($this->image, 'thumb');
 
         // Assert that the web path is correct
-        $expectedPath = '/uploads/documents/styles/thumb/dummy.jpg';
+        $expectedPath = '/test/images/styles/thumb/dummy.jpg';
         $this->assertEquals($expectedPath, $this->image->getStyle());
     }
 
@@ -40,20 +40,9 @@ class StyleManagerTest extends ResponsiveImageTestCase
 
         $this->assertContains('<picture>', $picture);
         $this->assertContains('</picture>', $picture);
-        $this->assertContains('<source srcset="/uploads/documents/styles/thumb/dummy.jpg" media="(min-width: 1100px)">', $picture);
-        $this->assertContains('<source srcset="/uploads/documents/styles/thumb_picture-base/dummy.jpg" media="(min-width: 0px)">', $picture);
-        $this->assertContains('<img srcset="/uploads/documents/styles/thumb_picture-base/dummy.jpg">', $picture);
-    }
-
-    public function testPictureTag()
-    {
-        $pictureTag = $this->styleManager->pictureTag('thumb_picture', 'dummy.jpg');
-
-        $this->assertContains('<picture>', $pictureTag);
-        $this->assertContains('</picture>', $pictureTag);
-        $this->assertContains('<source srcset="/uploads/documents/styles/thumb/dummy.jpg" media="(min-width: 1100px)">', $pictureTag);
-        $this->assertContains('<source srcset="/uploads/documents/styles/thumb_picture-base/dummy.jpg" media="(min-width: 0px)">', $pictureTag);
-        $this->assertContains('<img srcset="/uploads/documents/styles/thumb_picture-base/dummy.jpg">', $pictureTag);
+        $this->assertContains('<source srcset="/test/images/styles/thumb/dummy.jpg" media="(min-width: 1100px)">', $picture);
+        $this->assertContains('<source srcset="/test/images/styles/thumb_picture-base/dummy.jpg" media="(min-width: 0px)">', $picture);
+        $this->assertContains('<img srcset="/test/images/styles/thumb_picture-base/dummy.jpg" alt="Test image alt text " title="Test image alt text">', $picture);
     }
 
     public function testGetStyle()

@@ -62,16 +62,16 @@ class FileManager
      */
     public function __construct($rootDir, $imageConfigs, FileSystem $fileSystem)
     {
-        // @TODO: Replace with flysystem. For now use existing component.
+        // @TODO: Replace with flysystem.
         $this->fileSystem = $fileSystem;
 
         $uploadsDirectory = $imageConfigs['image_directory'];
         $stylesDirectory = $imageConfigs['image_styles_directory'];
         $symfonyDirectory = substr($rootDir, 0, -4);
 
-        $this->rootDir = $symfonyDirectory;
-        $this->uploadsDir = $uploadsDirectory;
-        $this->stylesDir = $uploadsDirectory . '/' . $stylesDirectory;
+        $this->rootDirectory = $symfonyDirectory;
+        $this->uploadsDirectory = $uploadsDirectory;
+        $this->stylesDirectory = $uploadsDirectory . '/' . $stylesDirectory;
         $this->systemPath = $symfonyDirectory . '/web';
         $this->systemUploadPath = $this->systemPath . '/' . $this->uploadsDirectory;
         $this->systemStylesPath = $this->systemUploadPath . '/' . $stylesDirectory;

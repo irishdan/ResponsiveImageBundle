@@ -122,7 +122,6 @@ class ImageMaker
         $this->setImage($source, $this->driver);
 
         if (!empty($style)) {
-            // @TODO: What should happen if not style is set?? perhaps just copy the file??
             $this->setStyleData($style);
         }
 

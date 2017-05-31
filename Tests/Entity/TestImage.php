@@ -64,13 +64,12 @@ class TestImage implements ResponsiveImageInterface
 
     public function getPicture()
     {
-        // TODO: Looks at implementation
         return $this->picture;
     }
 
     public function setPicture($picture)
     {
-        return $this->picture;
+        $this->picture = $picture;
     }
 
     public function getWidth()

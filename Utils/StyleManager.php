@@ -307,6 +307,7 @@ class StyleManager
         } else {
             $stylePath = $this->fileManager->getUploadsDirectory();
         }
+
         $webPath = $stylePath . '/' . $filename;
         $webPath = $this->prefixPath($webPath, $styleName);
         $image->setStyle($webPath);
