@@ -8,19 +8,19 @@ use ResponsiveImageBundle\Utils\ResponsiveImageManager;
 
 /**
  * Class ResponsiveImageExtension
+ *
  * @package ResponsiveImageBundle\Twig
  */
 class ResponsiveImageExtension extends \Twig_Extension
 {
-
     /**
      * @var ResponsiveImageManager
      */
     private $imageManager;
 
-
     /**
      * ResponsiveImageExtension constructor.
+     *
      * @param ResponsiveImageManager $imageManager
      */
     public function __construct(ResponsiveImageManager $imageManager)
@@ -33,14 +33,14 @@ class ResponsiveImageExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
+        return [
             new \Twig_SimpleFunction('picture_image', [$this, 'generatePictureImage'], [
                 'is_safe' => ['html']]),
             new \Twig_SimpleFunction('styled_image', [$this, 'generateStyledImage'], [
                 'is_safe' => ['html']]),
             new \Twig_SimpleFunction('background_reponsive_image', [$this, 'generateBackgroundImage'], [
                 'is_safe' => ['html']]),
-        );
+        ];
     }
 
     /**

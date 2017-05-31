@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 
 /**
  * Class FileToObject
+ *
  * @package ResponsiveImageBundle\Utils
  */
 class FileToObject
@@ -17,9 +18,11 @@ class FileToObject
 
     /**
      * FileToObject constructor.
+     *
      * @param EntityManager $manager
      */
-    public function __construct(EntityManager $manager) {
+    public function __construct(EntityManager $manager)
+    {
         $this->manager = $manager;
     }
 
@@ -28,15 +31,19 @@ class FileToObject
      *
      * @param $filename
      * @param $entityClassName
-     * @param string $property
      * @return mixed
      */
-    public function getObjectFromFilename($filename, $entityClassName, $property = 'path') {
-        $methodName = 'findOneBy' . ucfirst($property);
+    public function getObjectFromFilename($filename, $entityClassName)
+    {
+        /** @var ResponsiveImageRepositoryInterface $repository */
+        $repository = $this->manager->getRepository($entityClassName);
 
-        $em = $this->manager;
-        $fileObject = $em->getRepository($entityClassName)->{$methodName}($filename);
+        if ($repository instanceof ResponsiveImageRepositoryInterface) {
+            $fileObject = $repository->findImageFromFilename($filename);
 
-        return $fileObject;
+            return $fileObject;
+        }
+
+        return null;
     }
 }

@@ -4,7 +4,6 @@ namespace ResponsiveImageBundle\Utils;
 
 use Symfony\Component\Filesystem\Filesystem;
 
-
 /**
  * Class FileSystem
  *
@@ -52,22 +51,26 @@ class FileManager
      * @var
      */
     private $webStylesDirectory;
+    /**
+     * @var Filesystem
+     */
     private $fileSystem;
 
     /**
-     * FileSystem constructor.
+     * FileManager constructor.
      *
-     * @param $rootDir
-     * @param $imageConfigs
+     * @param            $rootDirectory
+     * @param array      $imageConfigs
+     * @param Filesystem $fileSystem
      */
-    public function __construct($rootDir, $imageConfigs, FileSystem $fileSystem)
+    public function __construct($rootDirectory, array $imageConfigs, FileSystem $fileSystem)
     {
         // @TODO: Replace with flysystem.
         $this->fileSystem = $fileSystem;
 
         $uploadsDirectory = $imageConfigs['image_directory'];
         $stylesDirectory = $imageConfigs['image_styles_directory'];
-        $symfonyDirectory = substr($rootDir, 0, -4);
+        $symfonyDirectory = substr($rootDirectory, 0, -4);
 
         $this->rootDirectory = $symfonyDirectory;
         $this->uploadsDirectory = $uploadsDirectory;
@@ -157,7 +160,7 @@ class FileManager
      */
     public function getStyleTree($stylename)
     {
-        return $this->stylesDir . '/' . $stylename;
+        return $this->stylesDirectory . '/' . $stylename;
     }
 
     /**
