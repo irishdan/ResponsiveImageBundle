@@ -7,8 +7,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
 {
-    private $testKernel;
-    private $parameters = [];
+    protected $testKernel;
+    protected $parameters = [];
 
     protected function bootSymfony()
     {
