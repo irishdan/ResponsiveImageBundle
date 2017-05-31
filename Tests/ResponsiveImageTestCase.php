@@ -3,6 +3,9 @@
 namespace ResponsiveImageBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Yaml\Yaml;
 
 class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
@@ -35,6 +38,27 @@ class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
             }
         }
         rmdir($directory);
+    }
+
+    protected function runCommand($name, $options = [])
+    {
+        if (empty($this->testKernel)) {
+            $this->bootSymfony();
+        }
+
+        $application = new Application($this->testKernel);
+        $application->setAutoExit(false);
+
+        $output = new NullOutput();
+        $input = new ArrayInput([
+                'name' => $name,
+            ]
+        );
+        $input->setInteractive(false);
+
+        $exitCode = $application->run($input, $output);
+
+        return $exitCode;
     }
 
     protected function getService($serviceName)

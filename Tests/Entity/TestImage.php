@@ -3,18 +3,56 @@
 namespace ResponsiveImageBundle\Tests\Entity;
 
 use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * Image
+ * @ORM\Table(name="image")
+ * @ORM\HasLifecycleCallbacks()
+ */
 class TestImage implements ResponsiveImageInterface
 {
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
     private $id = 1;
+    /**
+     * @ORM\Column(name="title", type="string", length=255)
+     */
     private $title = 'Test image';
+    /**
+     * @ORM\Column(name="path", type="string", length=255, unique=true)
+     */
     private $path = 'dummy.jpg';
+    /**
+     * @ORM\Column(name="alt", type="string", length=255, nullable=true)
+     */
     private $alt = 'Test image alt text';
+    /**
+     * @ORM\Column(name="width", type="integer", nullable=true)
+     */
     private $width = 1000;
+    /**
+     * @ORM\Column(name="width", type="integer", nullable=true)
+     */
     private $height = 1600;
+    /**
+     * @Assert\File(maxSize="6000000")
+     */
     private $file;
+    /**
+     * @ORM\Column(name="crop_coordinations", type="string", nullable=true)
+     */
     private $cropCoordinates = '200, 3, 800, 1400:310, 145, 750, 617';
+    /**
+     * @var
+     */
     private $style;
+    /**
+     * @var
+     */
     private $picture;
 
     public function getId()
@@ -103,7 +141,7 @@ class TestImage implements ResponsiveImageInterface
     }
 
     // @TODO: Only used during upload review if needed after move to flysystem
-    public function setFile(\Symfony\Component\HttpFoundation\File\UploadedFile $file)
+    public function setFile(UploadedFile $file)
     {
         $this->file = $file;
     }
