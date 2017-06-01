@@ -75,6 +75,6 @@ services:
     responsive_image.twig_extension:
         class: ResponsiveImageBundle\Twig\ResponsiveImageExtension
         public: false
-        arguments: [ '@responsive_image' ]
+        arguments: [ '@responsive_image.style_manager' ]
         tags:
             - { name: twig.extension }

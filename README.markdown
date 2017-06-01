@@ -311,7 +311,7 @@ The easiest way tot generate styled images is to use the twig extensions in your
 You can also generate background image css with media queries for each brak point in a picture set.
 ```
 <style>
-   {{ background_responsive_image(content.article.imageField.image, 'picture_set_name', '#header') }}
+   {{ background_responsive_image(image, 'picture_set_name', '#header') }}
 </style>
 ```
 

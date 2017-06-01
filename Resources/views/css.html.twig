@@ -1,0 +1,12 @@
+<style>
+    {% for mq, source in mq_mappings %}
+
+        @media ( {{ mq }}) {
+            {{ selector }} {
+                background-image: url({{ source }});
+            }
+        }
+
+    {% endfor %}
+
+</style>

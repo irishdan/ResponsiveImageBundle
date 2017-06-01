@@ -49,7 +49,7 @@ class ResponsiveImageManager
      * @param $imager
      * @param $config
      */
-    public function __construct($imager, $styleManager, $config, $system, $s3, $uploader)
+    public function __construct(ImageMaker $imager, StyleManager $styleManager, array $config, $system, $s3, $uploader)
     {
         $this->imager = $imager;
         $this->styleManager = $styleManager;

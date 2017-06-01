@@ -1,6 +1,7 @@
 <picture>
-    {% for set in image.picture %}
-        <source srcset="{{ set.src }}" media="({{ set.mediaQuery }})">
+    {% for mq, source in mq_mappings | reverse %}
+        <source srcset="{{ source }}" media="({{ mq }})">
     {% endfor %}
-    <img src="{{ image.src }}" height="{{ image.height }}" width="{{ image.width }}" title="{{ image.title }}" alt="{{ image.alt }}"/>
+    <img src="{{ image.style }}" height="{{ image.height }}" width="{{ image.width }}" title="{{ image.title }}"
+         alt="{{ image.alt }}"/>
 </picture>

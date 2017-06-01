@@ -122,41 +122,6 @@ class StyleManager
     }
 
     /**
-     * Generate background image CSS with media queries.
-     *
-     * @param ResponsiveImageInterface $image
-     * @param                          $pictureSetName
-     * @param                          $selector
-     * @return string
-     */
-    public function createBackgroundImageCSS(ResponsiveImageInterface $image, $pictureSetName, $selector)
-    {
-        $filename = $image->getPath();
-        $css = $this->css($pictureSetName, $filename, $selector);
-
-        return $css;
-    }
-
-    /**
-     * Sets the pictureTag property of a image object.
-     *
-     * @param ResponsiveImageInterface $image
-     * @param                          $pictureSetName
-     * @return ResponsiveImageInterface
-     */
-    public function setPictureImage(ResponsiveImageInterface $image, $pictureSetName)
-    {
-        $filename = $image->getPath();
-        $alt = $image->getAlt();
-        $title = $image->getTitle();
-
-        $picture = $this->pictureTag($pictureSetName, $filename, $alt, $alt, $title);
-        $image->setPicture($picture);
-
-        return $image;
-    }
-
-    /**
      * @param mixed $displayPathPrefix
      */
     public function setDisplayPathPrefix($displayPathPrefix)
@@ -202,7 +167,7 @@ class StyleManager
      * @param $style
      * @return string
      */
-    public function prefixPath($url, $style = null)
+    protected function prefixPath($url, $style = null)
     {
         // Remote fle policy values ALL, STYLED_ONLY.
         if (!empty($this->displayPathPrefix) && $style !== null) {
@@ -222,74 +187,39 @@ class StyleManager
         return $url;
     }
 
-    /**
-     * Generates a picture tag for a given picture set and filename.
-     *
-     * @param $pictureSetName
-     * @param $filename
-     * @return string
-     */
-    public function pictureTag($pictureSetName, $filename, $alt = '', $title = '')
+    public function getMediaQuerySourceMappings(ResponsiveImageInterface $image, $pictureSetName)
     {
+        $mappings = [];
+        $filename = $image->getPath();
+
+        // First mapping is the default image.
+        $mappings[] = $image->getStyle();
+
         if (!empty($this->pictureSets[$pictureSetName])) {
             $set = $this->pictureSets[$pictureSetName];
 
-            $picture = '<picture>';
-            foreach (array_reverse($set) as $break => $style) {
-                if (is_array($style)) {
-                    $stylename = $pictureSetName . '-' . $break;
-                } else {
-                    $stylename = $style;
-                }
-                $styles_directory = $this->fileManager->getStylesDirectory();
-                $path = $styles_directory . '/' . $stylename . '/' . $filename;
-                $path = $this->prefixPath($path, $stylename);
-
-                $picture .= '<source srcset="' . $path . '" media="(' . $this->breakpoints[$break] . ')">';
-            }
-
-            $picture .= '<img srcset="' . $path . '" alt="' . $alt . ' " title="' . $title . '">';
-            $picture .= '</picture>';
-
-            return $picture;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Generates a picture tag for a given picture set and filename.
-     *
-     * @param $pictureSetName
-     * @param $filename
-     * @return string
-     */
-    public function css($pictureSetName, $filename, $selector)
-    {
-        if (!empty($this->pictureSets[$pictureSetName])) {
-            $set = $this->pictureSets[$pictureSetName];
-            $css = '';
             foreach ($set as $break => $style) {
                 if (is_array($style)) {
-                    $stylename = $pictureSetName . '-' . $break;
+                    $styleName = $pictureSetName . '-' . $break;
                 } else {
-                    $stylename = $style;
+                    $styleName = $style;
                 }
-                $styles_directory = $this->fileManager->getStylesDirectory();
-                $path = $styles_directory . '/' . $stylename . '/' . $filename;
-                $path = $this->prefixPath($path, $stylename);
+                $path = $this->buildStylePath($styleName, $filename);
 
-                $css .= "@media( " . $this->breakpoints[$break] . ") {\n";
-                $css .= $selector . " {\n";
-                $css .= "background-image: url(" . $path . ");\n";
-                $css .= "}\n";
-                $css .= "}\n";
+                $mappings[$this->breakpoints[$break]] = $path;
             }
-
-            return $css;
-        } else {
-            return '';
         }
+
+        return $mappings;
+    }
+
+    protected function buildStylePath($styleName, $fileName)
+    {
+        $styles_directory = $this->fileManager->getStylesDirectory();
+        $path = $styles_directory . '/' . $styleName . '/' . $fileName;
+        $path = $this->prefixPath($path, $styleName);
+
+        return $path;
     }
 
     /**
