@@ -393,7 +393,7 @@ class FileManager
      * @param bool $slash
      * @return string
      */
-    public function trailingSlash($path, $slash = true)
+    protected function trailingSlash($path, $slash = true)
     {
         $path = rtrim($path, '/');
         if ($slash) {

@@ -31,6 +31,6 @@ class CreateImageEntityCommandTest extends ResponsiveImageTestCase
 
         $exitCode = $this->application->run($input, $output);
 
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(1, $exitCode);
     }
 }

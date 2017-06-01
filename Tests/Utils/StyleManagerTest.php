@@ -33,16 +33,18 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->assertEquals($expectedPath, $this->image->getStyle());
     }
 
-    public function testSetPictureImage()
+    public function testGetMediaQuerySourceMappings()
     {
-        $this->styleManager->setPictureImage($this->image, 'thumb_picture');
-        $picture = $this->image->getPicture();
+        $this->styleManager->setImageStyle($this->image, 'thumb');
+        $mq = $this->styleManager->getMediaQuerySourceMappings($this->image, 'thumb_picture');
 
-        $this->assertContains('<picture>', $picture);
-        $this->assertContains('</picture>', $picture);
-        $this->assertContains('<source srcset="/test/images/styles/thumb/dummy.jpg" media="(min-width: 1100px)">', $picture);
-        $this->assertContains('<source srcset="/test/images/styles/thumb_picture-base/dummy.jpg" media="(min-width: 0px)">', $picture);
-        $this->assertContains('<img srcset="/test/images/styles/thumb_picture-base/dummy.jpg" alt="Test image alt text " title="Test image alt text">', $picture);
+        $this->assertArrayHasKey(0, $mq);
+        $this->assertArrayHasKey('min-width: 0px', $mq);
+        $this->assertArrayHasKey('min-width: 1100px', $mq);
+
+        $this->assertEquals('/test/images/styles/thumb/dummy.jpg', $mq[0]);
+        $this->assertEquals('/test/images/styles/thumb_picture-base/dummy.jpg', $mq['min-width: 0px']);
+        $this->assertEquals('/test/images/styles/thumb/dummy.jpg', $mq['min-width: 1100px']);
     }
 
     public function testGetStyle()
@@ -62,27 +64,27 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->assertEquals($expected, $style);
     }
 
-    public function prefixProvider()
-    {
-        return [
-            ['path', 'style', 'http://prefix.', 'ALL', 'http://prefix.path'],
-            ['path', 'style', '', 'ALL', '/path'],
-            ['path', 'style', '', 'STYLED_ONLY', '/path'],
-            ['path', null, 'http://prefix.', 'ALL', 'http://prefix.path'],
-            ['path', null, 'http://prefix.', 'STYLED_ONLY', '/path'],
-        ];
-    }
+    // public function prefixProvider()
+    // {
+    //     return [
+    //         ['path', 'style', 'http://prefix.', 'ALL', 'http://prefix.path'],
+    //         ['path', 'style', '', 'ALL', '/path'],
+    //         ['path', 'style', '', 'STYLED_ONLY', '/path'],
+    //         ['path', null, 'http://prefix.', 'ALL', 'http://prefix.path'],
+    //         ['path', null, 'http://prefix.', 'STYLED_ONLY', '/path'],
+    //     ];
+    // }
 
-    /**
-     * @dataProvider prefixProvider
-     */
-    public function testPrefixPath($path, $style, $prefix, $policy, $expected)
-    {
-        $this->styleManager->setDisplayPathPrefix($prefix);
-        $this->styleManager->setRemoteFilePolicy($policy);
+    // /**
+    //  * @dataProvider prefixProvider
+    //  */
+    // public function testPrefixPath($path, $style, $prefix, $policy, $expected)
+    // {
+    //     $this->styleManager->setDisplayPathPrefix($prefix);
+    //     $this->styleManager->setRemoteFilePolicy($policy);
 
-        $result = $this->styleManager->prefixPath($path, $style);
+    //     $result = $this->styleManager->prefixPath($path, $style);
 
-        $this->assertEquals($expected, $result);
-    }
+    //     $this->assertEquals($expected, $result);
+    // }
 }

@@ -188,7 +188,6 @@ class {{ class_name }} implements ResponsiveImageInterface
         $this->cropCoordinates = $cords;
     }
 
-    // @TODO: Only used during upload review if needed after move to flysystem
     public function setFile(UploadedFile $file)
     {
         $this->file = $file;
@@ -197,50 +196,6 @@ class {{ class_name }} implements ResponsiveImageInterface
     public function getFile()
     {
         return $this->file;
-    }
-
-    /**
-     * Generates an <img> tag for a given style.
-     *
-     * @param null $style
-     * @return string
-     */
-    public function img()
-    {
-        // @TODO: Look at using twig template to generate the html. this way users can override.
-
-        if (!empty($this->style)) {
-            $src = $this->style;
-        } else {
-            $src = $this->getPath();
-        }
-
-        // @TODO: Use cache_bust config.
-        // $updated = $this->getUpdated();
-        // if (!empty($updated)) {
-        //     $src = $this->path . '?' . $updated->getTimestamp();
-        // }
-
-        $title = $this->title;
-        $alt = $this->alt;
-
-        // @TODO: If image style is used height and width should be transposed.
-        $height = $this->height;
-        $width = $this->width;
-
-        return '<img src="' . $src . '" height="' . $height . '" width="' . $width . '" title="' . $title . '" alt="' . $alt . '"/>';
-    }
-
-    /**
-     *  Returns an <img> tag string if the object is printed directly.
-     */
-    public function __toString()
-    {
-        if (empty($this->picture)) {
-            return $this->img();
-        }
-
-        return $this->picture;
     }
 {% endblock class_body %}
 }
