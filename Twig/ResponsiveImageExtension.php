@@ -38,7 +38,7 @@ class ResponsiveImageExtension extends \Twig_Extension
                 'is_safe' => ['html']]),
             new \Twig_SimpleFunction('styled_image', [$this, 'generateStyledImage'], [
                 'is_safe' => ['html']]),
-            new \Twig_SimpleFunction('background_reponsive_image', [$this, 'generateBackgroundImage'], [
+            new \Twig_SimpleFunction('background_responsive_image', [$this, 'generateBackgroundImage'], [
                 'is_safe' => ['html']]),
         ];
     }

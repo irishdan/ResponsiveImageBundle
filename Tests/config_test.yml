@@ -2,11 +2,11 @@ imports:
     - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
 
 parameters:
-    database_host: 127.0.0.1
-    database_port: null
-    database_name: responsive_image_test
-    database_user: root
-    database_password: root
+    # database_host: 127.0.0.1
+    # database_port: null
+    # database_name: responsive_image_test
+    # database_user: root
+    # database_password: root
     mailer_transport: smtp
     mailer_host: 127.0.0.1
     mailer_user: null
@@ -27,7 +27,7 @@ framework:
 doctrine:
     dbal:
         driver:   pdo_sqlite
-        path:     '%kernel.cache_dir%/test.db'
+        path:     '%kernel.cache_dir%/test.sqlite'
         # driver: pdo_mysql
         # host: '%database_host%'
         # port: '%database_port%'
@@ -41,11 +41,11 @@ doctrine:
         auto_mapping: false
         mappings:
             ResponsiveImageBundle:
-                # type: php
+                type: annotation
                 dir: '%kernel.root_dir%/Entity'
-                alias: ~
-                prefix: ~
-                is_bundle: true
+                alias: 'TestImage'
+                prefix: 'ResponsiveImageBundle\Tests\Entity\TestImage'
+                is_bundle: false
 
 responsive_image:
     debug: false

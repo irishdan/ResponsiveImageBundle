@@ -248,19 +248,61 @@ and is also included in the bundle at Resources/public/js/vendor/picturefill.js.
 5: Usage
 ---------------------------
 
+Generator is now included
+
 For image objects you can use your own entity, as long as it implements the ResponsiveImageInterface
 ```
 ResponsiveImageBundle\Utils\ResponsiveImageInterface.
 ```
-There's also a working image object included, Image.php, that you can use directly or modify.
+don't for get jquery for the edit widget
+
 ```
-ResponsiveImageBundle\Entity\ResponsiveImage.php
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 ```
 
 When creating a new image the responsive_image.uploader service handles uploading and saving the image file to the server.
 ```
 $this->get('responsive_image.uploader')->upload($image);
 ```
+
+for exmaple:
+```
+class ResponsiveImageController extends Controller
+{
+    ...
+    ...
+
+    /**
+     * Creates a new responsiveImage entity.
+     *
+     * @Route("/new", name="image_new")
+     * @Method({"GET", "POST"})
+     */
+    public function newAction(Request $request)
+    {
+        $responsiveImage = new Responsiveimage();
+        $form = $this->createForm('ResponsiveImageBundle\Form\ResponsiveImageType', $responsiveImage);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $this->get('responsive_image.uploader')->upload($responsiveImage);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($responsiveImage);
+            $em->flush();
+
+            return $this->redirectToRoute('image_show', ['id' => $responsiveImage->getId()]);
+        }
+
+        return $this->render('responsiveimage/new.html.twig', [
+            'responsiveImage' => $responsiveImage,
+            'form' => $form->createView(),
+        ]);
+    }
+
+```
+
 The easiest way tot generate styled images is to use the twig extensions in your templates.
 ```
 {{ styled_image(image, 'image_style_name') }}
@@ -269,7 +311,7 @@ The easiest way tot generate styled images is to use the twig extensions in your
 You can also generate background image css with media queries for each brak point in a picture set.
 ```
 <style>
-   {{ background_reponsive_image(content.article.imageField.image, 'picture_set_name', '#header') }}
+   {{ background_responsive_image(content.article.imageField.image, 'picture_set_name', '#header') }}
 </style>
 ```
 

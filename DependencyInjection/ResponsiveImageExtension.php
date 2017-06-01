@@ -29,7 +29,15 @@ class ResponsiveImageExtension extends Extension
         $container->setParameter('image_styles_directory', $config['image_styles_directory']);
 
         // Create the image_entity_class parameter.
+        // @TODO: Prefix parameters
+        // @TODO: $config['image_entity_class'] should be scalar.
         $container->setParameter('image_entity_class', $config['image_entity_class']);
+
+        if (!empty($config['image_entity_class'])) {
+            $container->setParameter('responsive_image.entity_class', $config['image_entity_class'][0]);
+        } else {
+            $container->setParameter('responsive_image.entity_class', 'AppBundle\Entity\Image');
+        }
 
         // Add the cropfocus.html.twig to form resources
         $resources = $container->getParameter('twig.form.resources');

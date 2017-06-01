@@ -4,9 +4,11 @@ namespace ResponsiveImageBundle\Tests\Entity;
 
 use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Image
+ * @ORM\Entity(repositoryClass="ResponsiveImageBundle\Repository\ImageRepository")
  * @ORM\Table(name="image")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -35,7 +37,7 @@ class TestImage implements ResponsiveImageInterface
      */
     private $width = 1000;
     /**
-     * @ORM\Column(name="width", type="integer", nullable=true)
+     * @ORM\Column(name="height", type="integer", nullable=true)
      */
     private $height = 1600;
     /**

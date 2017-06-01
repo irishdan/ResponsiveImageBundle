@@ -1,8 +1,9 @@
 <?php
 
-namespace ResponsiveImageBundle\Form\Type;
+namespace ResponsiveImageBundle\Form;
 
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use ResponsiveImageBundle\Utils\StyleManager;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -16,25 +17,18 @@ use Symfony\Component\Form\AbstractType;
  */
 class CropFocusType extends AbstractType
 {
-    /**
-     * @var
-     */
-    private $config;
-
-    /**
-     * @var
-     */
     private $styleManager;
+    private $displayCoordinates = true;
+    private $includeJsCss = true;
 
-    /**
-     * CropFocusType constructor.
-     * 
-     * @param $styleManager
-     */
-    public function __construct($styleManager, $config)
+    public function __construct(StyleManager $styleManager, array $configuration)
     {
         $this->styleManager = $styleManager;
-        $this->config = $config;
+
+        if (!empty($configuration['crop_focus_widget'])) {
+            $this->includeJsCss = empty($configuration['crop_focus_widget']['include_js_css']) ? false : true;
+            $this->displayCoordinates = empty($configuration['crop_focus_widget']['display_coordinates']) ? false : true;
+        }
     }
 
     /**
@@ -42,19 +36,22 @@ class CropFocusType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'label' => 'Focus and Crop',
             'empty_data' => '0, 0, 0, 0:0, 0, 0, 0',
             'alt' => 'Alt',
             'title' => 'title',
             'width' => 100,
             'height' => 100,
-        ));
+            'display_coordinates' => $this->displayCoordinates,
+            'include_js_css' => $this->includeJsCss,
+            'coordinate_field_type' => $this->displayCoordinates ? 'text' : 'hidden',
+        ]);
     }
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -62,9 +59,9 @@ class CropFocusType extends AbstractType
     }
 
     /**
-     * @param FormView $view
+     * @param FormView      $view
      * @param FormInterface $form
-     * @param array $options
+     * @param array         $options
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
@@ -75,22 +72,14 @@ class CropFocusType extends AbstractType
         $options['value'] = $image->getCropCoordinates();
         $options['image'] = $image;
 
-        $config = $this->config['crop_focus_widget'];
-        if (!empty($config['include_js_css'])) {
-            $options['include_js_css'] = TRUE;
-            $pubicDirectory = dirname(__FILE__) . '/../../Resources/public/';
+        if ($options['include_js_css']) {
+            $pubicDirectory = dirname(__FILE__) . '/../Resources/public/';
             $js = file_get_contents($pubicDirectory . 'js/jquery.cropper.js', FILE_USE_INCLUDE_PATH);
             $css = file_get_contents($pubicDirectory . 'css/cropper.css', FILE_USE_INCLUDE_PATH);
 
             $options['js'] = $js;
             $options['css'] = $css;
         }
-        else {
-            $options['include_js_css'] = FALSE;
-        }
-
-        $options['display_coordinates'] = empty($config['display_coordinates']) ? FALSE : TRUE;
-
 
         $view->vars = array_replace($view->vars, $options);
     }
@@ -100,6 +89,6 @@ class CropFocusType extends AbstractType
      */
     public function getParent()
     {
-        return TextType::class;
+        return HiddenType::class;
     }
 }

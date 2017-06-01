@@ -29,15 +29,16 @@ services:
 
     # Custom form field type.
     responsive_image.form.type.crop_focus:
-        class: ResponsiveImageBundle\Form\Type\CropFocusType
+        class: ResponsiveImageBundle\Form\CropFocusType
         arguments: [ '@responsive_image.style_manager', '%responsive_image%' ]
         tags:
             - { name: form.type }
 
-    # Form handlers.
-    responsive_image.styles_form_handler:
-        class: ResponsiveImageBundle\Form\Handler\StylesFormHandler
-        arguments: [ '@responsive_image.style_manager', '@event_dispatcher' ]
+    responsive_image.form.type.responsive_image:
+        class: ResponsiveImageBundle\Form\ResponsiveImageType
+        arguments: [ '%responsive_image.entity_class%' ]
+        tags:
+            - { name: form.type }
 
     # Event listeners.
     responsive_image.listener.image_generate_styled:

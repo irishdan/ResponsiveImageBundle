@@ -1,18 +1,19 @@
 {% block crop_focus_widget %}
     <div class="crop-focus-widget bundle-folder">
         <div class="crop-focus-image">
-            {{ image | raw }}
+            {{ include('ResponsiveImageBundle::img.html.twig', {'image': image}) }}
         </div>
         <div class="crop-focus-coordinates">
+            {% set type = coordinate_field_type %}
             {{ block('form_widget_simple') }}
         </div>
     </div>
     {% if include_js_css == true %}
-    <style>
-        {{ css | raw }}
-    </style>
-    <script>
-        {{ js | raw }}
-    </script>
+        <style>
+            {{ css | raw }}
+        </style>
+        <script>
+            {{ js | raw }}
+        </script>
     {% endif %}
 {% endblock %}
