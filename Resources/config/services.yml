@@ -1,79 +1,79 @@
 services:
     responsive_image:
-        class: ResponsiveImageBundle\Utils\ResponsiveImageManager
+        class: IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageManager
         arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_manager', '@responsive_image.s3_bridge', '@responsive_image.uploader' ]
 
     responsive_image.file_manager:
-        class: ResponsiveImageBundle\Utils\FileManager
+        class: IrishDan\ResponsiveImageBundle\Utils\FileManager
         arguments: ['%kernel.root_dir%', '%responsive_image%', '@filesystem' ]
 
     responsive_image.style_manager:
-        class: ResponsiveImageBundle\Utils\StyleManager
+        class: IrishDan\ResponsiveImageBundle\Utils\StyleManager
         arguments: ['@responsive_image.file_manager', '%responsive_image%' ]
 
     responsive_image.image_maker:
-        class: ResponsiveImageBundle\Utils\ImageMaker
+        class: IrishDan\ResponsiveImageBundle\Utils\ImageMaker
         arguments: [ '@responsive_image.file_manager', '%responsive_image%' ]
 
     responsive_image.file_to_object:
-        class: ResponsiveImageBundle\Utils\FileToObject
+        class: IrishDan\ResponsiveImageBundle\Utils\FileToObject
         arguments: [ '@doctrine.orm.entity_manager' ]
 
     responsive_image.uploader:
-        class: ResponsiveImageBundle\Utils\Uploader
+        class: IrishDan\ResponsiveImageBundle\Utils\Uploader
         arguments: ['@responsive_image.file_manager']
 
     responsive_image.s3_bridge:
-        class: ResponsiveImageBundle\Utils\S3Bridge
+        class: IrishDan\ResponsiveImageBundle\Utils\S3Bridge
         arguments: [ '%responsive_image.aws_s3%' ]
 
     # Custom form field type.
     responsive_image.form.type.crop_focus:
-        class: ResponsiveImageBundle\Form\CropFocusType
+        class: IrishDan\ResponsiveImageBundle\Form\CropFocusType
         arguments: [ '@responsive_image.style_manager', '%responsive_image%' ]
         tags:
             - { name: form.type }
 
     responsive_image.form.type.responsive_image:
-        class: ResponsiveImageBundle\Form\ResponsiveImageType
+        class: IrishDan\ResponsiveImageBundle\Form\ResponsiveImageType
         arguments: [ '%responsive_image.entity_class%' ]
         tags:
             - { name: form.type }
 
     # Event listeners.
     responsive_image.listener.image_generate_styled:
-        class: ResponsiveImageBundle\Event\ImageListener
+        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
         arguments: [ '%responsive_image', '@responsive_image' ]
         tags:
             - { name: kernel.event_listener, event: responsive_image.image_generate_styled, method: imageGenerateStyled }
 
     responsive_image.listener.image_delete_all:
-        class: ResponsiveImageBundle\Event\ImageListener
+        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
         arguments: [ '%responsive_image', '@responsive_image' ]
         tags:
             - { name: kernel.event_listener, event: responsive_image.image_delete_all, method: imageDeleteAll }
 
     responsive_image.listener.image_delete_styled:
-        class: ResponsiveImageBundle\Event\ImageListener
+        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
         arguments: [ '%responsive_image', '@responsive_image' ]
         tags:
             - { name: kernel.event_listener, event: responsive_image.image_delete_styled, method: imageDeleteStyled }
 
     responsive_image.listener.style_delete_styled:
-        class: ResponsiveImageBundle\Event\ImageListener
+        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
         arguments: [ '%responsive_image', '@responsive_image' ]
         tags:
             - { name: kernel.event_listener, event: responsive_image.style_delete_styled, method: styleDeleteStyled }
 
     responsive_image.listener.style_delete_all:
-        class: ResponsiveImageBundle\Event\ImageListener
+        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
         arguments: [ '%responsive_image', '@responsive_image' ]
         tags:
             - { name: kernel.event_listener, event: responsive_image.style_delete_all, method: styleDeleteAll }
 
     # Twig extensions
     responsive_image.twig_extension:
-        class: ResponsiveImageBundle\Twig\ResponsiveImageExtension
+        class: IrishDan\ResponsiveImageBundle\Twig\ResponsiveImageExtension
         public: false
         arguments: [ '@responsive_image.style_manager' ]
         tags:

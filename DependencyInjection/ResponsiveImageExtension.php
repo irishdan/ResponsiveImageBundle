@@ -1,7 +1,6 @@
 <?php
 
-namespace ResponsiveImageBundle\DependencyInjection;
-
+namespace IrishDan\ResponsiveImageBundle\DependencyInjection;
 
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -30,11 +29,9 @@ class ResponsiveImageExtension extends Extension
 
         // Create the image_entity_class parameter.
         // @TODO: Prefix parameters
-        // @TODO: $config['image_entity_class'] should be scalar.
         $container->setParameter('image_entity_class', $config['image_entity_class']);
-
         if (!empty($config['image_entity_class'])) {
-            $container->setParameter('responsive_image.entity_class', $config['image_entity_class'][0]);
+            $container->setParameter('responsive_image.entity_class', $config['image_entity_class']);
         } else {
             $container->setParameter('responsive_image.entity_class', 'AppBundle\Entity\Image');
         }

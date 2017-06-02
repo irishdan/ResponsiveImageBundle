@@ -1,6 +1,6 @@
 <?php
 
-namespace ResponsiveImageBundle;
+namespace IrishDan\ResponsiveImageBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

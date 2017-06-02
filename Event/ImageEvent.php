@@ -1,9 +1,9 @@
 <?php
 
-namespace ResponsiveImageBundle\Event;
+namespace IrishDan\ResponsiveImageBundle\Event;
 
 
-use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
+use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**

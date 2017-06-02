@@ -1,8 +1,8 @@
 <?php
 
-namespace ResponsiveImageBundle\Command;
+namespace IrishDan\ResponsiveImageBundle\Command;
 
-use ResponsiveImageBundle\Generator\ImageEntityGenerator;
+use IrishDan\ResponsiveImageBundle\Generator\ImageEntityGenerator;
 use Sensio\Bundle\GeneratorBundle\Command\GeneratorCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

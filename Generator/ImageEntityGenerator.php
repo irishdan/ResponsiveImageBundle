@@ -1,6 +1,6 @@
 <?php
 
-namespace ResponsiveImageBundle\Generator;
+namespace IrishDan\ResponsiveImageBundle\Generator;
 
 use Sensio\Bundle\GeneratorBundle\Generator\Generator;
 use Symfony\Component\Filesystem\Filesystem;

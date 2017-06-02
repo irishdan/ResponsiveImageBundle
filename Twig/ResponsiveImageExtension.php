@@ -1,11 +1,11 @@
 <?php
 
-namespace ResponsiveImageBundle\Twig;
+namespace IrishDan\ResponsiveImageBundle\Twig;
 
 
-use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
-use ResponsiveImageBundle\Utils\ResponsiveImageManager;
-use ResponsiveImageBundle\Utils\StyleManager;
+use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageInterface;
+use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageManager;
+use IrishDan\ResponsiveImageBundle\Utils\StyleManager;
 
 /**
  * Class ResponsiveImageExtension

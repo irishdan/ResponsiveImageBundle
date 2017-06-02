@@ -1,13 +1,13 @@
 <?php
 
-namespace ResponsiveImageBundle\Tests\Utils;
+namespace IrishDan\ResponsiveImageBundle\Tests\Utils;
 
 
-use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
-use ResponsiveImageBundle\Tests\Entity\TestImage;
-use ResponsiveImageBundle\Utils\FileManager;
-use ResponsiveImageBundle\Utils\FileSystem;
-use ResponsiveImageBundle\Utils\StyleManager;
+use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
+use IrishDan\ResponsiveImageBundle\Utils\FileManager;
+use IrishDan\ResponsiveImageBundle\Utils\FileSystem;
+use IrishDan\ResponsiveImageBundle\Utils\StyleManager;
 
 class StyleManagerTest extends ResponsiveImageTestCase
 {

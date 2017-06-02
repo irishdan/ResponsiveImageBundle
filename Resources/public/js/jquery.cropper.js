@@ -1,32 +1,35 @@
 /*
  A jquery widget for selecting area and a focus area of an image.
  It's based of the widget here:
+
  http://code.tutsplus.com/tutorials/how-to-create-a-jquery-image-cropping-plugin-from-scratch-part-i--net-20994
  http://code.tutsplus.com/tutorials/how-to-create-a-jquery-image-cropping-plugin-from-scratch-part-ii--net-21092
  */
-(function($) {
-    $.imageCrop = function(object, customOptions) {
+(function ($) {
+    $.imageCrop = function (object, customOptions) {
         cropper = {
             defaultOptions: {
-                aspectRatio : 0,
-                displaySizeHint : false,
-                minSelect : [0, 0],
-                minSize : [0, 0],
-                maxSize : [0, 0],
-                outlineOpacity : 0.5,
-                overlayOpacity : 0.5,
-                previewBoundary : 90,
-                previewFadeOnBlur : 1,
-                previewFadeOnFocus : 0.35,
-                selectionPosition : [0, 0],
-                selectionWidth : 0,
-                selectionHeight : 0,
-                focusPosition : [0, 0],
-                focusWidth : 0,
-                focusHeight : 0,
+                aspectRatio: 0,
+                displaySizeHint: false,
+                minSelect: [0, 0],
+                minSize: [0, 0],
+                maxSize: [0, 0],
+                outlineOpacity: 0.5,
+                overlayOpacity: 0.5,
+                previewBoundary: 90,
+                previewFadeOnBlur: 1,
+                previewFadeOnFocus: 0.35,
+                selectionPosition: [0, 0],
+                selectionWidth: 0,
+                selectionHeight: 0,
+                focusPosition: [0, 0],
+                focusWidth: 0,
+                focusHeight: 0,
                 cropInputselector: '.crop-focus-coordinates input',
-                onChange : function() {},
-                onSelect : function() {}
+                onChange: function () {
+                },
+                onSelect: function () {
+                }
             },
 
             $trigger: '',
@@ -59,7 +62,7 @@
             focusExists: '',
             focusOrigin: [0, 0],
 
-            init: function(object, customOptions) {
+            init: function (object, customOptions) {
                 // Set options to default.
                 this.options = this.defaultOptions;
 
@@ -75,7 +78,7 @@
                 // Initialize an image holder
                 this.$holder = $('<div></div>')
                     .css({
-                        position : 'relative'
+                        position: 'relative'
                     })
                     .width(this.$image.width())
                     .height(this.$image.height());
@@ -83,13 +86,13 @@
                 // Wrap the holder around the image
                 this.$image.wrap(this.$holder)
                     .css({
-                        position : 'absolute'
+                        position: 'absolute'
                     });
 
                 // Initialize an overlay layer and place it above the image
                 this.$overlay = $('<div id="image-crop-overlay"></div>')
                     .css({
-                        opacity : this.options.overlayOpacity,
+                        opacity: this.options.overlayOpacity,
 
                     })
                     .width(this.$image.width())
@@ -99,9 +102,9 @@
                 // Initialize a trigger layer and place it above the overlay layer
                 this.$trigger = $('<div></div>')
                     .css({
-                        backgroundColor : '#000000',
-                        opacity : 0,
-                        position : 'absolute'
+                        backgroundColor: '#000000',
+                        opacity: 0,
+                        position: 'absolute'
                     })
                     .width(this.$image.width())
                     .height(this.$image.height())
@@ -110,16 +113,16 @@
                 // Initialize an outline layer and place it above the trigger layer
                 this.$outline = $('<div id="image-crop-outline"></div>')
                     .css({
-                        opacity : this.options.outlineOpacity,
+                        opacity: this.options.outlineOpacity,
                     })
                     .insertAfter(this.$trigger);
 
                 // Initialize a selection layer and place it above the outline layer
                 this.$selection = $('<div></div>')
                     .css({
-                        background : 'url(' + this.$image.attr('src') + ') no-repeat',
+                        background: 'url(' + this.$image.attr('src') + ') no-repeat',
                         backgroundSize: this.$image.width() + 'px auto',
-                        position : 'absolute'
+                        position: 'absolute'
                     })
                     .insertAfter(this.$outline);
 
@@ -141,7 +144,7 @@
                 this.$focusSelection = $('<div></div>')
                     .css({
                         // backgroundSize: '970px auto',
-                        position : 'absolute'
+                        position: 'absolute'
                     })
                     .addClass('image-focus-rectangle')
                     .insertAfter(this.$seCropResizer)
@@ -185,13 +188,13 @@
                 $('div.image-crop-resize-handler, div.image-focus-resize-handler').mousedown(this.pickResizeHandler);
 
                 // Add click event to the focus destroyer.
-                this.$focusDestroyer.click(function() {
+                this.$focusDestroyer.click(function () {
                     cropper.removeFocus();
                     return false;
                 });
             },
 
-            setNaturalDimensions: function() {
+            setNaturalDimensions: function () {
                 var theImage = new Image();
                 theImage.src = this.$image.attr("src");
 
@@ -200,21 +203,21 @@
             },
 
             // Get the current offset of an element
-            getElementOffset: function(object) {
+            getElementOffset: function (object) {
                 var offset = $(object).offset();
 
                 return [offset.left, offset.top];
             },
 
             // Update the overlay layer
-            updateOverlayLayer: function() {
+            updateOverlayLayer: function () {
                 this.$overlay.css({
-                    display : this.selectionExists ? 'block' : 'none'
+                    display: this.selectionExists ? 'block' : 'none'
                 });
             },
 
             // Get the current mouse position relative to the image position
-            getMousePosition: function(event) {
+            getMousePosition: function (event) {
                 var imageOffset = this.getElementOffset(this.$image);
 
                 var x = event.pageX - imageOffset[0],
@@ -227,65 +230,65 @@
             },
 
             // Update the trigger layer
-            updateTriggerLayer: function() {
+            updateTriggerLayer: function () {
                 this.$trigger.css({
-                    cursor : 'crosshair',
+                    cursor: 'crosshair',
                 });
             },
 
             // Update the selection
-            updateCrop: function() {
+            updateCrop: function () {
                 // Update the outline layer
                 this.$outline.css({
-                        cursor: 'default',
-                        display: this.selectionExists ? 'block' : 'none',
-                        left: this.options.selectionPosition[0],
-                        top: this.options.selectionPosition[1]
-                    })
+                    cursor: 'default',
+                    display: this.selectionExists ? 'block' : 'none',
+                    left: this.options.selectionPosition[0],
+                    top: this.options.selectionPosition[1]
+                })
                     .width(this.options.selectionWidth)
                     .height(this.options.selectionHeight);
 
                 // Update the selection layer
                 this.$selection.css({
-                        backgroundPosition: ( -this.options.selectionPosition[0] - 1) + 'px ' + ( -this.options.selectionPosition[1] - 1) + 'px',
-                        cursor: 'move',
-                        display: this.selectionExists ? 'block' : 'none',
-                        left: this.options.selectionPosition[0] + 1,
-                        top: this.options.selectionPosition[1] + 1
-                    })
+                    backgroundPosition: ( -this.options.selectionPosition[0] - 1) + 'px ' + ( -this.options.selectionPosition[1] - 1) + 'px',
+                    cursor: 'move',
+                    display: this.selectionExists ? 'block' : 'none',
+                    left: this.options.selectionPosition[0] + 1,
+                    top: this.options.selectionPosition[1] + 1
+                })
                     .width((this.options.selectionWidth - 2 > 0) ? (this.options.selectionWidth - 2) : 0)
                     .height((this.options.selectionHeight - 2 > 0) ? (this.options.selectionHeight - 2) : 0);
 
                 // Update the forcus rectangle
                 this.$focusSelection.css({
-                        backgroundPosition: ( -this.options.focusPosition[0] - 1) + 'px ' + ( -this.options.focusPosition[1] - 1) + 'px',
-                        cursor: 'move',
-                        display: this.focusExists ? 'block' : 'none',
-                        left: this.options.focusPosition[0] + 1,
-                        top: this.options.focusPosition[1] + 1
-                    })
+                    backgroundPosition: ( -this.options.focusPosition[0] - 1) + 'px ' + ( -this.options.focusPosition[1] - 1) + 'px',
+                    cursor: 'move',
+                    display: this.focusExists ? 'block' : 'none',
+                    left: this.options.focusPosition[0] + 1,
+                    top: this.options.focusPosition[1] + 1
+                })
                     .width((this.options.focusWidth - 2 > 0) ? (this.options.focusWidth - 2) : 0)
                     .height((this.options.focusHeight - 2 > 0) ? (this.options.focusHeight - 2) : 0);
 
             },
 
             // Update the cursor type
-            updateCursor: function(cursorType) {
+            updateCursor: function (cursorType) {
                 this.$trigger.css({
-                    cursor : cursorType
+                    cursor: cursorType
                 });
 
                 this.$outline.css({
-                    cursor : cursorType
+                    cursor: cursorType
                 });
 
                 this.$selection.css({
-                    cursor : cursorType
+                    cursor: cursorType
                 });
             },
 
             // Update the plug-in's interface
-            updateInterface: function(sender) {
+            updateInterface: function (sender) {
                 switch (sender) {
                     case 'addRectangles':
                         this.updateOverlayLayer();
@@ -332,7 +335,7 @@
             },
 
             // Set a new selection
-            setCrop: function(event) {
+            setCrop: function (event) {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -355,7 +358,7 @@
                 cropper.updateInterface('setCrop');
             },
 
-            setFocus: function(event) {
+            setFocus: function (event) {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -380,7 +383,7 @@
                 cropper.updateInterface('setCrop');
             },
 
-            isValidPosition: function(mousePosition, area) {
+            isValidPosition: function (mousePosition, area) {
                 var mouseX = mousePosition[0],
                     mouseY = mousePosition[1],
                     valid = true;
@@ -404,7 +407,7 @@
             },
 
             // Resize the crop area
-            resizeCrop: function(event) {
+            resizeCrop: function (event) {
                 event.preventDefault();
                 event.stopPropagation();
                 var mousePosition = cropper.getMousePosition(event),
@@ -429,7 +432,7 @@
                 }
             },
 
-            resizeFocus: function(event) {
+            resizeFocus: function (event) {
                 event.preventDefault();
                 event.stopPropagation();
                 var mousePosition = cropper.getMousePosition(event),
@@ -455,7 +458,7 @@
             },
 
             // Release the current selection
-            releaseCrop: function(event) {
+            releaseCrop: function (event) {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -491,7 +494,7 @@
                 cropper.updateInterface('releaseCrop');
             },
 
-            releaseFocus: function(event) {
+            releaseFocus: function (event) {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -527,7 +530,7 @@
                 cropper.updateInterface('releaseCrop');
             },
 
-            removeFocus: function() {
+            removeFocus: function () {
                 // Remove the rectangle.
                 cropper.$focusSelection.css({
                     top: 0,
@@ -539,7 +542,7 @@
                 // Reset the values.
                 cropper.focusExists = false;
                 cropper.focusOrigin = [0, 0];
-                cropper.options.focusPosition = [0,0];
+                cropper.options.focusPosition = [0, 0];
                 cropper.options.focusHeight = 0;
                 cropper.options.focusWidth = 0;
 
@@ -551,12 +554,12 @@
             },
 
             // Update the resize handlers
-            updateResizeHandlers: function(action) {
+            updateResizeHandlers: function (action) {
                 switch (action) {
                     case 'hide-all' :
-                        $('.image-crop-resize-handler, .image-focus-resize-handler').each(function() {
+                        $('.image-crop-resize-handler, .image-focus-resize-handler').each(function () {
                             $(this).css({
-                                display : 'none'
+                                display: 'none'
                             });
                         });
 
@@ -565,66 +568,66 @@
                         var display = (cropper.selectionExists) ? 'block' : 'none';
                         // Crop rectangle.
                         cropper.$nwCropResizer.css({
-                            cursor : 'nw-resize',
-                            display : display,
-                            left : cropper.options.selectionPosition[0] - Math.round(cropper.$nwCropResizer.width() / 2),
-                            top : cropper.options.selectionPosition[1] - Math.round(cropper.$nwCropResizer.height() / 2)
+                            cursor: 'nw-resize',
+                            display: display,
+                            left: cropper.options.selectionPosition[0] - Math.round(cropper.$nwCropResizer.width() / 2),
+                            top: cropper.options.selectionPosition[1] - Math.round(cropper.$nwCropResizer.height() / 2)
                         });
 
                         cropper.$neCropResizer.css({
-                            cursor : 'ne-resize',
-                            display : display,
-                            left : cropper.options.selectionPosition[0] + cropper.options.selectionWidth - Math.round(cropper.$neCropResizer.width() / 2) - 1,
-                            top : cropper.options.selectionPosition[1] - Math.round(cropper.$neCropResizer.height() / 2)
+                            cursor: 'ne-resize',
+                            display: display,
+                            left: cropper.options.selectionPosition[0] + cropper.options.selectionWidth - Math.round(cropper.$neCropResizer.width() / 2) - 1,
+                            top: cropper.options.selectionPosition[1] - Math.round(cropper.$neCropResizer.height() / 2)
                         });
 
                         cropper.$swCropResizer.css({
-                            cursor : 'sw-resize',
-                            display : display,
-                            left : cropper.options.selectionPosition[0] - Math.round(cropper.$swCropResizer.width() / 2),
-                            top : cropper.options.selectionPosition[1] + cropper.options.selectionHeight - Math.round(cropper.$swCropResizer.height() / 2) - 1
+                            cursor: 'sw-resize',
+                            display: display,
+                            left: cropper.options.selectionPosition[0] - Math.round(cropper.$swCropResizer.width() / 2),
+                            top: cropper.options.selectionPosition[1] + cropper.options.selectionHeight - Math.round(cropper.$swCropResizer.height() / 2) - 1
                         });
 
                         cropper.$seCropResizer.css({
-                            cursor : 'se-resize',
-                            display : display,
-                            left : cropper.options.selectionPosition[0] + cropper.options.selectionWidth - Math.round(cropper.$seCropResizer.width() / 2) - 1,
-                            top : cropper.options.selectionPosition[1] + cropper.options.selectionHeight - Math.round(cropper.$seCropResizer.height() / 2) - 1
+                            cursor: 'se-resize',
+                            display: display,
+                            left: cropper.options.selectionPosition[0] + cropper.options.selectionWidth - Math.round(cropper.$seCropResizer.width() / 2) - 1,
+                            top: cropper.options.selectionPosition[1] + cropper.options.selectionHeight - Math.round(cropper.$seCropResizer.height() / 2) - 1
                         });
 
                         // Focus Rectangle.
                         cropper.$nwFocusResizer.css({
-                            cursor : 'nw-resize',
-                            display : display,
-                            left : cropper.options.focusPosition[0] - Math.round(cropper.$nwFocusResizer.width() / 2),
-                            top : cropper.options.focusPosition[1] - Math.round(cropper.$nwFocusResizer.height() / 2)
+                            cursor: 'nw-resize',
+                            display: display,
+                            left: cropper.options.focusPosition[0] - Math.round(cropper.$nwFocusResizer.width() / 2),
+                            top: cropper.options.focusPosition[1] - Math.round(cropper.$nwFocusResizer.height() / 2)
                         });
 
                         cropper.$neFocusResizer.css({
-                            cursor : 'ne-resize',
-                            display : display,
-                            left : cropper.options.focusPosition[0] + cropper.options.focusWidth - Math.round(cropper.$neFocusResizer.width() / 2) - 1,
-                            top : cropper.options.focusPosition[1] - Math.round(cropper.$neFocusResizer.height() / 2)
+                            cursor: 'ne-resize',
+                            display: display,
+                            left: cropper.options.focusPosition[0] + cropper.options.focusWidth - Math.round(cropper.$neFocusResizer.width() / 2) - 1,
+                            top: cropper.options.focusPosition[1] - Math.round(cropper.$neFocusResizer.height() / 2)
                         });
 
                         cropper.$swFocusResizer.css({
-                            cursor : 'sw-resize',
-                            display : display,
-                            left : cropper.options.focusPosition[0] - Math.round(cropper.$swFocusResizer.width() / 2),
-                            top : cropper.options.focusPosition[1] + cropper.options.focusHeight - Math.round(cropper.$swFocusResizer.height() / 2) - 1
+                            cursor: 'sw-resize',
+                            display: display,
+                            left: cropper.options.focusPosition[0] - Math.round(cropper.$swFocusResizer.width() / 2),
+                            top: cropper.options.focusPosition[1] + cropper.options.focusHeight - Math.round(cropper.$swFocusResizer.height() / 2) - 1
                         });
 
                         cropper.$seFocusResizer.css({
-                            cursor : 'se-resize',
-                            display : display,
-                            left : cropper.options.focusPosition[0] + cropper.options.focusWidth - Math.round(cropper.$seFocusResizer.width() / 2) - 1,
-                            top : cropper.options.focusPosition[1] + cropper.options.focusHeight - Math.round(cropper.$seFocusResizer.height() / 2) - 1
+                            cursor: 'se-resize',
+                            display: display,
+                            left: cropper.options.focusPosition[0] + cropper.options.focusWidth - Math.round(cropper.$seFocusResizer.width() / 2) - 1,
+                            top: cropper.options.focusPosition[1] + cropper.options.focusHeight - Math.round(cropper.$seFocusResizer.height() / 2) - 1
                         });
                 }
             },
 
             // Pick the current selection
-            pickSelection: function(event) {
+            pickSelection: function (event) {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -632,7 +635,7 @@
             },
 
             // Pick one of the resize handlers
-            pickResizeHandler: function(event) {
+            pickResizeHandler: function (event) {
                 var rectangle = 'Crop';
 
                 event.preventDefault();
@@ -700,10 +703,10 @@
                 var $input = $(cropper.options.cropInputselector),
                     valueString = $input.val();
 
-                if (valueString != '' ) {
+                if (valueString != '') {
                     var valueArray = valueString.split(':'),
                         cropString = valueArray[0],
-                        focusString= valueArray[1],
+                        focusString = valueArray[1],
                         cropCoords = cropString.split(', '),
                         focusCoords = focusString.split(', '),
                         widthScale = cropper.naturalWidth / cropper.$image.width(),
@@ -735,7 +738,7 @@
             },
 
             // Return an object containing information about the plug-in state
-            getCropData: function() {
+            getCropData: function () {
                 var data = cropper.options;
 
                 var widthScale = cropper.naturalWidth / cropper.$image.width();
@@ -750,7 +753,7 @@
                     fw = Math.floor(data.focusWidth * widthScale),
                     fh = Math.floor(data.focusHeight * heightScale);
 
-                var output = cx + ', ' +  cy + ', ' + (cx + cw) + ', ' + (cy + ch) + ':' + fx + ', ' +  fy + ', ' + (fx + fw) + ', ' + (fy + fh);
+                var output = cx + ', ' + cy + ', ' + (cx + cw) + ', ' + (cy + ch) + ':' + fx + ', ' + fy + ', ' + (fx + fw) + ', ' + (fy + fh);
 
                 $(data.cropInputselector).val(output);
             }
@@ -759,13 +762,13 @@
         cropper.init(object, customOptions);
     };
 
-    $.fn.imageCrop = function(customOptions) {
-        this.each(function() {
+    $.fn.imageCrop = function (customOptions) {
+        this.each(function () {
             var currentObject = this,
                 image = new Image();
 
             // And attach imageCrop when the object is loaded
-            image.onload = function() {
+            image.onload = function () {
                 $.imageCrop(currentObject, customOptions);
             };
 
@@ -775,8 +778,8 @@
 
         return this;
     };
-}) (jQuery);
+})(jQuery);
 
-jQuery(window).load(function($) {
+jQuery(window).load(function ($) {
     jQuery('.crop-focus-image img').imageCrop();
 });

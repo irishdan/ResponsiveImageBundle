@@ -1,6 +1,6 @@
 <?php
 
-namespace ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle\Utils;
 
 /**
  * Class StyleManager
@@ -193,7 +193,6 @@ class StyleManager
         $filename = $image->getPath();
 
         // First mapping is the default image.
-        // @TODO: Art we using this or not
         $mappings[] = $image->getStyle();
 
         if (!empty($this->pictureSets[$pictureSetName])) {

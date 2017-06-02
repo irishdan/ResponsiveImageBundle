@@ -1,6 +1,6 @@
 <?php
 
-namespace ResponsiveImageBundle\Event;
+namespace IrishDan\ResponsiveImageBundle\Event;
 
 /**
  * Class ImageEvents

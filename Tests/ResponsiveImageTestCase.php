@@ -1,6 +1,6 @@
 <?php
 
-namespace ResponsiveImageBundle\Tests;
+namespace IrishDan\ResponsiveImageBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Application;

@@ -1,8 +1,8 @@
 <?php
 
-namespace ResponsiveImageBundle\Test\Command;
+namespace IrishDan\ResponsiveImageBundle\Test\Command;
 
-use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;

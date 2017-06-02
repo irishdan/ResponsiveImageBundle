@@ -1,8 +1,8 @@
 <?php
 
-namespace ResponsiveImageBundle\Tests\Utils;
+namespace IrishDan\ResponsiveImageBundle\Tests\Utils;
 
-use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 
 class ImageMakerTest extends ResponsiveImageTestCase
 {

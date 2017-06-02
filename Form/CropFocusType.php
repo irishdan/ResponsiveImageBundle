@@ -1,8 +1,8 @@
 <?php
 
-namespace ResponsiveImageBundle\Form;
+namespace IrishDan\ResponsiveImageBundle\Form;
 
-use ResponsiveImageBundle\Utils\StyleManager;
+use IrishDan\ResponsiveImageBundle\Utils\StyleManager;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;

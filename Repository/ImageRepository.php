@@ -1,9 +1,9 @@
 <?php
 
-namespace ResponsiveImageBundle\Repository;
+namespace IrishDan\ResponsiveImageBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use ResponsiveImageBundle\Utils\ResponsiveImageRepositoryInterface;
+use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageRepositoryInterface;
 
 class ImageRepository extends EntityRepository implements ResponsiveImageRepositoryInterface
 {

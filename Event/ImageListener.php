@@ -1,8 +1,8 @@
 <?php
 
-namespace ResponsiveImageBundle\Event;
+namespace IrishDan\ResponsiveImageBundle\Event;
 
-use ResponsiveImageBundle\Event\ImageEvent;
+use IrishDan\ResponsiveImageBundle\Event\ImageEvent;
 
 /**
  * Class ImageListener

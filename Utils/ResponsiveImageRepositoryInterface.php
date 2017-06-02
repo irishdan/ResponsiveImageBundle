@@ -1,6 +1,6 @@
 <?php
 
-namespace ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle\Utils;
 
 Interface ResponsiveImageRepositoryInterface
 {

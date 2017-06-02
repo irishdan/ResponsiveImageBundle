@@ -1,9 +1,9 @@
 <?php
 
-namespace ResponsiveImageBundle\Test\Controller;
+namespace IrishDan\ResponsiveImageBundle\Test\Controller;
 
-use ResponsiveImageBundle\Tests\Entity\TestImage;
-use ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
+use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 
 class ImageControllerTest extends ResponsiveImageTestCase
 {

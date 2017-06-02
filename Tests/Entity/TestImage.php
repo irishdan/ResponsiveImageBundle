@@ -1,8 +1,8 @@
 <?php
 
-namespace ResponsiveImageBundle\Tests\Entity;
+namespace IrishDan\ResponsiveImageBundle\Tests\Entity;
 
-use ResponsiveImageBundle\Utils\ResponsiveImageInterface;
+use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;

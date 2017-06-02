@@ -14,10 +14,8 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\TwigBundle\TwigBundle();
             $bundles[] = new Symfony\Bundle\MonologBundle\MonologBundle();
             $bundles[] = new Doctrine\Bundle\DoctrineBundle\DoctrineBundle();
-            $bundles[] = new ResponsiveImageBundle\ResponsiveImageBundle();
+            $bundles[] = new IrishDan\ResponsiveImageBundle\ResponsiveImageBundle();
         }
-
-        // @TODO: These are dependencies, adjust composer to reflex.
 
         return $bundles;
     }
