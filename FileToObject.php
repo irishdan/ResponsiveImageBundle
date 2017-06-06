@@ -1,13 +1,13 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 use Doctrine\ORM\EntityManager;
 
 /**
  * Class FileToObject
  *
- * @package ResponsiveImageBundle\Utils
+ * @package ResponsiveImageBundle
  */
 class FileToObject
 {

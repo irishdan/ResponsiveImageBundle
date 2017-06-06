@@ -1,11 +1,11 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 /**
  * Class StyleManager
  *
- * @package ResponsiveImageBundle\Utils
+ * @package ResponsiveImageBundle
  */
 class StyleManager
 {
@@ -37,8 +37,8 @@ class StyleManager
     /**
      * StyleManager constructor.
      *
-     * @param \ResponsiveImageBundle\Utils\FileManager $system
-     * @param array                                    $parameters
+     * @param \ResponsiveImageBundle\FileManager $system
+     * @param array                              $parameters
      */
     public function __construct(FileManager $system, array $parameters)
     {
@@ -232,7 +232,7 @@ class StyleManager
     public function setImageStyle(ResponsiveImageInterface $image, $styleName = null)
     {
         // @TODO: Hack to avoid looping over itself and string paths together.
-        if ($styleName !== null && !in_array($styleName, $this->styles)) {
+        if ($styleName !== null && empty($this->getStyle($styleName))) {
             return $image;
         }
 

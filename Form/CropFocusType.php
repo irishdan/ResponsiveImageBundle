@@ -2,7 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Form;
 
-use IrishDan\ResponsiveImageBundle\Utils\StyleManager;
+use IrishDan\ResponsiveImageBundle\StyleManager;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;

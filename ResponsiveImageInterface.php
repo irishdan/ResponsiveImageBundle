@@ -1,13 +1,13 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Interface ResponsiveImageInterface
  *
- * @package ResponsiveImageBundle\Utils
+ * @package ResponsiveImageBundle
  */
 Interface ResponsiveImageInterface
 {

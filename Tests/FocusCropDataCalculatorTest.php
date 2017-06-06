@@ -1,9 +1,9 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Tests\Utils;
+namespace IrishDan\ResponsiveImageBundle\Tests;
 
 use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
-use IrishDan\ResponsiveImageBundle\Utils\FocusCropDataCalculator;
+use IrishDan\ResponsiveImageBundle\FocusCropDataCalculator;
 
 class FocusCropDataCalculatorTest extends ResponsiveImageTestCase
 {

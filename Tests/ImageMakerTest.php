@@ -1,14 +1,14 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Tests\Utils;
+namespace IrishDan\ResponsiveImageBundle\Tests;
 
 use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 
 class ImageMakerTest extends ResponsiveImageTestCase
 {
     private $imager;
-    private $testImagePath = __DIR__ . '/../Resources/dummy.jpg';
-    private $generatedDirectory = __DIR__ . '/../Resources/generated/';
+    private $testImagePath = __DIR__ . '/Resources/dummy.jpg';
+    private $generatedDirectory = __DIR__ . '/Resources/generated/';
     private $coordinates = '100, 100, 900, 900:400, 500, 700, 800';
 
     public function setUp()

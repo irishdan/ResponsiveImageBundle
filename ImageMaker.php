@@ -1,16 +1,18 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 use Intervention\Image\ImageManager;
 
 /**
  * Class ImageMaker
  *
- * @package ResponsiveImageBundle\Utils
+ * @package ResponsiveImageBundle
  */
 class ImageMaker
 {
+    use CoordinateLengthCalculator;
+
     /**
      * @var
      */
@@ -248,5 +250,22 @@ class ImageMaker
         $this->img->save($fullPath, $this->compression);
 
         return $fullPath;
+    }
+
+    /**
+     * Gets vertical or horizontal length between two coordinates (x, y, x2, y2).
+     *
+     * @param string $type
+     * @param array  $coords
+     * @return mixed
+     */
+    protected function getLength($type = 'x', array $coords)
+    {
+        $type = strtolower($type);
+        if ($type == 'x') {
+            return $coords[2] - $coords[0];
+        } else {
+            return $coords[3] - $coords[1];
+        }
     }
 }

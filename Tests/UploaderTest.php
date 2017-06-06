@@ -1,10 +1,10 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Tests\Utils;
+namespace IrishDan\ResponsiveImageBundle\Tests;
 
 use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
-use IrishDan\ResponsiveImageBundle\Utils\FileSystem;
-use IrishDan\ResponsiveImageBundle\Utils\Uploader;
+use IrishDan\ResponsiveImageBundle\FileSystem;
+use IrishDan\ResponsiveImageBundle\Uploader;
 
 class UploaderTest extends ResponsiveImageTestCase
 {

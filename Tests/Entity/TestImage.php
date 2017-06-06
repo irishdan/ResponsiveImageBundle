@@ -2,7 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Tests\Entity;
 
-use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageInterface;
+use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;

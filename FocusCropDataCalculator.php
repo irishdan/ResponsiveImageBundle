@@ -1,9 +1,10 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 class FocusCropDataCalculator
 {
+    use CoordinateLengthCalculator;
     private $cropCoordinates;
     private $focusCoordinates;
     private $styleWidth;
@@ -219,22 +220,5 @@ class FocusCropDataCalculator
         }
 
         return $inBounds;
-    }
-
-    /**
-     * Gets vertical or horizontal length between two coordinates (x, y, x2, y2).
-     *
-     * @param string $type
-     * @param array  $coords
-     * @return mixed
-     */
-    protected function getLength($type = 'x', array $coords)
-    {
-        $type = strtolower($type);
-        if ($type == 'x') {
-            return $coords[2] - $coords[0];
-        } else {
-            return $coords[3] - $coords[1];
-        }
     }
 }

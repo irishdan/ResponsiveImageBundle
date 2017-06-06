@@ -1,10 +1,10 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 /**
  * Class ResponsiveImageManager
- * @package ResponsiveImageBundle\Utils
+ * @package ResponsiveImageBundle
  */
 class ResponsiveImageManager
 {

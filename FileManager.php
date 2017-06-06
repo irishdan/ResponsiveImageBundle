@@ -1,13 +1,13 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class FileSystem
  *
- * @package ResponsiveImageBundle\Utils
+ * @package ResponsiveImageBundle
  */
 class FileManager
 {

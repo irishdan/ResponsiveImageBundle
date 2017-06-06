@@ -3,7 +3,7 @@
 namespace IrishDan\ResponsiveImageBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageRepositoryInterface;
+use IrishDan\ResponsiveImageBundle\ResponsiveImageRepositoryInterface;
 
 class ImageRepository extends EntityRepository implements ResponsiveImageRepositoryInterface
 {

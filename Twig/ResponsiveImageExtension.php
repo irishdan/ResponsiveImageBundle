@@ -3,9 +3,9 @@
 namespace IrishDan\ResponsiveImageBundle\Twig;
 
 
-use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageInterface;
-use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageManager;
-use IrishDan\ResponsiveImageBundle\Utils\StyleManager;
+use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
+use IrishDan\ResponsiveImageBundle\ResponsiveImageManager;
+use IrishDan\ResponsiveImageBundle\StyleManager;
 
 /**
  * Class ResponsiveImageExtension

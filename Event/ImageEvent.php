@@ -3,7 +3,7 @@
 namespace IrishDan\ResponsiveImageBundle\Event;
 
 
-use IrishDan\ResponsiveImageBundle\Utils\ResponsiveImageInterface;
+use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**

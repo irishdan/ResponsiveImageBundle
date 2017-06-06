@@ -1,6 +1,6 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Utils;
+namespace IrishDan\ResponsiveImageBundle;
 
 use Aws\CommandPool;
 use Aws\Exception\AwsException;
@@ -9,7 +9,7 @@ use Aws\S3\S3Client;
 /**
  * Class S3Bridge
  *
- * @package ResponsiveImageBundle\Utils
+ * @package ResponsiveImageBundle
  */
 class S3Bridge
 {

@@ -233,7 +233,7 @@ Generator is now included
 
 For image objects you can use your own entity, as long as it implements the ResponsiveImageInterface
 ```
-ResponsiveImageBundle\Utils\ResponsiveImageInterface.
+ResponsiveImageBundle\ResponsiveImageInterface.
 ```
 don't for get jquery for the edit widget
 
