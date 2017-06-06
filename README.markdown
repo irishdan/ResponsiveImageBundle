@@ -103,28 +103,9 @@ If no focus or cropped were applied the images would be like this:
 2: Installation
 ---------------------------
 
-Clone the bundle repo to your src directory.
+With composer
 ```
-git clone https://github.com/irishdan/ResponsiveImageBundle.git
-```
-
-The bundle utilises the intervention image library http://image.intervention.io/. Add it as a requirement to composer.json
-```
-{
-    "require": {
-        "intervention/image": "^2.3",
-    }
-}
-```
-
-To use AWS the, the AWS PHP sdk is also required.
-
-```
-{
-    "require": {
-        "aws/aws-sdk-php": "^3.18",
-    }
-}
+composer require irishdan/responsive-image-bundle
 ```
 
 3: Enable the Bundle

@@ -231,7 +231,13 @@ class StyleManager
      */
     public function setImageStyle(ResponsiveImageInterface $image, $styleName = null)
     {
+        // @TODO: Hack to avoid looping over itself and string paths together.
+        if ($styleName !== null && !in_array($styleName, $this->styles)) {
+            return $image;
+        }
+
         $filename = $image->getPath();
+
         if (!empty($styleName)) {
             $stylePath = $this->fileManager->styleWebPath($styleName);
         } else {
@@ -240,6 +246,7 @@ class StyleManager
 
         $webPath = $stylePath . '/' . $filename;
         $webPath = $this->prefixPath($webPath, $styleName);
+
         $image->setStyle($webPath);
 
         return $image;

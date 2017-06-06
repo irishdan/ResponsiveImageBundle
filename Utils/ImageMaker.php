@@ -196,6 +196,7 @@ class ImageMaker
             $y1 = $cropCoords[1];
 
             // Get the lengths.
+            // @TODO: Methods not existing
             $newWidth = $this->getLength('x', $cropCoords);
             $newHeight = $this->getLength('y', $cropCoords);
 
