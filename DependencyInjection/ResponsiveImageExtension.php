@@ -27,6 +27,9 @@ class ResponsiveImageExtension extends Extension
         $container->setParameter('image_directory', $config['image_directory']);
         $container->setParameter('image_styles_directory', $config['image_styles_directory']);
 
+        // @TODO
+        $container->setParameter('responsive_image.filesystem', $config['filesystem']);
+
         // Create the image_entity_class parameter.
         // @TODO: Prefix parameters
         $container->setParameter('image_entity_class', $config['image_entity_class']);

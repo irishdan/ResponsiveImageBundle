@@ -21,6 +21,9 @@ class ImageController extends Controller
      */
     public function indexAction($stylename, $filename)
     {
+        // @TODO:
+        // $filesystem = $this->get('oneup_flysystem.nomad.local_filesystem');
+
         // Get image style information.
         if (empty($this->get('responsive_image.style_manager')->styleExists($stylename))) {
             throw $this->createNotFoundException('The style does not exist');

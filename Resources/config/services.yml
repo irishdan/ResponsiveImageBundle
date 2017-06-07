@@ -21,7 +21,7 @@ services:
 
     responsive_image.uploader:
         class: IrishDan\ResponsiveImageBundle\Uploader
-        arguments: ['@responsive_image.file_manager']
+        arguments: [ '@responsive_image_filesystem' ]
 
     responsive_image.s3_bridge:
         class: IrishDan\ResponsiveImageBundle\S3Bridge

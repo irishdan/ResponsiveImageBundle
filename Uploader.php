@@ -2,6 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle;
 
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -15,7 +16,7 @@ class Uploader
     /**
      * @var array
      */
-    public $allowedTypes = [
+    protected $allowedTypes = [
         'jpg',
         'jpeg',
         'png',
@@ -23,190 +24,79 @@ class Uploader
     /**
      * @var FileManager
      */
-    private $fileSystem;
+    protected $fileSystem;
+    /**
+     * @var UploadedFile $file
+     */
+    protected $file;
     /**
      * @var
      */
-    private $file;
-    /**
-     * @var
-     */
-    private $uploadOk = false;
+    protected $error;
 
     /**
      * Uploader constructor.
      *
-     * @param FileManager $system
+     * @param FilesystemInterface $fileSystem
      */
-    public function __construct(FileManager $system)
+    public function __construct(FilesystemInterface $fileSystem)
     {
-        $this->fileSystem = $system;
+        $this->fileSystem = $fileSystem;
     }
 
     /**
-     * Sets file.
-     *
-     * @param UploadedFile $file
+     * @return null|string
      */
-    public function setFile(UploadedFile $file = null)
+    protected function formatPath()
     {
-        $this->file = $file;
+        // @TODO: The could be adjusted in any number of ways depending on implementation.
+        $path = $this->file->getClientOriginalName();
+
+        return $path;
     }
 
-    /**
-     * Get file.
-     *
-     * @return UploadedFile
-     */
-    public function getFile()
+    protected function isValid()
     {
-        return $this->file;
+        // @TODO: Implement.
+        // $this->error = '';
+        return true;
     }
 
-    /**
-     * Sanitizes and cleans up filename
-     *
-     * @param $str
-     * @return mixed
-     */
-    private function createFilename($str)
-    {
-        // Sanitize and transliterate
-        $str = strtolower($str);
-        $str = strip_tags($str);
-        $safeName = preg_replace('/[^a-z0-9-_\.]/', '', $str);
-
-        // Create unique filename.
-        $i = 1;
-        while (!$this->isUniqueFilename($safeName)) {
-            $nameArray = explode('.', $safeName);
-            $safeName = $nameArray[0] . '-' . $i . '.' . $nameArray[1];
-            $i++;
-        }
-
-        return $safeName;
-    }
-
-    /**
-     * Convert MB/K/G to bytesize
-     *
-     * @param $uploadMaxSize
-     * @return int
-     */
-    public function mToBytes($uploadMaxSize)
-    {
-        $uploadMaxSize = trim($uploadMaxSize);
-        $last = strtolower($uploadMaxSize[strlen($uploadMaxSize) - 1]);
-
-        switch ($last) {
-            case 'g':
-                $uploadMaxSize *= 1024 * 1000 * 1000;
-                break;
-
-            case 'm':
-                $uploadMaxSize *= 1024 * 1000;
-                break;
-
-            case 'k':
-                $uploadMaxSize *= 1024;
-                break;
-        }
-
-        return $uploadMaxSize;
-    }
-
-    /**
-     * Checks to see if a file name is unique in the storage directory.
-     *
-     * @param $name
-     * @return bool
-     */
-    private function isUniqueFilename($name)
-    {
-        $storageDirectory = $this->fileSystem->getStorageDirectory();
-        $filePath = $storageDirectory . $name;
-        if ($this->fileSystem->directoryExists($filePath)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Tests if mime type is allowed.
-     *
-     * @return bool
-     */
-    public function isAllowedType()
-    {
-        $extension = $this->getFile()->guessExtension();
-        if (in_array($extension, $this->allowedTypes)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * After uploading, this function checks if the image is valid and if so moves it to an appropriate storage
-     * location.
-     *
-     * @param ResponsiveImageInterface $image .
-     * @return ResponsiveImageInterface
-     */
     public function upload(ResponsiveImageInterface $image)
     {
-        // The file property can be empty if the field is not required.
-        if (null === $image->getFile()) {
-            return false;
-        }
+        $this->file = $image->getFile();
 
-        $this->setFile($image->getFile());
-        $messages = [];
-        $this->uploadOk = true;
+        // Use UploadedFile's inbuild validation and allow
+        // implementation specific custom checks on uploaded file
+        if ($this->file->isValid() && $this->isValid()) {
+            // Alter name for uniqueness
+            $path = $this->formatPath();
 
-        // Get max file upload in bytes.
-        $uploadMaxSize = ini_get('upload_max_filesize');
-        $uploadMaxSize = $this->mToBytes($uploadMaxSize);
+            $info = getimagesize($this->file);
+            list($x, $y) = $info;
 
-        if (!$this->file instanceof UploadedFile && !empty($image->getFile()->getError())) {
-            $messages[] = 'Uploaded file should be an instance of \'UploadedFile\'';
-            $this->uploadOk = false;
-        } elseif ($this->file->getSize() > $uploadMaxSize) {
-            $messages[] = sprintf('%s: File size cannot be larger than %s', $this->file->getSize(), $uploadMaxSize);
-            $this->uploadOk = false;
-        } elseif (!$this->isAllowedType()) {
-            $messages[] = 'File type is not allowed';
-            $this->uploadOk = false;
-        } else {
-            // Sanitize it at least to avoid any security issues.
-            $fileName = $this->file->getClientOriginalName();
-            $newFileName = $this->createFilename($fileName);
+            // Save the actual file to the filesystem.
+            $stream = fopen($this->file->getRealPath(), 'r+');
+            $this->fileSystem->writeStream($path, $stream);
+            fclose($stream);
 
-            // Move takes the target directory and then the target filename to move to.
-            $storageDirectory = $this->fileSystem->getStorageDirectory('original');
-            $this->file->move(
-                $storageDirectory,
-                $newFileName
-            );
+            $image->setPath($path);
+            $image->setHeight($x);
+            $image->setWidth($y);
 
-            // Set the path property to the filename where you've saved the file.
-            $image->setPath($newFileName);
-
-            // Set the image dimensions.
-            $imageData = getimagesize($storageDirectory . $newFileName);
-            $image->setWidth($imageData[0]);
-            $image->setHeight($imageData[1]);
+            // var_dump($this->fileSystem->getMetadata($path));
+            // var_dump($info);
+            // var_dump($x);
+            // var_dump($y);
 
             // Clean up the file property as you won't need it anymore.
             $this->file = null;
             $image->setFile(null);
-        }
-
-        if ($this->uploadOk) {
-            return $image;
         } else {
-            throw new FileException($messages[0]);
+            $error = empty($this->error) ? $this->file->getErrorMessage() : $this->error;
+            throw new FileException(
+                $error
+            );
         }
     }
 }
