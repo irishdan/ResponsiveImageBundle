@@ -15,15 +15,17 @@ class FileToObject
      * @var EntityManager
      */
     private $manager;
+    private $entityClassName;
 
     /**
      * FileToObject constructor.
      *
      * @param EntityManager $manager
      */
-    public function __construct(EntityManager $manager)
+    public function __construct(EntityManager $manager, $entityClassName)
     {
         $this->manager = $manager;
+        $this->entityClassName = $entityClassName;
     }
 
     /**
@@ -33,10 +35,10 @@ class FileToObject
      * @param $entityClassName
      * @return mixed
      */
-    public function getObjectFromFilename($filename, $entityClassName)
+    public function getObjectFromFilename($filename)
     {
         /** @var ResponsiveImageRepositoryInterface $repository */
-        $repository = $this->manager->getRepository($entityClassName);
+        $repository = $this->manager->getRepository($this->entityClassName);
 
         if ($repository instanceof ResponsiveImageRepositoryInterface) {
             $fileObject = $repository->findImageFromFilename($filename);

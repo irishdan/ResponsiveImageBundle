@@ -17,15 +17,25 @@ services:
 
     responsive_image.file_to_object:
         class: IrishDan\ResponsiveImageBundle\FileToObject
-        arguments: [ '@doctrine.orm.entity_manager' ]
+        arguments: [ '@doctrine.orm.entity_manager', '%responsive_image.entity_class%' ]
 
     responsive_image.uploader:
         class: IrishDan\ResponsiveImageBundle\Uploader
-        arguments: [ '@responsive_image_filesystem' ]
+        arguments: [ '@event_dispatcher', '@responsive_image.filename_transliterator', '@responsive_image.file_validator' ]
+        calls:
+            - [ setFileSystem, [ '@responsive_image_filesystem' ]]
 
     responsive_image.s3_bridge:
         class: IrishDan\ResponsiveImageBundle\S3Bridge
         arguments: [ '%responsive_image.aws_s3%' ]
+
+    # Uploader services
+    responsive_image.filename_transliterator:
+        class: IrishDan\ResponsiveImageBundle\File\FilenameTransliterator
+        arguments: ['@responsive_image.file_to_object']
+
+    responsive_image.file_validator:
+        class: IrishDan\ResponsiveImageBundle\File\FileValidator
 
     # Custom form field type.
     responsive_image.form.type.crop_focus:
@@ -40,36 +50,42 @@ services:
         tags:
             - { name: form.type }
 
+    # Event subscribers
+    responsive_image.uploader_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventListener\UploaderSubscriber
+        arguments: [ '@logger', '@responsive_image_filesystem' ]
+        tags:
+            - { name: kernel.event_subscriber }
+
     # Event listeners.
-    responsive_image.listener.image_generate_styled:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
-        tags:
-            - { name: kernel.event_listener, event: responsive_image.image_generate_styled, method: imageGenerateStyled }
+    # responsive_image.listener.image_generate_styled:
+    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
+    #     arguments: [ '%responsive_image', '@responsive_image' ]
+    #     tags:
+    #         - { name: kernel.event_listener, event: responsive_image.image_generate_styled, method: imageGenerateStyled }
 
-    responsive_image.listener.image_delete_all:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
-        tags:
-            - { name: kernel.event_listener, event: responsive_image.image_delete_all, method: imageDeleteAll }
+    # responsive_image.listener.image_delete_all:
+    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
+    #     arguments: [ '%responsive_image', '@responsive_image' ]
+    #     tags:
+    #         - { name: kernel.event_listener, event: responsive_image.image_delete_all, method: imageDeleteAll }
 
-    responsive_image.listener.image_delete_styled:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
-        tags:
-            - { name: kernel.event_listener, event: responsive_image.image_delete_styled, method: imageDeleteStyled }
+    # responsive_image.listener.image_delete_styled:
+    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
+    #     arguments: [ '%responsive_image', '@responsive_image' ]
+    #     tags:
 
-    responsive_image.listener.style_delete_styled:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
-        tags:
-            - { name: kernel.event_listener, event: responsive_image.style_delete_styled, method: styleDeleteStyled }
+    # responsive_image.listener.style_delete_styled:
+    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
+    #     arguments: [ '%responsive_image', '@responsive_image' ]
+    #     tags:
+    #         - { name: kernel.event_listener, event: responsive_image.style_delete_styled, method: styleDeleteStyled }
 
-    responsive_image.listener.style_delete_all:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
-        tags:
-            - { name: kernel.event_listener, event: responsive_image.style_delete_all, method: styleDeleteAll }
+    # responsive_image.listener.style_delete_all:
+    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
+    #     arguments: [ '%responsive_image', '@responsive_image' ]
+    #     tags:
+    #         - { name: kernel.event_listener, event: responsive_image.style_delete_all, method: styleDeleteAll }
 
     # Twig extensions
     responsive_image.twig_extension:

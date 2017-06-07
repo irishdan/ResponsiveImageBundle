@@ -2,7 +2,6 @@
 
 namespace IrishDan\ResponsiveImageBundle\Event;
 
-
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -11,13 +10,12 @@ use Symfony\Component\EventDispatcher\Event;
  *
  * @package ResponsiveImageBundle\Event
  */
-class ImageEvent extends Event {
-
+class ImageEvent extends Event
+{
     /**
      * @var
      */
     protected $image;
-
     /**
      * @var
      */
@@ -25,10 +23,11 @@ class ImageEvent extends Event {
 
     /**
      * ImageEvent constructor.
+     *
      * @param ResponsiveImageInterface|NULL $image
-     * @param array|NULL $stylesArray
+     * @param array|NULL                    $stylesArray
      */
-    public function __construct(ResponsiveImageInterface $image = NULL, array $stylesArray = NULL)
+    public function __construct(ResponsiveImageInterface $image = null, array $stylesArray = null)
     {
         if (!empty($image)) {
             $this->image = $image;

@@ -2,7 +2,12 @@
 
 namespace IrishDan\ResponsiveImageBundle;
 
+use IrishDan\ResponsiveImageBundle\Event\UploaderEvent;
+use IrishDan\ResponsiveImageBundle\Event\UploaderEvents;
+use IrishDan\ResponsiveImageBundle\File\FilenameTransliteratorInterface;
+use IrishDan\ResponsiveImageBundle\File\FileValidatorInterface;
 use League\Flysystem\FilesystemInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -11,16 +16,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *
  * @package ResponsiveImageBundle
  */
-class Uploader
+class Uploader implements UploaderInterface
 {
-    /**
-     * @var array
-     */
-    protected $allowedTypes = [
-        'jpg',
-        'jpeg',
-        'png',
-    ];
     /**
      * @var FileManager
      */
@@ -33,47 +30,64 @@ class Uploader
      * @var
      */
     protected $error;
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+    /**
+     * @var FilenameTransliteratorInterface
+     */
+    protected $transliterator;
+    /**
+     * @var FileValidatorInterface
+     */
+    protected $fileValidator;
 
     /**
      * Uploader constructor.
      *
-     * @param FilesystemInterface $fileSystem
+     * @param EventDispatcherInterface             $eventDispatcher
+     * @param FilenameTransliteratorInterface|null $transliterator
+     * @param FileValidatorInterface|null          $fileValidator
      */
-    public function __construct(FilesystemInterface $fileSystem)
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        FilenameTransliteratorInterface $transliterator = null,
+        FileValidatorInterface $fileValidator = null
+    )
+    {
+        $this->eventDispatcher = $eventDispatcher;
+        $this->transliterator = $transliterator;
+        $this->fileValidator = $fileValidator;
+    }
+
+    public function setFilesystem(FilesystemInterface $fileSystem)
     {
         $this->fileSystem = $fileSystem;
     }
 
-    /**
-     * @return null|string
-     */
-    protected function formatPath()
+    public function getFilesystem()
     {
-        // @TODO: The could be adjusted in any number of ways depending on implementation.
-        $path = $this->file->getClientOriginalName();
-
-        return $path;
-    }
-
-    protected function isValid()
-    {
-        // @TODO: Implement.
-        // $this->error = '';
-        return true;
+        return $this->fileSystem;
     }
 
     public function upload(ResponsiveImageInterface $image)
     {
+        $uploaderEvent = new UploaderEvent($this);
+
+        // Dispatch pre-upload event
+        $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_PRE_UPLOAD, $uploaderEvent);
+
         $this->file = $image->getFile();
 
-        // Use UploadedFile's inbuild validation and allow
+        // Use UploadedFile's inbuilt validation and allow
         // implementation specific custom checks on uploaded file
         if ($this->file->isValid() && $this->isValid()) {
             // Alter name for uniqueness
             $path = $this->formatPath();
 
             $info = getimagesize($this->file);
-            list($x, $y) = $info;
+            list($length, $height) = $info;
 
             // Save the actual file to the filesystem.
             $stream = fopen($this->file->getRealPath(), 'r+');
@@ -81,22 +95,41 @@ class Uploader
             fclose($stream);
 
             $image->setPath($path);
-            $image->setHeight($x);
-            $image->setWidth($y);
+            $image->setHeight($length);
+            $image->setWidth($height);
 
-            // var_dump($this->fileSystem->getMetadata($path));
-            // var_dump($info);
-            // var_dump($x);
-            // var_dump($y);
+            // @TODO: We need to save the filesystem name with the image entity.
 
             // Clean up the file property as you won't need it anymore.
             $this->file = null;
             $image->setFile(null);
+
+            // Dispatch uploaded event
+            $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_UPLOADED, $uploaderEvent);
         } else {
             $error = empty($this->error) ? $this->file->getErrorMessage() : $this->error;
             throw new FileException(
                 $error
             );
         }
+    }
+
+    protected function formatPath()
+    {
+        $path = $this->file->getClientOriginalName();
+        if ($this->transliterator instanceof FilenameTransliteratorInterface) {
+            $path = $this->transliterator->transliterate($path);
+        }
+
+        return $path;
+    }
+
+    protected function isValid()
+    {
+        if ($this->fileValidator instanceof FileValidatorInterface) {
+            return $this->fileValidator->validate($this->file);
+        }
+
+        return true;
     }
 }
