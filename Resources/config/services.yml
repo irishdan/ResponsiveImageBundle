@@ -1,11 +1,15 @@
 services:
     responsive_image:
         class: IrishDan\ResponsiveImageBundle\ResponsiveImageManager
-        arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_manager', '@responsive_image.uploader' ]
+        arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@response_image.file_system_factory', '@responsive_image.uploader' ]
 
-    responsive_image.file_manager:
-        class: IrishDan\ResponsiveImageBundle\FileManager
-        arguments: [ '%responsive_image%', '@filesystem' ]
+    # responsive_image.file_manager:
+    #    class: IrishDan\ResponsiveImageBundle\FileManager
+    #    arguments: [ '%responsive_image%', '@filesystem' ]
+
+    responsive_image.image_manager:
+        class: IrishDan\ResponsiveImageBundle\Image\ImageManager
+        arguments: [ '@responsive_image.style_manager', '@responsive_image.image_maker', '@response_image.file_system_factory', '@responsive_image_temp']
 
     responsive_image.style_manager:
         class: IrishDan\ResponsiveImageBundle\StyleManager
@@ -13,7 +17,7 @@ services:
 
     responsive_image.image_maker:
         class: IrishDan\ResponsiveImageBundle\ImageMaker
-        arguments: [ '@responsive_image.file_manager', '%responsive_image%' ]
+        arguments: [ '%responsive_image%' ]
 
     responsive_image.file_to_object:
         class: IrishDan\ResponsiveImageBundle\FileToObject

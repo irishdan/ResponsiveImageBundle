@@ -9,6 +9,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FileSystemFactory
 {
+    // @TODO: Perhaps rename to Wrapper
+
     private $fileSystem;
     private $eventDispatcher;
 
@@ -30,12 +32,11 @@ class FileSystemFactory
 
     public function setFileSystem($fileSystem)
     {
-        // if (!empty($this->eventDispatcher)) {
-        //     $fileSystemEvent = new FileSystemEvent($this);
-        //     $this->eventDispatcher->dispatch(FileSystemEvents::FILE_SYSTEM_FACTORY_SET, $fileSystemEvent);
-        // }
-//
-        // $this->fileSystem = $fileSystem;
+        if (!empty($this->eventDispatcher)) {
+            $fileSystemEvent = new FileSystemEvent($this);
+            $this->eventDispatcher->dispatch(FileSystemEvents::FILE_SYSTEM_FACTORY_SET, $fileSystemEvent);
+        }
+        $this->fileSystem = $fileSystem;
     }
 
     public function write($path, $contents)
@@ -88,7 +89,7 @@ class FileSystemFactory
         return $this->fileSystem->getMimetype($path);
     }
 
-    public function thing($path)
+    public function getTimeStamp($path)
     {
         return $this->fileSystem->getTimestamp($path);
     }
@@ -106,5 +107,18 @@ class FileSystemFactory
     public function deleteDir($path)
     {
         $this->fileSystem->deleteDir($path);
+    }
+
+    // @TODO: needed to generate image in
+    public function createTemporaryDirectory()
+    {
+        // @TODO: allow this to be configured
+        $tempDirectory = '/Users/danielbyrne/Sites/responsiveimagebundle/var/cache/dev/responsive_images';
+
+        if (!file_exists($tempDirectory)) {
+            return mkdir($tempDirectory, 0775, true);
+        }
+
+        return $tempDirectory;
     }
 }

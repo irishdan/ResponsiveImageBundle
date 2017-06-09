@@ -3,6 +3,7 @@
 namespace IrishDan\ResponsiveImageBundle;
 
 use Intervention\Image\ImageManager;
+use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
 
 /**
  * Class ImageMaker
@@ -12,11 +13,10 @@ use Intervention\Image\ImageManager;
 class ImageMaker
 {
     use CoordinateLengthCalculator;
-
     /**
      * @var
      */
-    private $compression;
+    private $compression = 90;
     /**
      * @var
      */
@@ -24,7 +24,7 @@ class ImageMaker
     /**
      * @var
      */
-    private $driver;
+    private $driver = 'gd';
     /**
      * @var FileManager
      */
@@ -46,17 +46,8 @@ class ImageMaker
      */
     private $styleData = [];
 
-    /**
-     * Imager constructor.
-     *
-     * @param FileManager $system
-     * @param array       $responsiveImageConfig
-     * @internal param $driver
-     * @internal param $compression
-     */
-    public function __construct(FileManager $system, $responsiveImageConfig = [])
+    public function __construct($responsiveImageConfig = [])
     {
-        $this->fileManager = $system;
         if (!empty($responsiveImageConfig['image_driver'])) {
             $this->driver = $responsiveImageConfig['image_driver'];
         }
@@ -129,6 +120,7 @@ class ImageMaker
             $this->setCoordinateGroups($cropFocusCoords);
         }
 
+        var_dump('createImage');
         if (!empty($this->styleData)) {
             switch ($this->styleData['effect']) {
                 case 'scale':
@@ -238,16 +230,17 @@ class ImageMaker
      */
     protected function saveImage($destination, $source)
     {
+        var_dump('saveImage: ' . $destination);
+        // var_dump($source);
         // Check if directory exists and if not create it.
-        $this->fileManager->directoryExists($destination, true);
-
+        // $this->fileManager->directoryExists($destination, true);
         // Get the file name from source path.
-        $filename = $this->fileManager->getFilenameFromPath($source);
-        $fullPath = $destination . '/' . $filename;
+        // $filename = $this->fileManager->getFilenameFromPath($source);
+        // $fullPath = $destination . '/' . $filename;
 
-        $this->image->save($fullPath, $this->compression);
+        $this->image->save($destination, $this->compression);
 
-        return $fullPath;
+        return $destination;
     }
 
     /**
