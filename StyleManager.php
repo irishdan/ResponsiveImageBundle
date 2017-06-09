@@ -49,7 +49,7 @@ class StyleManager
         }
     }
 
-    protected function styleExists($styleName)
+    public function styleExists($styleName)
     {
         $style = $this->getStyle($styleName);
 
@@ -119,7 +119,7 @@ class StyleManager
 
     public function setImageStyle(ResponsiveImageInterface $image, $styleName = null)
     {
-        // @TODO: perahps should be setSrc
+        // @TODO: perhaps should be setSrc
 
         if ($styleName !== null && empty($this->getStyle($styleName))) {
             return $image;

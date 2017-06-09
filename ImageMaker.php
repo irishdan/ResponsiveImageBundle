@@ -3,7 +3,6 @@
 namespace IrishDan\ResponsiveImageBundle;
 
 use Intervention\Image\ImageManager;
-use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
 
 /**
  * Class ImageMaker
@@ -163,7 +162,7 @@ class ImageMaker
             }
         }
 
-        return $this->saveImage($destination, $source);
+        return $this->saveImage($destination);
     }
 
     protected function cropImage($width, $height, $xOffset, $yOffset)
@@ -188,7 +187,6 @@ class ImageMaker
             $y1 = $cropCoords[1];
 
             // Get the lengths.
-            // @TODO: Methods not existing
             $newWidth = $this->getLength('x', $cropCoords);
             $newHeight = $this->getLength('y', $cropCoords);
 
@@ -221,42 +219,10 @@ class ImageMaker
         return $coords;
     }
 
-    /**
-     * Saves the new image.
-     *
-     * @param $destination
-     * @param $source
-     * @return string
-     */
-    protected function saveImage($destination, $source)
+    protected function saveImage($destination)
     {
-        var_dump('saveImage: ' . $destination);
-        // var_dump($source);
-        // Check if directory exists and if not create it.
-        // $this->fileManager->directoryExists($destination, true);
-        // Get the file name from source path.
-        // $filename = $this->fileManager->getFilenameFromPath($source);
-        // $fullPath = $destination . '/' . $filename;
-
         $this->image->save($destination, $this->compression);
 
         return $destination;
-    }
-
-    /**
-     * Gets vertical or horizontal length between two coordinates (x, y, x2, y2).
-     *
-     * @param string $type
-     * @param array  $coords
-     * @return mixed
-     */
-    protected function getLength($type = 'x', array $coords)
-    {
-        $type = strtolower($type);
-        if ($type == 'x') {
-            return $coords[2] - $coords[0];
-        } else {
-            return $coords[3] - $coords[1];
-        }
     }
 }

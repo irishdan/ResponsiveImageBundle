@@ -1,15 +1,19 @@
 services:
     responsive_image:
         class: IrishDan\ResponsiveImageBundle\ResponsiveImageManager
-        arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@response_image.file_system_factory', '@responsive_image.uploader' ]
-
-    # responsive_image.file_manager:
-    #    class: IrishDan\ResponsiveImageBundle\FileManager
-    #    arguments: [ '%responsive_image%', '@filesystem' ]
+        arguments:
+            - '@responsive_image.style_manager'
+            - '%responsive_image%'
+            - '@responsive_image.uploader'
 
     responsive_image.image_manager:
         class: IrishDan\ResponsiveImageBundle\Image\ImageManager
-        arguments: [ '@responsive_image.style_manager', '@responsive_image.image_maker', '@response_image.file_system_factory', '@responsive_image_temp']
+        arguments:
+            - '@responsive_image.style_manager'
+            - '@responsive_image.image_maker'
+            - '@response_image.file_system_factory'
+            - '@responsive_image_temp'
+            - '@event_dispatcher'
 
     responsive_image.style_manager:
         class: IrishDan\ResponsiveImageBundle\StyleManager
@@ -31,7 +35,10 @@ services:
     # Uploader
     responsive_image.uploader:
         class: IrishDan\ResponsiveImageBundle\Uploader
-        arguments: [ '@response_image.file_system_factory', '@responsive_image.filename_transliterator', '@responsive_image.file_validator' ]
+        arguments:
+            - '@response_image.file_system_factory'
+            - '@responsive_image.filename_transliterator'
+            - '@responsive_image.file_validator'
         #calls:
         #    - [ setFileSystem, [ '@responsive_image_filesystem' ]]
 
@@ -70,6 +77,15 @@ services:
     responsive_image.file_system_event_subscriber:
         class: IrishDan\ResponsiveImageBundle\EventListener\FileSystemSubscriber
         arguments: [ '@logger' ]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    responsive_image.styled_image_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventListener\StyledImagesSubscriber
+        arguments:
+            - '@logger'
+            - '@response_image.file_system_factory'
+            - '@responsive_image_temp'
         tags:
             - { name: kernel.event_subscriber }
 

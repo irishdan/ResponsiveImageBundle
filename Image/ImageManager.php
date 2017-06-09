@@ -2,12 +2,15 @@
 
 namespace IrishDan\ResponsiveImageBundle\Image;
 
+use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvent;
+use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvents;
 use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
 use IrishDan\ResponsiveImageBundle\ImageMaker;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\StyleManager;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\InvalidArgumentException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ImageManager
 {
@@ -15,18 +18,22 @@ class ImageManager
     private $imageMaker;
     private $fileSystem;
     private $temporaryFileSystem;
+    private $eventDispatcher;
+    private $generatedImages = [];
 
     public function __construct(
         StyleManager $styleManager,
         ImageMaker $imageMaker,
         FileSystemFactory $fileSystem,
-        FilesystemInterface $temporaryFileSystem
+        FilesystemInterface $temporaryFileSystem,
+        EventDispatcherInterface $eventDispatcher = null
     )
     {
         $this->styleManager = $styleManager;
         $this->imageMaker = $imageMaker;
         $this->fileSystem = $fileSystem;
         $this->temporaryFileSystem = $temporaryFileSystem;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function createStyledImages(ResponsiveImageInterface $image, array $styles = [])
@@ -37,10 +44,19 @@ class ImageManager
 
         // Generate all of the required files
         foreach ($styles as $style) {
-
+            // @TODO: Use the relative part instead of the full path!!!
             $this->createStyledImage($image, $style);
         }
-        // @TODO: Use events to queue/move/delete generated images
+
+        // Dispatch an event.
+        if (!empty($this->eventDispatcher)) {
+            $imagesGeneratedEvent = new StyledImagesEvent($image, $this->generatedImages);
+            $this->eventDispatcher->dispatch(StyledImagesEvents::STYLED_IMAGES_GENERATED, $imagesGeneratedEvent);
+        }
+
+        var_dump($this->generatedImages);
+
+        return $this->generatedImages;
     }
 
     protected function createStyledImage(ResponsiveImageInterface $image, $style)
@@ -48,7 +64,6 @@ class ImageManager
         $styleData = $this->styleManager->getStyle($style);
         $directory = $this->temporaryFileSystem->getAdapter()->getPathPrefix();
         $source = $directory . $image->getPath();
-
 
         if (!empty($styleData)) {
             $cropFocusData = $image->getCropCoordinates();
@@ -60,9 +75,8 @@ class ImageManager
             $this->createStyleDirectory($relativeStylePath);
 
             try {
-
-
                 $this->imageMaker->createImage($source, $destination, $styleData, $cropFocusData);
+                $this->generatedImages[$style] = $relativeStylePath;
             } catch (\Exception $e) {
                 // @TODO: Throw exception
             }

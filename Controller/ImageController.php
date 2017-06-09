@@ -21,26 +21,22 @@ class ImageController extends Controller
      */
     public function indexAction($stylename, $filename)
     {
-        // @TODO:
-        // $filesystem = $this->get('oneup_flysystem.nomad.local_filesystem');
-
         // Get image style information.
         if (empty($this->get('responsive_image.style_manager')->styleExists($stylename))) {
             throw $this->createNotFoundException('The style does not exist');
         }
 
         // Create image if the file exists.
-        if ($this->get('responsive_image.file_manager')->fileExists($filename)) {
-            // Get the image object.
-            $imageEntityClass = $this->getParameter('responsive_image.entity_class');
-            $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename, $imageEntityClass);
+        $imageEntityClass = $this->getParameter('responsive_image.entity_class');
+        $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename, $imageEntityClass);
 
+        if (!empty($imageObject)) {
             if (!empty($imageObject)) {
-                $image = $this->get('responsive_image')->createStyledImages($imageObject, $stylename);
+                $generatedImageArray = $this->get('responsive_image.image_manager')->createStyledImages($imageObject, [$stylename]);
             }
 
-            if (!empty($image)) {
-                $response = new BinaryFileResponse($image);
+            if (!empty($generatedImageArray[$stylename])) {
+                $response = new BinaryFileResponse($generatedImageArray[$stylename]);
             } else {
                 throw $this->createNotFoundException('Derived image could not be created');
             }
