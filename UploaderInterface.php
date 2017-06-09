@@ -8,7 +8,7 @@ interface UploaderInterface
 {
     public function upload(ResponsiveImageInterface $image);
 
-    public function setFileSystem(FilesystemInterface $fileSystem);
+    // public function setFileSystem(FilesystemInterface $fileSystem);
 
-    public function getFileSystem();
+    // public function getFileSystem();
 }

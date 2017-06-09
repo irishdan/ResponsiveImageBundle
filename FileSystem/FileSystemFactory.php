@@ -1,36 +1,41 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle;
+namespace IrishDan\ResponsiveImageBundle\FileSystem;
 
+use IrishDan\ResponsiveImageBundle\Event\FileSystemEvent;
+use IrishDan\ResponsiveImageBundle\Event\FileSystemEvents;
 use League\Flysystem\FilesystemInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-/**
- * This is just a wrapper around flysytem API
- *
- * @see     http://flysystem.thephpleague.com/api/
- * @package ResponsiveImageBundle
- */
-class FileSystem
+class FileSystemFactory
 {
     private $fileSystem;
-    private $uploadPath;
-    private $stylePath;
+    private $eventDispatcher;
 
-    public function __construct(array $imageConfigs, FilesystemInterface $fileSystem)
+    public function __construct(EventDispatcherInterface $eventDispatcher = null, FilesystemInterface $fileSystem = null)
     {
+        $this->eventDispatcher = $eventDispatcher;
         $this->fileSystem = $fileSystem;
-        $this->uploadPath = $imageConfigs['image_directory'];
-        $this->stylePath = $imageConfigs['image_directory'] . '/' . $imageConfigs['image_styles_directory'];
     }
 
     public function getFileSystem()
     {
+        if (!empty($this->eventDispatcher)) {
+            $fileSystemEvent = new FileSystemEvent($this);
+            $this->eventDispatcher->dispatch(FileSystemEvents::FILE_SYSTEM_FACTORY_GET, $fileSystemEvent);
+        }
+
         return $this->fileSystem;
     }
 
     public function setFileSystem($fileSystem)
     {
-        $this->fileSystem = $fileSystem;
+        // if (!empty($this->eventDispatcher)) {
+        //     $fileSystemEvent = new FileSystemEvent($this);
+        //     $this->eventDispatcher->dispatch(FileSystemEvents::FILE_SYSTEM_FACTORY_SET, $fileSystemEvent);
+        // }
+//
+        // $this->fileSystem = $fileSystem;
     }
 
     public function write($path, $contents)

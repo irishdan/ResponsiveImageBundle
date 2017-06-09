@@ -36,7 +36,7 @@ class ImageMaker
     /**
      * @var
      */
-    private $img;
+    private $image;
     /**
      * @var
      */
@@ -57,9 +57,6 @@ class ImageMaker
     public function __construct(FileManager $system, $responsiveImageConfig = [])
     {
         $this->fileManager = $system;
-        if (!empty($responsiveImageConfig['debug'])) {
-            $this->debug = $responsiveImageConfig['debug'];
-        }
         if (!empty($responsiveImageConfig['image_driver'])) {
             $this->driver = $responsiveImageConfig['image_driver'];
         }
@@ -96,17 +93,18 @@ class ImageMaker
 
     protected function scaleImage($width, $height)
     {
-        $this->img->resize($width, $height, function ($constraint) {
+        $this->image->resize($width, $height, function ($constraint) {
             $constraint->aspectRatio();
         });
     }
 
     protected function setImage($source, $driver = 'gd')
     {
+        // @TODO: Perhaps rename this method , it makes no sense 
         if (empty($this->manager)) {
             $this->manager = new ImageManager(['driver' => $driver]);
         }
-        $this->img = $this->manager->make($source);
+        $this->image = $this->manager->make($source);
     }
 
     /**
@@ -160,7 +158,7 @@ class ImageMaker
                         }
                     }
 
-                    $this->img->fit($this->styleData['width'], $this->styleData['height'], function ($constraint) {
+                    $this->image->fit($this->styleData['width'], $this->styleData['height'], function ($constraint) {
                         $constraint->upsize();
                     });
 
@@ -169,7 +167,7 @@ class ImageMaker
 
             // Do greyscale.
             if (!empty($this->styleData['greyscale'])) {
-                $this->img->greyscale();
+                $this->image->greyscale();
             }
         }
 
@@ -178,7 +176,7 @@ class ImageMaker
 
     protected function cropImage($width, $height, $xOffset, $yOffset)
     {
-        $this->img->crop(
+        $this->image->crop(
             round($width),
             round($height),
             round($xOffset),
@@ -203,7 +201,7 @@ class ImageMaker
             $newHeight = $this->getLength('y', $cropCoords);
 
             // Do the initial crop.
-            $this->img->crop($newWidth, $newHeight, $x1, $y1);
+            $this->image->crop($newWidth, $newHeight, $x1, $y1);
         }
     }
 
@@ -247,7 +245,7 @@ class ImageMaker
         $filename = $this->fileManager->getFilenameFromPath($source);
         $fullPath = $destination . '/' . $filename;
 
-        $this->img->save($fullPath, $this->compression);
+        $this->image->save($fullPath, $this->compression);
 
         return $fullPath;
     }

@@ -6,6 +6,8 @@ use IrishDan\ResponsiveImageBundle\Event\UploaderEvent;
 use IrishDan\ResponsiveImageBundle\Event\UploaderEvents;
 use IrishDan\ResponsiveImageBundle\File\FilenameTransliteratorInterface;
 use IrishDan\ResponsiveImageBundle\File\FileValidatorInterface;
+use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
+use League\Flysystem\AdapterInterface;
 use League\Flysystem\FilesystemInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -19,7 +21,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class Uploader implements UploaderInterface
 {
     /**
-     * @var FileManager
+     * @var FilesystemInterface $fileSystem
      */
     protected $fileSystem;
     /**
@@ -30,10 +32,6 @@ class Uploader implements UploaderInterface
      * @var
      */
     protected $error;
-    /**
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
     /**
      * @var FilenameTransliteratorInterface
      */
@@ -51,32 +49,33 @@ class Uploader implements UploaderInterface
      * @param FileValidatorInterface|null          $fileValidator
      */
     public function __construct(
-        EventDispatcherInterface $eventDispatcher,
+        //EventDispatcherInterface $eventDispatcher,
+        FileSystemFactory $fileSystemFactory,
         FilenameTransliteratorInterface $transliterator = null,
         FileValidatorInterface $fileValidator = null
     )
     {
-        $this->eventDispatcher = $eventDispatcher;
+        // $this->eventDispatcher = $eventDispatcher;
         $this->transliterator = $transliterator;
         $this->fileValidator = $fileValidator;
+        $this->fileSystem = $fileSystemFactory->getFileSystem();
     }
 
-    public function setFilesystem(FilesystemInterface $fileSystem)
-    {
-        $this->fileSystem = $fileSystem;
-    }
-
-    public function getFilesystem()
-    {
-        return $this->fileSystem;
-    }
+    // public function setFilesystem(FilesystemInterface $fileSystem)
+    // {
+    //     $this->fileSystem = $fileSystem;
+    // }
+//
+    // public function getFilesystem()
+    // {
+    //     return $this->fileSystem;
+    // }
 
     public function upload(ResponsiveImageInterface $image)
     {
-        $uploaderEvent = new UploaderEvent($this);
-
+        // $uploaderEvent = new UploaderEvent($this);
         // Dispatch pre-upload event
-        $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_PRE_UPLOAD, $uploaderEvent);
+        // $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_PRE_UPLOAD, $uploaderEvent);
 
         $this->file = $image->getFile();
 
@@ -98,20 +97,64 @@ class Uploader implements UploaderInterface
             $image->setHeight($length);
             $image->setWidth($height);
 
-            // @TODO: We need to save the filesystem name with the image entity.
+            // @TODO: if it is configured to do so
+            $storageData = $this->getStorageDataFormFileSystem();
+            if (!empty($storageData)) {
+                $image->setFileSystem(serialize($storageData));
+            }
 
             // Clean up the file property as you won't need it anymore.
             $this->file = null;
             $image->setFile(null);
 
             // Dispatch uploaded event
-            $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_UPLOADED, $uploaderEvent);
+            // $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_UPLOADED, $uploaderEvent);
         } else {
             $error = empty($this->error) ? $this->file->getErrorMessage() : $this->error;
             throw new FileException(
                 $error
             );
         }
+    }
+
+    protected function getStorageDataFormFileSystem()
+    {
+        $adapter = $this->fileSystem->getAdapter();
+        $adapterType = $this->getAdapterType($adapter);
+
+        switch ($adapterType) {
+            case 'AwsS3Adapter':
+                $prefix = $adapter->getPathPrefix();
+                $bucket = $adapter->getBucket();
+                $region = $adapter->getClient()->getRegion();
+
+                return [
+                    'adapter' => $adapterType,
+                    'prefix' => $prefix,
+                    'bucket' => $bucket,
+                    'region' => $region,
+                ];
+
+                break;
+
+            case 'Local':
+                return [
+                    'adapter' => $adapterType,
+                    'prefix' => 'test/images',
+                ];
+
+                break;
+        }
+
+        return [];
+    }
+
+    protected function getAdapterType(AdapterInterface $adapter)
+    {
+        $class = get_class($adapter);
+        $namespaceArray = explode("\\", $class);
+
+        return array_pop($namespaceArray);
     }
 
     protected function formatPath()

@@ -6,6 +6,7 @@ namespace IrishDan\ResponsiveImageBundle\Twig;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageManager;
 use IrishDan\ResponsiveImageBundle\StyleManager;
+use IrishDan\ResponsiveImageBundle\UrlBuilder;
 
 /**
  * Class ResponsiveImageExtension
@@ -15,10 +16,12 @@ use IrishDan\ResponsiveImageBundle\StyleManager;
 class ResponsiveImageExtension extends \Twig_Extension
 {
     private $styleManager;
+    private $urlBuilder;
 
-    public function __construct(StyleManager $styleManager)
+    public function __construct(StyleManager $styleManager, UrlBuilder $urlBuilder)
     {
         $this->styleManager = $styleManager;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -49,6 +52,11 @@ class ResponsiveImageExtension extends \Twig_Extension
     {
         $mq = $this->styleManager->getMediaQuerySourceMappings($image, $pictureSetName);
 
+        foreach ($mq as $index => $path) {
+            $mq[$index] = $this->urlBuilder->filePublicUrl($path);
+        }
+
+        dump($mq);
         $original = $mq[0];
         unset($mq[0]);
 
@@ -64,7 +72,12 @@ class ResponsiveImageExtension extends \Twig_Extension
     {
         $mq = $this->styleManager->getMediaQuerySourceMappings($image, $pictureSetName);
 
+        foreach ($mq as $index => $path) {
+            $mq[$index] = $this->urlBuilder->filePublicUrl($path);
+        }
+
         $original = $mq[0];
+
         unset($mq[0]);
 
         return $environment->render('ResponsiveImageBundle::picture.html.twig', [
@@ -77,6 +90,12 @@ class ResponsiveImageExtension extends \Twig_Extension
     public function generateStyledImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $styleName)
     {
         $this->styleManager->setImageStyle($image, $styleName);
+
+        $stylePath = $image->getStyle();
+
+        $src = $this->urlBuilder->filePublicUrl($stylePath);
+        dump($src);
+        $image->setSrc($src);
 
         return $environment->render('ResponsiveImageBundle::img.html.twig', [
             'image' => $image,

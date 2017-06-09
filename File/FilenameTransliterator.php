@@ -32,7 +32,7 @@ class FilenameTransliterator implements FilenameTransliteratorInterface
             $secondLastIndex = count($parts) - 2;
 
             // Add an incremented suffix to the second last part.
-            $parts[$secondLastIndex] = $parts[$secondLastIndex] . '-' . $i;
+            $parts[$secondLastIndex] = $parts[$secondLastIndex] . '_' . $i;
             // Stick it all back together
             $safeName = implode('.', $parts);
 

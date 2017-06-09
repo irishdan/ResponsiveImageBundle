@@ -4,5 +4,7 @@ namespace IrishDan\ResponsiveImageBundle\Event;
 
 final class FileSystemEvents
 {
-    const FILESYSTEM_ERROR = 'filesystem.error';
+    const FILE_SYSTEM_FACTORY_GET = 'file_system_factory.get';
+
+    const FILE_SYSTEM_FACTORY_SET = 'file_system_factory.set';
 }

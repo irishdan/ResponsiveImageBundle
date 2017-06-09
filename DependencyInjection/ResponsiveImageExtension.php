@@ -12,10 +12,6 @@ class ResponsiveImageExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        if (!empty($config['aws_s3'])) {
-            $config['path_prefix'] = $this->buildPathPrefix($config);
-        }
-
         foreach ($configs as $subConfig) {
             $config = array_merge($config, $subConfig);
         }
@@ -49,16 +45,5 @@ class ResponsiveImageExtension extends Extension
         } else {
             $container->setParameter('responsive_image.aws_s3', []);
         }
-    }
-
-    protected function buildPathPrefix($config)
-    {
-        $pathPrefix = null;
-        if (!empty($config['aws_s3']) && !empty($config['aws_s3']['enabled'])) {
-            $url = $config['aws_s3']['protocol'] . '://s3-' . $config['aws_s3']['region'] . '.amazonaws.com/' . $config['aws_s3']['bucket'] . '/' . $config['aws_s3']['directory'] . '/';
-            $pathPrefix = $url;
-        }
-
-        return $pathPrefix;
     }
 }

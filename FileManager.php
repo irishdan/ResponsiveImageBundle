@@ -63,31 +63,19 @@ class FileManager
      * @param array      $imageConfigs
      * @param Filesystem $fileSystem
      */
-    public function __construct($rootDirectory, array $imageConfigs, FileSystem $fileSystem)
+    public function __construct(array $imageConfigs, FileSystem $fileSystem)
     {
         // @TODO: Replace with flysystem.
+        // @TODO: This whole service is now redundant
+
+
         $this->fileSystem = $fileSystem;
 
         $uploadsDirectory = $imageConfigs['image_directory'];
         $stylesDirectory = $imageConfigs['image_styles_directory'];
-        $symfonyDirectory = substr($rootDirectory, 0, -4);
 
-        $this->rootDirectory = $symfonyDirectory;
         $this->uploadsDirectory = $uploadsDirectory;
         $this->stylesDirectory = $uploadsDirectory . '/' . $stylesDirectory;
-        $this->systemPath = $symfonyDirectory . '/web';
-        $this->systemUploadPath = $this->systemPath . '/' . $this->uploadsDirectory;
-        $this->systemStylesPath = $this->systemUploadPath . '/' . $stylesDirectory;
-
-        // Set the temp directory if aws is enabled.
-        if (!empty($imageConfigs['aws_s3'])) {
-            if (!empty($imageConfigs['aws_s3']['enabled'])) {
-                $this->awsConfig = $imageConfigs['aws_s3'];
-                if (!empty($this->awsConfig['temp_directory'])) {
-                    $this->tempDirectory = $symfonyDirectory . '/' . $this->awsConfig['temp_directory'];
-                }
-            }
-        }
     }
 
     /**

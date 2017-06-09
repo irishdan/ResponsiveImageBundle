@@ -1,15 +1,15 @@
 services:
     responsive_image:
         class: IrishDan\ResponsiveImageBundle\ResponsiveImageManager
-        arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_manager', '@responsive_image.s3_bridge', '@responsive_image.uploader' ]
+        arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_manager', '@responsive_image.uploader' ]
 
     responsive_image.file_manager:
         class: IrishDan\ResponsiveImageBundle\FileManager
-        arguments: ['%kernel.root_dir%', '%responsive_image%', '@filesystem' ]
+        arguments: [ '%responsive_image%', '@filesystem' ]
 
     responsive_image.style_manager:
         class: IrishDan\ResponsiveImageBundle\StyleManager
-        arguments: ['@responsive_image.file_manager', '%responsive_image%' ]
+        arguments: [ '%responsive_image%' ]
 
     responsive_image.image_maker:
         class: IrishDan\ResponsiveImageBundle\ImageMaker
@@ -19,23 +19,29 @@ services:
         class: IrishDan\ResponsiveImageBundle\FileToObject
         arguments: [ '@doctrine.orm.entity_manager', '%responsive_image.entity_class%' ]
 
+    # filesystem
+    response_image.file_system_factory:
+        class: IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory
+        arguments: [ '@event_dispatcher', '@responsive_image_filesystem' ]
+
+    # Uploader
     responsive_image.uploader:
         class: IrishDan\ResponsiveImageBundle\Uploader
-        arguments: [ '@event_dispatcher', '@responsive_image.filename_transliterator', '@responsive_image.file_validator' ]
-        calls:
-            - [ setFileSystem, [ '@responsive_image_filesystem' ]]
+        arguments: [ '@response_image.file_system_factory', '@responsive_image.filename_transliterator', '@responsive_image.file_validator' ]
+        #calls:
+        #    - [ setFileSystem, [ '@responsive_image_filesystem' ]]
 
-    responsive_image.s3_bridge:
-        class: IrishDan\ResponsiveImageBundle\S3Bridge
-        arguments: [ '%responsive_image.aws_s3%' ]
-
-    # Uploader services
     responsive_image.filename_transliterator:
         class: IrishDan\ResponsiveImageBundle\File\FilenameTransliterator
         arguments: ['@responsive_image.file_to_object']
 
     responsive_image.file_validator:
         class: IrishDan\ResponsiveImageBundle\File\FileValidator
+
+    # url builder
+    responsive_image.url_builder:
+        class: IrishDan\ResponsiveImageBundle\UrlBuilder
+        arguments: ['@response_image.file_system_factory']
 
     # Custom form field type.
     responsive_image.form.type.crop_focus:
@@ -54,6 +60,12 @@ services:
     responsive_image.uploader_event_subscriber:
         class: IrishDan\ResponsiveImageBundle\EventListener\UploaderSubscriber
         arguments: [ '@logger', '@responsive_image_filesystem' ]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    responsive_image.file_system_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventListener\FileSystemSubscriber
+        arguments: [ '@logger' ]
         tags:
             - { name: kernel.event_subscriber }
 
@@ -91,6 +103,6 @@ services:
     responsive_image.twig_extension:
         class: IrishDan\ResponsiveImageBundle\Twig\ResponsiveImageExtension
         public: false
-        arguments: [ '@responsive_image.style_manager' ]
+        arguments: [ '@responsive_image.style_manager', '@responsive_image.url_builder' ]
         tags:
             - { name: twig.extension }
