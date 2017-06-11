@@ -2,25 +2,25 @@
 
 namespace IrishDan\ResponsiveImageBundle;
 
-use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
+use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
 use League\Flysystem\AdapterInterface;
 
 class UrlBuilder
 {
     private $fileSystem;
 
-    public function __construct(FileSystemFactory $fileSystemFactory = null)
+    public function __construct(PrimaryFileSystemWrapper $PrimaryFileSystemWrapper = null)
     {
-        if (!empty($fileSystemFactory)) {
-            $this->fileSystem = $fileSystemFactory->getFileSystem();
+        if (!empty($PrimaryFileSystemWrapper)) {
+            $this->fileSystem = $PrimaryFileSystemWrapper->getFileSystem();
         }
     }
 
-    public function filePublicUrl($relativeFilePath, $adapterData = '')
+    public function filePublicUrl($relativeFilePath, $adapterUrlData = '')
     {
         // @TODO:
-        if (!empty($adapterData)) {
-            $pathArray = $this->getUrlDataFromFileSystem(unserialize($adapterData));
+        if (!empty($adapterUrlData)) {
+            $pathArray = $this->getUrlDataFromFileSystem(unserialize($adapterUrlData));
         } else {
             $pathArray = $this->getUrlDataFromFileSystem();
         }

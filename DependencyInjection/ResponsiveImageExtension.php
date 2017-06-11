@@ -20,15 +20,10 @@ class ResponsiveImageExtension extends Extension
         $container->setParameter('responsive_image', $config);
 
         // Create the image directories as parameters for routing.
-        $container->setParameter('image_directory', $config['image_directory']);
-        $container->setParameter('image_styles_directory', $config['image_styles_directory']);
-
-        // @TODO
-        $container->setParameter('responsive_image.filesystem', $config['filesystem']);
+        $container->setParameter('responsive_image.image_directory', $config['image_directory']);
+        $container->setParameter('responsive_image.image_styles_directory', $config['image_styles_directory']);
 
         // Create the image_entity_class parameter.
-        // @TODO: Prefix parameters
-        $container->setParameter('image_entity_class', $config['image_entity_class']);
         if (!empty($config['image_entity_class'])) {
             $container->setParameter('responsive_image.entity_class', $config['image_entity_class']);
         } else {
@@ -38,12 +33,5 @@ class ResponsiveImageExtension extends Extension
         // Add the cropfocus.html.twig to form resources
         $resources = $container->getParameter('twig.form.resources');
         $container->setParameter('twig.form.resources', array_merge(['ResponsiveImageBundle::cropfocus.html.twig'], $resources));
-
-        // Add the aws_s3 config as a parameter.
-        if (!empty($config['aws_s3'])) {
-            $container->setParameter('responsive_image.aws_s3', $config['aws_s3']);
-        } else {
-            $container->setParameter('responsive_image.aws_s3', []);
-        }
     }
 }

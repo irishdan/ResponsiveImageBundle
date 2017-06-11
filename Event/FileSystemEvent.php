@@ -8,15 +8,15 @@ use Symfony\Component\EventDispatcher\Event;
 
 class FileSystemEvent extends Event
 {
-    protected $fileSystemFactory;
+    protected $PrimaryFileSystemWrapper;
 
-    public function __construct($fileSystemFactory)
+    public function __construct($PrimaryFileSystemWrapper)
     {
-        $this->fileSystemFactory = $fileSystemFactory;
+        $this->PrimaryFileSystemWrapper = $PrimaryFileSystemWrapper;
     }
 
-    public function getFileSystemFactory()
+    public function getPrimaryFileSystemWrapper()
     {
-        return $this->fileSystemFactory;
+        return $this->PrimaryFileSystemWrapper;
     }
 }

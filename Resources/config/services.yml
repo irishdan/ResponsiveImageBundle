@@ -20,16 +20,16 @@ services:
         arguments: [ '%responsive_image%' ]
 
     responsive_image.image_maker:
-        class: IrishDan\ResponsiveImageBundle\ImageMaker
+        class: IrishDan\ResponsiveImageBundle\ImageStyler
         arguments: [ '%responsive_image%' ]
 
     responsive_image.file_to_object:
-        class: IrishDan\ResponsiveImageBundle\FileToObject
+        class: IrishDan\ResponsiveImageBundle\File\FileToObject
         arguments: [ '@doctrine.orm.entity_manager', '%responsive_image.entity_class%' ]
 
     # filesystem
     response_image.file_system_factory:
-        class: IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory
+        class: IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper
         arguments: [ '@event_dispatcher', '@responsive_image_filesystem' ]
 
     # Uploader
@@ -68,56 +68,33 @@ services:
             - { name: form.type }
 
     # Event subscribers
+    responsive_image.image_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\ImageSubscriber
+        arguments: [ '@responsive_image.image_manager','@logger' ]
+        tags:
+            - { name: kernel.event_subscriber }
+
     responsive_image.uploader_event_subscriber:
-        class: IrishDan\ResponsiveImageBundle\EventListener\UploaderSubscriber
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\UploaderSubscriber
         arguments: [ '@logger', '@responsive_image_filesystem' ]
         tags:
             - { name: kernel.event_subscriber }
 
     responsive_image.file_system_event_subscriber:
-        class: IrishDan\ResponsiveImageBundle\EventListener\FileSystemSubscriber
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\FileSystemSubscriber
         arguments: [ '@logger' ]
         tags:
             - { name: kernel.event_subscriber }
 
     responsive_image.styled_image_event_subscriber:
-        class: IrishDan\ResponsiveImageBundle\EventListener\StyledImagesSubscriber
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\StyledImagesSubscriber
         arguments:
-            - '@logger'
             - '@response_image.file_system_factory'
             - '@responsive_image_temp'
+            - '@logger'
         tags:
             - { name: kernel.event_subscriber }
 
-    # Event listeners.
-    # responsive_image.listener.image_generate_styled:
-    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
-    #     arguments: [ '%responsive_image', '@responsive_image' ]
-    #     tags:
-    #         - { name: kernel.event_listener, event: responsive_image.image_generate_styled, method: imageGenerateStyled }
-
-    # responsive_image.listener.image_delete_all:
-    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
-    #     arguments: [ '%responsive_image', '@responsive_image' ]
-    #     tags:
-    #         - { name: kernel.event_listener, event: responsive_image.image_delete_all, method: imageDeleteAll }
-
-    # responsive_image.listener.image_delete_styled:
-    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
-    #     arguments: [ '%responsive_image', '@responsive_image' ]
-    #     tags:
-
-    # responsive_image.listener.style_delete_styled:
-    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
-    #     arguments: [ '%responsive_image', '@responsive_image' ]
-    #     tags:
-    #         - { name: kernel.event_listener, event: responsive_image.style_delete_styled, method: styleDeleteStyled }
-
-    # responsive_image.listener.style_delete_all:
-    #     class: IrishDan\ResponsiveImageBundle\EventListener\ImageListener
-    #     arguments: [ '%responsive_image', '@responsive_image' ]
-    #     tags:
-    #         - { name: kernel.event_listener, event: responsive_image.style_delete_all, method: styleDeleteAll }
 
     # Twig extensions
     responsive_image.twig_extension:

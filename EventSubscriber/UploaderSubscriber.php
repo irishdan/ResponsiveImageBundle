@@ -1,6 +1,6 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\EventListener;
+namespace IrishDan\ResponsiveImageBundle\EventSubscriber;
 
 use IrishDan\ResponsiveImageBundle\Event\UploaderEvent;
 use IrishDan\ResponsiveImageBundle\Event\UploaderEvents;

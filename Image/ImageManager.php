@@ -4,18 +4,23 @@ namespace IrishDan\ResponsiveImageBundle\Image;
 
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvent;
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvents;
-use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
-use IrishDan\ResponsiveImageBundle\ImageMaker;
+use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
+use IrishDan\ResponsiveImageBundle\ImageStyler;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\StyleManager;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Class ImageManager
+ *
+ * @package IrishDan\ResponsiveImageBundle\Image
+ */
 class ImageManager
 {
     private $styleManager;
-    private $imageMaker;
+    private $ImageStyler;
     private $fileSystem;
     private $temporaryFileSystem;
     private $eventDispatcher;
@@ -23,17 +28,30 @@ class ImageManager
 
     public function __construct(
         StyleManager $styleManager,
-        ImageMaker $imageMaker,
-        FileSystemFactory $fileSystem,
-        FilesystemInterface $temporaryFileSystem,
+        ImageStyler $imageStyler,
+        PrimaryFileSystemWrapper $fileSystem,
+        FilesystemInterface $temporaryFileSystem = null,
         EventDispatcherInterface $eventDispatcher = null
     )
     {
         $this->styleManager = $styleManager;
-        $this->imageMaker = $imageMaker;
-        $this->fileSystem = $fileSystem;
+        $this->ImageStyler = $imageStyler;
+        $this->fileSystem = $fileSystem->getFileSystem();
         $this->temporaryFileSystem = $temporaryFileSystem;
         $this->eventDispatcher = $eventDispatcher;
+
+        // @TODO: In terms of configuration for the temporary directory, change the name, and..
+        // @TODO: If there's only on local directory configured then intervention will simply use that
+        // @TODO: That should be out of the box configuration
+
+        // @TODO: Filestore info save will be enabled simply if the getter exists. Add to generated image entity, commented out
+    }
+
+    public function createAllStyledImages(ResponsiveImageInterface $image)
+    {
+        $styles = $this->styleManager->getAllStylesNames();
+
+        return $this->createStyledImages($image, $styles);
     }
 
     public function createStyledImages(ResponsiveImageInterface $image, array $styles = [])
@@ -54,14 +72,17 @@ class ImageManager
             $this->eventDispatcher->dispatch(StyledImagesEvents::STYLED_IMAGES_GENERATED, $imagesGeneratedEvent);
         }
 
-        var_dump($this->generatedImages);
-
         return $this->generatedImages;
     }
 
     protected function createStyledImage(ResponsiveImageInterface $image, $style)
     {
         $styleData = $this->styleManager->getStyle($style);
+
+        // @TODO: Rename temporaryFileSystem
+        // @TODO: Use primary as a fallback
+        // @TODO: Ensure that file system is Local
+
         $directory = $this->temporaryFileSystem->getAdapter()->getPathPrefix();
         $source = $directory . $image->getPath();
 
@@ -75,7 +96,7 @@ class ImageManager
             $this->createStyleDirectory($relativeStylePath);
 
             try {
-                $this->imageMaker->createImage($source, $destination, $styleData, $cropFocusData);
+                $this->ImageStyler->createImage($source, $destination, $styleData, $cropFocusData);
                 $this->generatedImages[$style] = $relativeStylePath;
             } catch (\Exception $e) {
                 // @TODO: Throw exception
@@ -85,10 +106,16 @@ class ImageManager
         }
     }
 
+    public function deleteAllImages(ResponsiveImageInterface $image)
+    {
+        $this->deleteImage($image);
+        $this->deleteStyledImages($image);
+    }
+
     public function deleteStyledImages(ResponsiveImageInterface $image, array $styles = [])
     {
         if (empty($styles)) {
-            $styles = $this->styleManager->getAllStyles();
+            $styles = $this->styleManager->getAllStylesNames();
         }
 
         foreach ($styles as $style) {
@@ -98,7 +125,12 @@ class ImageManager
 
     public function deleteImage(ResponsiveImageInterface $image, $style = '')
     {
-        // @TODO: Implement
+        if (!empty($style)) {
+            $path = $this->styleManager->getStylePath($image, $style);
+        } else {
+            $path = $image->getPath();
+        }
+        $this->fileSystem->delete($path);
     }
 
     protected function createStyleDirectory($destination)

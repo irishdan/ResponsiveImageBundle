@@ -6,7 +6,7 @@ use IrishDan\ResponsiveImageBundle\Event\UploaderEvent;
 use IrishDan\ResponsiveImageBundle\Event\UploaderEvents;
 use IrishDan\ResponsiveImageBundle\File\FilenameTransliteratorInterface;
 use IrishDan\ResponsiveImageBundle\File\FileValidatorInterface;
-use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
+use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\FilesystemInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -50,7 +50,7 @@ class Uploader implements UploaderInterface
      */
     public function __construct(
         //EventDispatcherInterface $eventDispatcher,
-        FileSystemFactory $fileSystemFactory,
+        PrimaryFileSystemWrapper $PrimaryFileSystemWrapper,
         FilenameTransliteratorInterface $transliterator = null,
         FileValidatorInterface $fileValidator = null
     )
@@ -58,7 +58,7 @@ class Uploader implements UploaderInterface
         // $this->eventDispatcher = $eventDispatcher;
         $this->transliterator = $transliterator;
         $this->fileValidator = $fileValidator;
-        $this->fileSystem = $fileSystemFactory->getFileSystem();
+        $this->fileSystem = $PrimaryFileSystemWrapper->getFileSystem();
     }
 
     // public function setFilesystem(FilesystemInterface $fileSystem)

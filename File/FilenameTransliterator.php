@@ -2,7 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\File;
 
-use IrishDan\ResponsiveImageBundle\FileToObject;
+use IrishDan\ResponsiveImageBundle\File\FileToObject;
 
 class FilenameTransliterator implements FilenameTransliteratorInterface
 {

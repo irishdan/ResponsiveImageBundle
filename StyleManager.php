@@ -61,6 +61,13 @@ class StyleManager
         return $this->styles;
     }
 
+    public function getAllStylesNames()
+    {
+        $styles = $this->getAllStyles();
+
+        return array_keys($styles);
+    }
+
     public function getStyle($stylename)
     {
         if (!in_array($stylename, array_keys($this->styles))) {
@@ -72,6 +79,7 @@ class StyleManager
 
     public function getMediaQuerySourceMappings(ResponsiveImageInterface $image, $pictureSetName)
     {
+        // @TODO: Is this the best place for this
         $mappings = [];
         $filename = $image->getPath();
 

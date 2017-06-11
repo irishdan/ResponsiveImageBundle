@@ -16,33 +16,15 @@ class ImageEvent extends Event
      * @var
      */
     protected $image;
-    /**
-     * @var
-     */
-    protected $styles = [];
 
     /**
      * ImageEvent constructor.
      *
      * @param ResponsiveImageInterface|NULL $image
-     * @param array|NULL                    $stylesArray
      */
-    public function __construct(ResponsiveImageInterface $image = null, array $stylesArray = null)
+    public function __construct(ResponsiveImageInterface $image = null)
     {
-        if (!empty($image)) {
-            $this->image = $image;
-        }
-        if (!empty($stylesArray)) {
-            $this->styles = $stylesArray;
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getStyles()
-    {
-        return $this->styles;
+        $this->image = $image;
     }
 
     /**

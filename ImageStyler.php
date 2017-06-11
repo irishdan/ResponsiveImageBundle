@@ -5,11 +5,11 @@ namespace IrishDan\ResponsiveImageBundle;
 use Intervention\Image\ImageManager;
 
 /**
- * Class ImageMaker
+ * Class ImageStyler
  *
  * @package ResponsiveImageBundle
  */
-class ImageMaker
+class ImageStyler
 {
     use CoordinateLengthCalculator;
     /**
@@ -119,7 +119,6 @@ class ImageMaker
             $this->setCoordinateGroups($cropFocusCoords);
         }
 
-        var_dump('createImage');
         if (!empty($this->styleData)) {
             switch ($this->styleData['effect']) {
                 case 'scale':

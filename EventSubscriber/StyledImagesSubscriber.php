@@ -1,24 +1,29 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\EventListener;
+namespace IrishDan\ResponsiveImageBundle\EventSubscriber;
 
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvent;
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvents;
-use IrishDan\ResponsiveImageBundle\FileSystem\FileSystemFactory;
+use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class StyledImagesSubscriber implements EventSubscriberInterface
 {
-    private $logger;
     private $temporaryFileSystem;
+    private $primaryFileSystem;
+    private $logger;
 
-    public function __construct(LoggerInterface $logger, FileSystemFactory $fileSystemFactory, FilesystemInterface $temporaryFileSystem)
+    public function __construct(
+        PrimaryFileSystemWrapper $PrimaryFileSystemWrapper,
+        FilesystemInterface $temporaryFileSystem = null,
+        LoggerInterface $logger = null
+    )
     {
-        $this->logger = $logger;
         $this->temporaryFileSystem = $temporaryFileSystem;
-        $this->primaryFileSystem = $fileSystemFactory->getFileSystem();
+        $this->primaryFileSystem = $PrimaryFileSystemWrapper->getFileSystem();
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents()
@@ -32,11 +37,11 @@ class StyledImagesSubscriber implements EventSubscriberInterface
     public function onImagesGenerated(StyledImagesEvent $event)
     {
         $image = $event->getImage();
-
         $this->temporaryFileSystem->delete($image->getPath());
 
-        $generateImages = $event->getStyleImageLocationArray();
-        foreach ($generateImages as $style => $relativePath) {
+        $generatedImages = $event->getStyleImageLocationArray();
+
+        foreach ($generatedImages as $style => $relativePath) {
             $contents = $this->temporaryFileSystem->read($relativePath);
             $this->primaryFileSystem->put($relativePath, $contents);
 
@@ -48,6 +53,7 @@ class StyledImagesSubscriber implements EventSubscriberInterface
 
     public function onImagesDeleted(StyledImagesEvent $event)
     {
+        // @TODO: Do we need this
         $this->logger->critical('StyledImages subscriber deleted');
     }
 }

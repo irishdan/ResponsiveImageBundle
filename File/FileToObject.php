@@ -1,8 +1,9 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle;
+namespace IrishDan\ResponsiveImageBundle\File;
 
 use Doctrine\ORM\EntityManager;
+use IrishDan\ResponsiveImageBundle\ResponsiveImageRepositoryInterface;
 
 /**
  * Class FileToObject

@@ -7,7 +7,7 @@ use IrishDan\ResponsiveImageBundle\Event\FileSystemEvents;
 use League\Flysystem\FilesystemInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class FileSystemFactory
+class PrimaryFileSystemWrapper
 {
     // @TODO: Perhaps rename to Wrapper
 

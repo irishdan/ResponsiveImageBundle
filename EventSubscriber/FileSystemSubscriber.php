@@ -1,6 +1,6 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\EventListener;
+namespace IrishDan\ResponsiveImageBundle\EventSubscriber;
 
 use IrishDan\ResponsiveImageBundle\Event\FileSystemEvent;
 use IrishDan\ResponsiveImageBundle\Event\FileSystemEvents;
@@ -18,7 +18,7 @@ class FileSystemSubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        // @TODO: Currently we don;y evce need this. this is for implementers to switch filesystem
+        // @TODO: Currently we don't even need this. this is for implementers to switch filesystem
         return [
             FileSystemEvents::FILE_SYSTEM_FACTORY_GET => 'onFileSystemGet',
             FileSystemEvents::FILE_SYSTEM_FACTORY_SET => 'onFileSystemSet',
