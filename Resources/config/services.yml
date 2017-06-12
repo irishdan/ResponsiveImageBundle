@@ -10,16 +10,20 @@ services:
         class: IrishDan\ResponsiveImageBundle\Image\ImageManager
         arguments:
             - '@responsive_image.style_manager'
-            - '@responsive_image.image_maker'
+            - '@responsive_image.image_styler'
             - '@response_image.file_system_factory'
             - '@responsive_image_temp'
             - '@event_dispatcher'
+            
+    # responsive_image.custom_image_manager:
+    #     parent: 'responsive_image.image_manager'
+    #     class: IrishDan\ResponsiveImageBundle\Style\CustomStyleManager
 
     responsive_image.style_manager:
         class: IrishDan\ResponsiveImageBundle\StyleManager
         arguments: [ '%responsive_image%' ]
 
-    responsive_image.image_maker:
+    responsive_image.image_styler:
         class: IrishDan\ResponsiveImageBundle\ImageStyler
         arguments: [ '%responsive_image%' ]
 
@@ -95,11 +99,10 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-
     # Twig extensions
     responsive_image.twig_extension:
         class: IrishDan\ResponsiveImageBundle\Twig\ResponsiveImageExtension
         public: false
-        arguments: [ '@responsive_image.style_manager', '@responsive_image.url_builder' ]
+        arguments: [ '@responsive_image.style_manager', '@responsive_image.url_builder' , '@responsive_image.image_manager']
         tags:
             - { name: twig.extension }

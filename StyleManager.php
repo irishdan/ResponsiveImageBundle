@@ -51,6 +51,7 @@ class StyleManager
 
     public function styleExists($styleName)
     {
+        // @TODO: Allow for custom styles. ie styles beginning with custom_scale or custom_scale
         $style = $this->getStyle($styleName);
 
         return !empty($style);
@@ -125,7 +126,7 @@ class StyleManager
         return $stylePath;
     }
 
-    public function setImageStyle(ResponsiveImageInterface $image, $styleName = null)
+    public function setImageStyleSrc(ResponsiveImageInterface $image, $styleName = null)
     {
         // @TODO: perhaps should be setSrc
 
@@ -135,8 +136,13 @@ class StyleManager
 
         $stylePath = $this->getStylePath($image, $styleName);
 
-        $image->setStyle($stylePath);
+        $image->setSrc($stylePath);
 
         return $image;
+    }
+
+    public function addStyle($key, $styleData)
+    {
+        $this->styles[$key] = $styleData;
     }
 }

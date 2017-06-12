@@ -19,12 +19,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class ImageManager
 {
-    private $styleManager;
-    private $ImageStyler;
-    private $fileSystem;
-    private $temporaryFileSystem;
-    private $eventDispatcher;
-    private $generatedImages = [];
+    protected $styleManager;
+    protected $ImageStyler;
+    protected $fileSystem;
+    protected $temporaryFileSystem;
+    protected $eventDispatcher;
+    protected $generatedImages = [];
 
     public function __construct(
         StyleManager $styleManager,
@@ -141,5 +141,42 @@ class ImageManager
         if (!$this->temporaryFileSystem->has($directory)) {
             $this->temporaryFileSystem->createDir($directory);
         }
+    }
+
+    public function imageExists($path)
+    {
+        return $this->fileSystem->has($path);
+    }
+
+    public function createCustomStyledImage(ResponsiveImageInterface $image, $customStyleString, $forceGenerate = false)
+    {
+        // check is it exists, using the string
+        $stylePath = $this->styleManager->getStylePath($image, $customStyleString);
+
+        $exists = $this->imageExists($stylePath);
+        if (!$exists || $forceGenerate) {
+            // create the style array and add to the existing styles
+
+            $styleData = explode('_', $customStyleString);
+
+            list($custom, $effect, $width, $height) = $styleData;
+
+            $style = [
+                'effect' => $effect,
+                'width' => $width,
+                'height' => $height,
+            ];
+
+            // Add this style to the styles array
+            $this->styleManager->addStyle($customStyleString, $style);
+
+            // generate the image
+            $this->createStyledImages($image, [$style]);
+        }
+    }
+
+    public function deleteCustomStyledImages(ResponsiveImageInterface $image)
+    {
+        // @TODO: Implement
     }
 }

@@ -21,9 +21,12 @@ class ImageController extends Controller
      */
     public function indexAction($stylename, $filename)
     {
+        dump($stylename);
+        dump($filename);
+
         // Get image style information.
         if (empty($this->get('responsive_image.style_manager')->styleExists($stylename))) {
-            throw $this->createNotFoundException('The style does not exist');
+            // throw $this->createNotFoundException('The style does not exist');
         }
 
         // Create image if the file exists.
