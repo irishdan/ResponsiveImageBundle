@@ -1,8 +1,8 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle;
+namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
-use Intervention\Image\ImageManager;
+use Intervention\Image\ImageManager as Intervention;
 
 /**
  * Class ImageStyler
@@ -11,7 +11,6 @@ use Intervention\Image\ImageManager;
  */
 class ImageStyler
 {
-    use CoordinateLengthCalculator;
     /**
      * @var
      */
@@ -88,7 +87,7 @@ class ImageStyler
     {
         // @TODO: Perhaps rename this method , it makes no sense 
         if (empty($this->manager)) {
-            $this->manager = new ImageManager(['driver' => $driver]);
+            $this->manager = new Intervention(['driver' => $driver]);
         }
         $this->image = $this->manager->make($source);
     }
@@ -178,15 +177,14 @@ class ImageStyler
         // Get the offset.
         $cropCoords = $this->getCoordinates('crop');
         if (!empty($cropCoords)) {
-            $x1 = $cropCoords[0];
-            $y1 = $cropCoords[1];
+            $geometry = new CoordinateGeometry($cropCoords[0], $cropCoords[1], $cropCoords[2], $cropCoords[3]);
 
             // Get the lengths.
-            $newWidth = $this->getLength('x', $cropCoords);
-            $newHeight = $this->getLength('y', $cropCoords);
+            $newWidth = $geometry->axisLength('x');
+            $newHeight = $geometry->axisLength('y');
 
             // Do the initial crop.
-            $this->image->crop($newWidth, $newHeight, $x1, $y1);
+            $this->image->crop($newWidth, $newHeight, $cropCoords[0], $cropCoords[1]);
         }
     }
 

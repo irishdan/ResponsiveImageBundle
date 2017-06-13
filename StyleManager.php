@@ -2,10 +2,12 @@
 
 namespace IrishDan\ResponsiveImageBundle;
 
+use IrishDan\ResponsiveImageBundle\ImageProcessing\CoordinateGeometry;
+
 /**
  * Class StyleManager
  * This class is responsible for image style information,
- * and translating styles into realatove style paths.
+ * and translating styles into relative style paths.
  *
  * @package ResponsiveImageBundle
  */
@@ -49,36 +51,41 @@ class StyleManager
 
     public function setImageAttributes(ResponsiveImageInterface $image, $styleName = null, $src = null)
     {
-        // @TODO: I don;t think we need to do this any more.
-        // $stylePath = $this->getStylePath($image, $styleName);
-        // $image->setStyle($stylePath);
-
         // Use the style data to figure out the width and height for this image
-        $styleData = $this->getStyleData($styleName);
-        if (!empty($styleData) && !empty($styleData['effect'])) {
-            switch ($styleData['effect']) {
-                case 'crop':
-                    $image->setWidth($styleData['width']);
-                    $image->setHeight($styleData['height']);
-                    break;
+        // and then set hose attributes on the image.
+        if (!empty($styleName)) {
+            $styleData = $this->getStyleData($styleName);
+            if (!empty($styleData) && !empty($styleData['effect'])) {
+                switch ($styleData['effect']) {
+                    case 'crop':
+                        $image->setWidth($styleData['width']);
+                        $image->setHeight($styleData['height']);
+                        break;
 
-                case 'scale':
-                    $coordinates = $image->getCropCoordinates();
+                    case 'scale':
+                        $coordinates = $image->getCropCoordinates();
 
-                    if (empty($coordinates)) {
-                        $geometry = new CoordinateGeometry(0, 0, $image->getWidth(), $image->getHeight());
-                    } else {
-                        $cropCoordinates = explode(':', $coordinates)[0];
-                        $points = explode(',', $cropCoordinates);
-                        $geometry = new CoordinateGeometry(trim($points[0]), trim($points[1]), trim($points[2]), trim($points[3]));
-                    }
+                        if (empty($coordinates)) {
+                            $geometry = new CoordinateGeometry(0, 0, $image->getWidth(), $image->getHeight());
+                        }
+                        else {
+                            $cropCoordinates = explode(':', $coordinates)[0];
+                            $points          = explode(',', $cropCoordinates);
+                            $geometry        = new CoordinateGeometry(
+                                trim($points[0]),
+                                trim($points[1]),
+                                trim($points[2]),
+                                trim($points[3])
+                            );
+                        }
 
-                    $scaledDimensions = $geometry->scaleSize($styleData['width'], $styleData['height']);
+                        $scaledDimensions = $geometry->scaleSize($styleData['width'], $styleData['height']);
 
-                    $image->setWidth($scaledDimensions['width']);
-                    $image->setHeight($scaledDimensions['height']);
+                        $image->setWidth($scaledDimensions['width']);
+                        $image->setHeight($scaledDimensions['height']);
 
-                    break;
+                        break;
+                }
             }
         }
 
@@ -117,7 +124,8 @@ class StyleManager
             if (strpos('custom', $styleName) == 0) {
                 return $this->styleDataFromCustomStyleString($styleName);
             }
-        } else {
+        }
+        else {
             return $this->styles[$styleName];
         }
 
@@ -126,7 +134,6 @@ class StyleManager
 
     public function getMediaQuerySourceMappings(ResponsiveImageInterface $image, $pictureSetName)
     {
-        // @TODO: Is this the best place for this
         $mappings = [];
         $filename = $image->getPath();
 
@@ -139,7 +146,8 @@ class StyleManager
             foreach ($set as $break => $style) {
                 if (is_array($style)) {
                     $styleName = $pictureSetName . '-' . $break;
-                } else {
+                }
+                else {
                     $styleName = $style;
                 }
                 $path = $this->buildStylePath($styleName, $filename);
@@ -153,7 +161,6 @@ class StyleManager
 
     protected function buildStylePath($styleName, $fileName)
     {
-        // @TODO: Add some formatting.
         $path = $this->styleDirectory . '/' . $styleName . '/' . $fileName;
 
         return $path;
@@ -165,7 +172,8 @@ class StyleManager
 
         if (!empty($styleName)) {
             $stylePath = $this->buildStylePath($styleName, $filename);
-        } else {
+        }
+        else {
             $stylePath = $filename;
         }
 
@@ -185,7 +193,7 @@ class StyleManager
 
         return [
             'effect' => $effect,
-            'width' => $width,
+            'width'  => $width,
             'height' => $height,
         ];
     }

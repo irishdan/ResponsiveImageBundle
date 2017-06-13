@@ -3,10 +3,10 @@
 namespace IrishDan\ResponsiveImageBundle\Twig;
 
 
-use IrishDan\ResponsiveImageBundle\Image\ImageManager;
+use IrishDan\ResponsiveImageBundle\ImageProcessing\ImageManager;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\StyleManager;
-use IrishDan\ResponsiveImageBundle\UrlBuilder;
+use IrishDan\ResponsiveImageBundle\Url\UrlBuilder;
 
 /**
  * Class ResponsiveImageExtension
@@ -22,7 +22,7 @@ class ResponsiveImageExtension extends \Twig_Extension
     public function __construct(StyleManager $styleManager, UrlBuilder $urlBuilder, ImageManager $imageManager = null)
     {
         $this->styleManager = $styleManager;
-        $this->urlBuilder = $urlBuilder;
+        $this->urlBuilder   = $urlBuilder;
         $this->imageManager = $imageManager;
     }
 
@@ -32,36 +32,45 @@ class ResponsiveImageExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('picture_image', [$this, 'generatePictureImage'], [
-                    'is_safe' => ['html'],
+            new \Twig_SimpleFunction(
+                'picture_image', [$this, 'generatePictureImage'], [
+                    'is_safe'           => ['html'],
                     'needs_environment' => true,
                 ]
             ),
-            new \Twig_SimpleFunction('styled_image', [$this, 'generateStyledImage'], [
-                    'is_safe' => ['html'],
+            new \Twig_SimpleFunction(
+                'styled_image', [$this, 'generateStyledImage'], [
+                    'is_safe'           => ['html'],
                     'needs_environment' => true,
                 ]
             ),
-            new \Twig_SimpleFunction('crop_image', [$this, 'cropImage'], [
-                    'is_safe' => ['html'],
+            new \Twig_SimpleFunction(
+                'crop_image', [$this, 'cropImage'], [
+                    'is_safe'           => ['html'],
                     'needs_environment' => true,
                 ]
             ),
-            new \Twig_SimpleFunction('scale_image', [$this, 'scaleImage'], [
-                    'is_safe' => ['html'],
+            new \Twig_SimpleFunction(
+                'scale_image', [$this, 'scaleImage'], [
+                    'is_safe'           => ['html'],
                     'needs_environment' => true,
                 ]
             ),
-            new \Twig_SimpleFunction('background_responsive_image', [$this, 'generateBackgroundImage'], [
-                    'is_safe' => ['html'],
+            new \Twig_SimpleFunction(
+                'background_responsive_image', [$this, 'generateBackgroundImage'], [
+                    'is_safe'           => ['html'],
                     'needs_environment' => true,
                 ]
             ),
         ];
     }
 
-    public function generateBackgroundImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $selector)
-    {
+    public function generateBackgroundImage(
+        \Twig_Environment $environment,
+        ResponsiveImageInterface $image,
+        $pictureSetName,
+        $selector
+    ) {
         $mq = $this->styleManager->getMediaQuerySourceMappings($image, $pictureSetName);
 
         foreach ($mq as $index => $path) {
@@ -71,16 +80,23 @@ class ResponsiveImageExtension extends \Twig_Extension
         $original = $mq[0];
         unset($mq[0]);
 
-        return $environment->render('ResponsiveImageBundle::css.html.twig', [
-            'original' => $original,
-            'mq_mappings' => $mq,
-            'selector' => $selector,
-            'image' => $image,
-        ]);
+        return $environment->render(
+            'ResponsiveImageBundle::css.html.twig',
+            [
+                'original'    => $original,
+                'mq_mappings' => $mq,
+                'selector'    => $selector,
+                'image'       => $image,
+            ]
+        );
     }
 
-    public function generatePictureImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $generate = false)
-    {
+    public function generatePictureImage(
+        \Twig_Environment $environment,
+        ResponsiveImageInterface $image,
+        $pictureSetName,
+        $generate = false
+    ) {
         // @TODO: Implement generate if missing.
 
         $mq = $this->styleManager->getMediaQuerySourceMappings($image, $pictureSetName);
@@ -92,68 +108,78 @@ class ResponsiveImageExtension extends \Twig_Extension
         $original = $mq[0];
         unset($mq[0]);
 
-        return $environment->render('ResponsiveImageBundle::picture.html.twig', [
-            'original' => $original,
-            'mq_mappings' => $mq,
-            'image' => $image,
-        ]);
+        return $environment->render(
+            'ResponsiveImageBundle::picture.html.twig',
+            [
+                'original'    => $original,
+                'mq_mappings' => $mq,
+                'image'       => $image,
+            ]
+        );
     }
 
-    public function generateStyledImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $styleName, $generate = false)
-    {
+    public function generateStyledImage(
+        \Twig_Environment $environment,
+        ResponsiveImageInterface $image,
+        $styleName = null,
+        $generate = false
+    ) {
         // @TODO: Implement generate if missing.
 
-        $stylePath = $this->styleManager->getStylePath($image, $styleName);
-
-        return $this->renderImage($environment, $image, $stylePath);
+        return $this->renderImage($environment, $image, $styleName);
     }
 
-    public function cropImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = '', $height = null)
-    {
-        // @TODO: To avoid creating images, that already exist, check if it exists, need a way to disable this checking
-        // @TODO: We could potentially cache a contents list
+    public function cropImage(
+        \Twig_Environment $environment,
+        ResponsiveImageInterface $image,
+        $width = '',
+        $height = null
+    ) {
         $styleName = 'custom_crop_' . $width . '_' . $height;
-        $stylePath = $this->styleManager->getStylePath($image, $styleName);
 
-        // $image->setWidth($width);
-        // $image->setHeight($height);
         if (!empty($this->imageManager)) {
             $this->imageManager->createCustomStyledImage($image, $styleName);
         }
 
-        $this->styleManager->setImageAttributes($image, $styleName);
-
-        // @TODO: Its not just about setting the src, its also about setting the height and width, so a method is needed
-
-        dump($stylePath);
-
-        return $this->renderImage($environment, $image, $stylePath);
+        return $this->renderImage($environment, $image, $styleName);
     }
 
-    public function scaleImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = '', $height = '')
-    {
+    public function scaleImage(
+        \Twig_Environment $environment,
+        ResponsiveImageInterface $image,
+        $width = '',
+        $height = ''
+    ) {
         $styleName = 'custom_scale_' . $width . '_' . $height;
-        $stylePath = $this->styleManager->getStylePath($image, $styleName);
-
-        // @TODO: We need to transform the height and width to match the styled image.
-        $this->styleManager->setImageAttributes($image, $styleName);
 
         if (!empty($this->imageManager)) {
             $this->imageManager->createCustomStyledImage($image, $styleName);
         }
 
-        return $this->renderImage($environment, $image, $stylePath);
+        return $this->renderImage($environment, $image, $styleName);
     }
 
-    protected function renderImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $stylePath)
+    protected function renderImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $styleName = null)
     {
-        $src = $this->urlBuilder->filePublicUrl($stylePath);
-        // @TODO: Add this int ge image interface.
-        $image->setSrc($src);
+        if (!empty($styleName)) {
+            $path = $this->styleManager->getStylePath($image, $styleName);
+        }
+        else {
+            $path = $image->getPath();
+        }
 
-        return $environment->render('ResponsiveImageBundle::img.html.twig', [
-            'image' => $image,
-        ]);
+        dump($path);
+        $src = $this->urlBuilder->filePublicUrl($path);
+        dump($src);
+        // Set the image attributes.
+        $this->styleManager->setImageAttributes($image, $styleName, $src);
+
+        return $environment->render(
+            'ResponsiveImageBundle::img.html.twig',
+            [
+                'image' => $image,
+            ]
+        );
     }
 
     /**

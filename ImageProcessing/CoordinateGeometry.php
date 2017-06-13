@@ -1,11 +1,15 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle;
-
+namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
 use Intervention\Image\Size;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
+/**
+ * Class CoordinateGeometry
+ *
+ * @package IrishDan\ResponsiveImageBundle
+ */
 class CoordinateGeometry
 {
     private $x1;
@@ -19,6 +23,11 @@ class CoordinateGeometry
     {
         $this->setPoints($x1, $y1, $x2, $y2);
         $this->setAspectRatio();
+    }
+
+    public function getAspectRatio()
+    {
+        return $this->aspectRatio;
     }
 
     public function scaleSize($scaleX, $scaleY)

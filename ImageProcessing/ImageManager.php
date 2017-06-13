@@ -1,15 +1,14 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle\Image;
+namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvent;
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvents;
 use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
-use IrishDan\ResponsiveImageBundle\ImageStyler;
+use IrishDan\ResponsiveImageBundle\ImageProcessing\ImageStyler;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\StyleManager;
 use League\Flysystem\FilesystemInterface;
-use Psr\Log\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -44,7 +43,7 @@ class ImageManager
         // @TODO: If there's only on local directory configured then intervention will simply use that
         // @TODO: That should be out of the box configuration
 
-        // @TODO: Filestore info save will be enabled simply if the getter exists. Add to generated image entity, commented out
+        // @TODO: Filesystem store info save will be enabled simply if the getter exists. Add to generated image entity, commented out
     }
 
     public function createAllStyledImages(ResponsiveImageInterface $image)
@@ -150,6 +149,9 @@ class ImageManager
 
     public function createCustomStyledImage(ResponsiveImageInterface $image, $customStyleString, $forceGenerate = false)
     {
+        // @TODO: To avoid creating images, that already exist, check if it exists, need a way to disable this checking
+        // @TODO: We could potentially cache a contents list for each adapter.
+
         // check is it exists, using the string
         $stylePath = $this->styleManager->getStylePath($image, $customStyleString);
 

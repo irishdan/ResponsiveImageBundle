@@ -6,7 +6,7 @@ use IrishDan\ResponsiveImageBundle\Event\FileSystemEvent;
 use IrishDan\ResponsiveImageBundle\Event\FileSystemEvents;
 use IrishDan\ResponsiveImageBundle\Event\ImageEvent;
 use IrishDan\ResponsiveImageBundle\Event\ImageEvents;
-use IrishDan\ResponsiveImageBundle\Image\ImageManager;
+use IrishDan\ResponsiveImageBundle\ImageProcessing\ImageManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

@@ -2,7 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Event;
 
-use League\Flysystem\FilesystemInterface;
+use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
 use Symfony\Component\EventDispatcher\Event;
 
 
@@ -10,7 +10,7 @@ class FileSystemEvent extends Event
 {
     protected $PrimaryFileSystemWrapper;
 
-    public function __construct($PrimaryFileSystemWrapper)
+    public function __construct(PrimaryFileSystemWrapper $PrimaryFileSystemWrapper)
     {
         $this->PrimaryFileSystemWrapper = $PrimaryFileSystemWrapper;
     }

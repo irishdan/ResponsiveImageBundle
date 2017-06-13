@@ -7,24 +7,20 @@ services:
             - '@responsive_image.uploader'
 
     responsive_image.image_manager:
-        class: IrishDan\ResponsiveImageBundle\Image\ImageManager
+        class: IrishDan\ResponsiveImageBundle\ImageProcessing\ImageManager
         arguments:
             - '@responsive_image.style_manager'
             - '@responsive_image.image_styler'
-            - '@response_image.file_system_factory'
+            - '@responsive_image.file_system_factory'
             - '@responsive_image_temp'
             - '@event_dispatcher'
-            
-    # responsive_image.custom_image_manager:
-    #     parent: 'responsive_image.image_manager'
-    #     class: IrishDan\ResponsiveImageBundle\Style\CustomStyleManager
 
     responsive_image.style_manager:
         class: IrishDan\ResponsiveImageBundle\StyleManager
         arguments: [ '%responsive_image%' ]
 
     responsive_image.image_styler:
-        class: IrishDan\ResponsiveImageBundle\ImageStyler
+        class: IrishDan\ResponsiveImageBundle\ImageProcessing\ImageStyler
         arguments: [ '%responsive_image%' ]
 
     responsive_image.file_to_object:
@@ -32,7 +28,7 @@ services:
         arguments: [ '@doctrine.orm.entity_manager', '%responsive_image.entity_class%' ]
 
     # filesystem
-    response_image.file_system_factory:
+    responsive_image.file_system_factory:
         class: IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper
         arguments: [ '@event_dispatcher', '@responsive_image_filesystem' ]
 
@@ -40,11 +36,9 @@ services:
     responsive_image.uploader:
         class: IrishDan\ResponsiveImageBundle\Uploader
         arguments:
-            - '@response_image.file_system_factory'
+            - '@responsive_image.file_system_factory'
             - '@responsive_image.filename_transliterator'
             - '@responsive_image.file_validator'
-        #calls:
-        #    - [ setFileSystem, [ '@responsive_image_filesystem' ]]
 
     responsive_image.filename_transliterator:
         class: IrishDan\ResponsiveImageBundle\File\FilenameTransliterator
@@ -55,8 +49,19 @@ services:
 
     # url builder
     responsive_image.url_builder:
-        class: IrishDan\ResponsiveImageBundle\UrlBuilder
-        arguments: ['@response_image.file_system_factory']
+        class: IrishDan\ResponsiveImageBundle\Url\UrlBuilder
+        arguments: ['@responsive_image.file_system_factory', '%responsive_image%']
+        calls:
+            - [ adapterUrlEncoder, [ 'Local' , '@responsive_image.local_url']]
+            - [ adapterUrlEncoder, [ 'AwsS3Adapter' , '@responsive_image.aws_url']]
+
+    responsive_image.local_url:
+        class: IrishDan\ResponsiveImageBundle\Url\LocalAdapterUrlEncoder
+        shared: false
+
+    responsive_image.aws_url:
+        class: IrishDan\ResponsiveImageBundle\Url\AwsAdapterUrlEncoder
+        shared: false
 
     # Custom form field type.
     responsive_image.form.type.crop_focus:
@@ -93,7 +98,7 @@ services:
     responsive_image.styled_image_event_subscriber:
         class: IrishDan\ResponsiveImageBundle\EventSubscriber\StyledImagesSubscriber
         arguments:
-            - '@response_image.file_system_factory'
+            - '@responsive_image.file_system_factory'
             - '@responsive_image_temp'
             - '@logger'
         tags:

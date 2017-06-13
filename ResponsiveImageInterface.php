@@ -71,19 +71,13 @@ Interface ResponsiveImageInterface
      */
     public function getCropCoordinates();
 
-    /**
-     * @param $picture
-     * @return mixed
-     */
-    public function setPicture($picture);
+    // public function setPicture($picture);
 
-    /**
-     * @param $style
-     * @return mixed
-     */
-    public function setStyle($style);
+    // public function setStyle($style);
 
-    public function getStyle();
+    // public function getStyle();
+
+    // public function getPicture();
 
     /**
      * @param UploadedFile $file
@@ -96,7 +90,9 @@ Interface ResponsiveImageInterface
      */
     public function getFile();
 
-    public function getPicture();
-
     public function setCropCoordinates($cords);
+
+    public function setSrc($src);
+
+    public function getSrc();
 }

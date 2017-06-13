@@ -1,14 +1,14 @@
 <?php
 
-namespace IrishDan\ResponsiveImageBundle;
+namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
 class FocusCropDataCalculator
 {
-    use CoordinateLengthCalculator;
     private $cropCoordinates;
     private $focusCoordinates;
     private $styleWidth;
     private $styleHeight;
+    private $geometry;
 
     public function __construct($cropCoordinates, $focusCoordinates, $styleWidth, $styleHeight)
     {
@@ -39,11 +39,15 @@ class FocusCropDataCalculator
         // 2: $imageAspectRatio < $styleAspectRatio
         // 3: $imageAspectRatio === $styleAspectRatio
 
-        $newWidth = $this->getLength('x', $this->cropCoordinates);
-        $newHeight = $this->getLength('y', $this->cropCoordinates);
+        list($x1, $y1, $x2, $y2) = $this->cropCoordinates;
+        $this->geometry = new CoordinateGeometry($x1, $y1, $x2, $y2);
+
+        $newWidth = $this->geometry->axisLength('x');
+        $newHeight = $this->geometry->axisLength('y');
 
         // Find out what type of style crop we are dealing with.
-        $imageAspectRatio = $newWidth / $newHeight;
+        $imageAspectRatio = $this->geometry->getAspectRatio();
+
         $styleAspectRatio = $this->styleWidth / $this->styleHeight;
 
         if ($imageAspectRatio > $styleAspectRatio) {

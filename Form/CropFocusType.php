@@ -20,14 +20,16 @@ class CropFocusType extends AbstractType
     private $styleManager;
     private $displayCoordinates = true;
     private $includeJsCss = true;
+    private $widgetImageStyle = 'thumb';
 
     public function __construct(StyleManager $styleManager, array $configuration)
     {
         $this->styleManager = $styleManager;
 
         if (!empty($configuration['crop_focus_widget'])) {
-            $this->includeJsCss = empty($configuration['crop_focus_widget']['include_js_css']) ? false : true;
+            $this->includeJsCss       = empty($configuration['crop_focus_widget']['include_js_css']) ? false : true;
             $this->displayCoordinates = empty($configuration['crop_focus_widget']['display_coordinates']) ? false : true;
+            $this->widgetImageStyle   = 'thumb'; // @TODO: add to configuration.
         }
     }
 
@@ -36,17 +38,20 @@ class CropFocusType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'label' => 'Focus and Crop',
-            'empty_data' => '0, 0, 0, 0:0, 0, 0, 0',
-            'alt' => 'Alt',
-            'title' => 'title',
-            'width' => 100,
-            'height' => 100,
-            'display_coordinates' => $this->displayCoordinates,
-            'include_js_css' => $this->includeJsCss,
-            'coordinate_field_type' => $this->displayCoordinates ? 'text' : 'hidden',
-        ]);
+        $resolver->setDefaults(
+            [
+                'label'                 => 'Focus and Crop',
+                'empty_data'            => '0, 0, 0, 0:0, 0, 0, 0',
+                'alt'                   => 'Alt',
+                'title'                 => 'title',
+                'width'                 => 100,
+                'height'                => 100,
+                'display_coordinates'   => $this->displayCoordinates,
+                'include_js_css'        => $this->includeJsCss,
+                'coordinate_field_type' => $this->displayCoordinates ? 'text' : 'hidden',
+                'image_style'           => $this->widgetImageStyle,
+            ]
+        );
     }
 
     /**
@@ -67,17 +72,16 @@ class CropFocusType extends AbstractType
     {
         parent::buildView($view, $form, $options);
 
-        $image = $options['data'];
-        // $image = $this->styleManager->setImageStyle($image);
+        $image            = $options['data'];
         $options['value'] = $image->getCropCoordinates();
         $options['image'] = $image;
 
         if ($options['include_js_css']) {
             $pubicDirectory = dirname(__FILE__) . '/../Resources/public/';
-            $js = file_get_contents($pubicDirectory . 'js/jquery.cropper.js', FILE_USE_INCLUDE_PATH);
-            $css = file_get_contents($pubicDirectory . 'css/cropper.css', FILE_USE_INCLUDE_PATH);
+            $js             = file_get_contents($pubicDirectory . 'js/jquery.cropper.js', FILE_USE_INCLUDE_PATH);
+            $css            = file_get_contents($pubicDirectory . 'css/cropper.css', FILE_USE_INCLUDE_PATH);
 
-            $options['js'] = $js;
+            $options['js']  = $js;
             $options['css'] = $css;
         }
 
