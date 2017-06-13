@@ -25,10 +25,6 @@ class ImageStyler
      */
     private $driver = 'gd';
     /**
-     * @var FileManager
-     */
-    private $fileManager;
-    /**
      * @var
      */
     private $focusCoordinates = [];

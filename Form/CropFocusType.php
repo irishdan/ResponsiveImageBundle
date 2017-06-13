@@ -68,7 +68,7 @@ class CropFocusType extends AbstractType
         parent::buildView($view, $form, $options);
 
         $image = $options['data'];
-        $image = $this->styleManager->setImageStyle($image);
+        // $image = $this->styleManager->setImageStyle($image);
         $options['value'] = $image->getCropCoordinates();
         $options['image'] = $image;
 

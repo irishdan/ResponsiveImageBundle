@@ -30,7 +30,7 @@ class StyleManagerTest extends ResponsiveImageTestCase
 
         // Assert that the web path is correct
         $expectedPath = '/test/images/styles/thumb/dummy.jpg';
-        $this->assertEquals($expectedPath, $this->image->getStyle());
+        $this->assertEquals($expectedPath, $this->image->getStyleData());
     }
 
     public function testGetMediaQuerySourceMappings()
@@ -47,14 +47,14 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->assertEquals('/test/images/styles/thumb/dummy.jpg', $mq['min-width: 1100px']);
     }
 
-    public function testGetStyle()
+    public function testgetStyleData()
     {
         // Non existant style returns FALSE.
-        $style = $this->styleManager->getStyle('nonExistingStyle');
+        $style = $this->styleManager->getStyleData('nonExistingStyle');
         $this->assertFalse($style);
 
         // Existing array returns array.
-        $style = $this->styleManager->getStyle('thumb');
+        $style = $this->styleManager->getStyleData('thumb');
         $this->assertTrue(is_array($style));
 
         // Style info.

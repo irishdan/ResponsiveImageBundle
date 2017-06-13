@@ -82,7 +82,7 @@ class TestImage implements ResponsiveImageInterface
         $this->title = $title;
     }
 
-    public function getStyle()
+    public function getStyleData()
     {
         return $this->style;
     }

@@ -77,7 +77,7 @@ class ResponsiveImageManager
         // }
 //
         // foreach ($paths as $styleKey => $files) {
-        //     $style = $this->styleManager->getStyle($styleKey);
+        //     $style = $this->styleManager->getStyleData($styleKey);
         //     $stylePath = $this->system->getStorageDirectory('styled', null, $styleKey);
         //     $image = $this->imager->createImage($filePath, $stylePath, $style, $crop);
         // }

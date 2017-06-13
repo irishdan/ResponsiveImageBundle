@@ -77,7 +77,7 @@ class ImageManager
 
     protected function createStyledImage(ResponsiveImageInterface $image, $style)
     {
-        $styleData = $this->styleManager->getStyle($style);
+        $styleData = $this->styleManager->getStyleData($style);
 
         // @TODO: Rename temporaryFileSystem
         // @TODO: Use primary as a fallback
@@ -155,23 +155,12 @@ class ImageManager
 
         $exists = $this->imageExists($stylePath);
         if (!$exists || $forceGenerate) {
-            // create the style array and add to the existing styles
-
-            $styleData = explode('_', $customStyleString);
-
-            list($custom, $effect, $width, $height) = $styleData;
-
-            $style = [
-                'effect' => $effect,
-                'width' => $width,
-                'height' => $height,
-            ];
-
-            // Add this style to the styles array
+            // Create the style array and add to the existing styles
+            $style = $this->styleManager->styleDataFromCustomStyleString($customStyleString);
             $this->styleManager->addStyle($customStyleString, $style);
 
             // generate the image
-            $this->createStyledImages($image, [$style]);
+            $this->createStyledImages($image, [$customStyleString]);
         }
     }
 

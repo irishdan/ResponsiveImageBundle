@@ -108,32 +108,39 @@ class ResponsiveImageExtension extends \Twig_Extension
         return $this->renderImage($environment, $image, $stylePath);
     }
 
-    public function cropImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = 10, $height = 10)
+    public function cropImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = '', $height = null)
     {
-        // $this->styleManager->generate
         // @TODO: To avoid creating images, that already exist, check if it exists, need a way to disable this checking
         // @TODO: We could potentially cache a contents list
         $styleName = 'custom_crop_' . $width . '_' . $height;
+        $stylePath = $this->styleManager->getStylePath($image, $styleName);
 
-        $image->setWidth($width);
-        $image->setHeight($height);
-
+        // $image->setWidth($width);
+        // $image->setHeight($height);
         if (!empty($this->imageManager)) {
             $this->imageManager->createCustomStyledImage($image, $styleName);
         }
 
+        $this->styleManager->setImageAttributes($image, $styleName);
+
         // @TODO: Its not just about setting the src, its also about setting the height and width, so a method is needed
-        $stylePath = $this->styleManager->getStylePath($image, $styleName);
 
         dump($stylePath);
 
         return $this->renderImage($environment, $image, $stylePath);
     }
 
-    public function scaleImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = 10, $height = 10)
+    public function scaleImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = '', $height = '')
     {
-        $styleName = 'custom_scale_w' . $width . '_h' . $height;
+        $styleName = 'custom_scale_' . $width . '_' . $height;
         $stylePath = $this->styleManager->getStylePath($image, $styleName);
+
+        // @TODO: We need to transform the height and width to match the styled image.
+        $this->styleManager->setImageAttributes($image, $styleName);
+
+        if (!empty($this->imageManager)) {
+            $this->imageManager->createCustomStyledImage($image, $styleName);
+        }
 
         return $this->renderImage($environment, $image, $stylePath);
     }

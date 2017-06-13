@@ -18,8 +18,6 @@ class StyleManager
 
     public function __construct(array $configuration)
     {
-        // @TODO: Anything in here should only ever return a relative path
-
         // Set the styles directory;
         if (!empty($configuration['image_styles_directory'])) {
             $this->styleDirectory = $configuration['image_styles_directory'];
@@ -49,10 +47,53 @@ class StyleManager
         }
     }
 
+    public function setImageAttributes(ResponsiveImageInterface $image, $styleName = null, $src = null)
+    {
+        // @TODO: I don;t think we need to do this any more.
+        // $stylePath = $this->getStylePath($image, $styleName);
+        // $image->setStyle($stylePath);
+
+        // Use the style data to figure out the width and height for this image
+        $styleData = $this->getStyleData($styleName);
+        if (!empty($styleData) && !empty($styleData['effect'])) {
+            switch ($styleData['effect']) {
+                case 'crop':
+                    $image->setWidth($styleData['width']);
+                    $image->setHeight($styleData['height']);
+                    break;
+
+                case 'scale':
+                    $coordinates = $image->getCropCoordinates();
+
+                    if (empty($coordinates)) {
+                        $geometry = new CoordinateGeometry(0, 0, $image->getWidth(), $image->getHeight());
+                    } else {
+                        $cropCoordinates = explode(':', $coordinates)[0];
+                        $points = explode(',', $cropCoordinates);
+                        $geometry = new CoordinateGeometry(trim($points[0]), trim($points[1]), trim($points[2]), trim($points[3]));
+                    }
+
+                    $scaledDimensions = $geometry->scaleSize($styleData['width'], $styleData['height']);
+
+                    $image->setWidth($scaledDimensions['width']);
+                    $image->setHeight($scaledDimensions['height']);
+
+                    break;
+            }
+        }
+
+        // Set the src if value is provided
+        if (!empty($src)) {
+            $image->setSrc($src);
+        }
+
+        return $image;
+    }
+
     public function styleExists($styleName)
     {
         // @TODO: Allow for custom styles. ie styles beginning with custom_scale or custom_scale
-        $style = $this->getStyle($styleName);
+        $style = $this->getStyleData($styleName);
 
         return !empty($style);
     }
@@ -69,13 +110,18 @@ class StyleManager
         return array_keys($styles);
     }
 
-    public function getStyle($stylename)
+    public function getStyleData($styleName)
     {
-        if (!in_array($stylename, array_keys($this->styles))) {
-            return false;
+        if (!in_array($styleName, array_keys($this->styles))) {
+            // If is custom style string.
+            if (strpos('custom', $styleName) == 0) {
+                return $this->styleDataFromCustomStyleString($styleName);
+            }
         } else {
-            return $this->styles[$stylename];
+            return $this->styles[$styleName];
         }
+
+        return false;
     }
 
     public function getMediaQuerySourceMappings(ResponsiveImageInterface $image, $pictureSetName)
@@ -126,23 +172,21 @@ class StyleManager
         return $stylePath;
     }
 
-    public function setImageStyleSrc(ResponsiveImageInterface $image, $styleName = null)
-    {
-        // @TODO: perhaps should be setSrc
-
-        if ($styleName !== null && empty($this->getStyle($styleName))) {
-            return $image;
-        }
-
-        $stylePath = $this->getStylePath($image, $styleName);
-
-        $image->setSrc($stylePath);
-
-        return $image;
-    }
-
     public function addStyle($key, $styleData)
     {
         $this->styles[$key] = $styleData;
+    }
+
+    public function styleDataFromCustomStyleString($customStyleString)
+    {
+        $styleData = explode('_', $customStyleString);
+
+        list($custom, $effect, $width, $height) = $styleData;
+
+        return [
+            'effect' => $effect,
+            'width' => $width,
+            'height' => $height,
+        ];
     }
 }
