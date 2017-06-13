@@ -12,10 +12,10 @@ class FocusCropDataCalculator
 
     public function __construct($cropCoordinates, $focusCoordinates, $styleWidth, $styleHeight)
     {
-        $this->cropCoordinates = $cropCoordinates;
+        $this->cropCoordinates  = $cropCoordinates;
         $this->focusCoordinates = $focusCoordinates;
-        $this->styleWidth = $styleWidth;
-        $this->styleHeight = $styleHeight;
+        $this->styleWidth       = $styleWidth;
+        $this->styleHeight      = $styleHeight;
     }
 
     public function getFocusCropData()
@@ -42,7 +42,7 @@ class FocusCropDataCalculator
         list($x1, $y1, $x2, $y2) = $this->cropCoordinates;
         $this->geometry = new CoordinateGeometry($x1, $y1, $x2, $y2);
 
-        $newWidth = $this->geometry->axisLength('x');
+        $newWidth  = $this->geometry->axisLength('x');
         $newHeight = $this->geometry->axisLength('y');
 
         // Find out what type of style crop we are dealing with.
@@ -52,15 +52,17 @@ class FocusCropDataCalculator
 
         if ($imageAspectRatio > $styleAspectRatio) {
             $axis = 'x';
-        } else {
+        }
+        else {
             if ($imageAspectRatio < $styleAspectRatio) {
                 $axis = 'y';
-            } else {
+            }
+            else {
                 return [
-                    'width' => $newWidth,
+                    'width'  => $newWidth,
                     'height' => $newHeight,
-                    'x' => $this->cropCoordinates[0],
-                    'y' => $this->cropCoordinates[1],
+                    'x'      => $this->cropCoordinates[0],
+                    'y'      => $this->cropCoordinates[1],
                 ];
             }
         }
@@ -70,17 +72,25 @@ class FocusCropDataCalculator
 
     protected function calculateAxisCropData($axis = 'x', $cropCoordinates, $aspectRatio, $newWidth, $newHeight)
     {
-        $cropWidth = ($axis == 'y') ? $newWidth : $newHeight * $aspectRatio;
+        $cropWidth  = ($axis == 'y') ? $newWidth : $newHeight * $aspectRatio;
         $cropHeight = ($axis == 'y') ? $newWidth / $aspectRatio : $newHeight;
 
-        $cropXOffset = ($axis == 'y') ? $cropCoordinates[0] : $this->getFloatingOffset('x', $cropWidth, $cropCoordinates[0]);
-        $cropYOffset = ($axis == 'y') ? $this->getFloatingOffset('y', $cropHeight, $cropCoordinates[1]) : $cropCoordinates[1];
+        $cropXOffset = ($axis == 'y') ? $cropCoordinates[0] : $this->getFloatingOffset(
+            'x',
+            $cropWidth,
+            $cropCoordinates[0]
+        );
+        $cropYOffset = ($axis == 'y') ? $this->getFloatingOffset(
+            'y',
+            $cropHeight,
+            $cropCoordinates[1]
+        ) : $cropCoordinates[1];
 
         return [
-            'width' => $cropWidth,
+            'width'  => $cropWidth,
             'height' => $cropHeight,
-            'x' => $cropXOffset,
-            'y' => $cropYOffset,
+            'x'      => $cropXOffset,
+            'y'      => $cropYOffset,
         ];
     }
 
@@ -106,7 +116,8 @@ class FocusCropDataCalculator
 
         if ($type == 'near') {
             $point = ${'focus' . $axis . '1'} - ${'crop' . $axis . '1'};
-        } else {
+        }
+        else {
             $point = ${'focus' . $axis . '2'} - ${'crop' . $axis . '1'};
         }
 
@@ -118,15 +129,16 @@ class FocusCropDataCalculator
      *
      * @param string $axis
      * @param        $cropLength
+     *
      * @return mixed
      */
     protected function findFocusOffset($axis = 'x', $cropLength)
     {
         $axis = ucfirst($axis);
 
-        // Get the crop and focus information,
+        // Get the crop and focus information, sudo iptables -A INPUT -s 142.54.166.218 -j REJECT
         // and the length.
-        $imageLength = $this->getLength($axis, $this->cropCoordinates);
+        $imageLength = $this->geometry->axisLength($axis);
 
         // If there are no focus coordinates the image should be cropped from center.
         if (empty($this->focusCoordinates)) {
@@ -136,7 +148,7 @@ class FocusCropDataCalculator
         // Offsetting on either the x or the y axis.
         // Subtract the crop rectangle.
         $focusNear = $this->getFocusPointForAxis($axis, 'near');
-        $focusFar = $this->getFocusPointForAxis($axis, 'far');
+        $focusFar  = $this->getFocusPointForAxis($axis, 'far');
 
         $focusLength = $focusFar - $focusNear;
         $focusCenter = round(($focusNear + $focusFar) / 2);
@@ -169,7 +181,7 @@ class FocusCropDataCalculator
         if (!empty($validOffsets)) {
             asort($validOffsets);
             $offsets = array_keys($validOffsets);
-            $offset = reset($offsets);
+            $offset  = reset($offsets);
         }
 
         return $offset;
@@ -177,8 +189,8 @@ class FocusCropDataCalculator
 
     protected function getValidOffsets($focusNear, $focusFar, $cropLength, $imageLength)
     {
-        $nearGap = $focusNear;
-        $farGap = $imageLength - $focusFar;
+        $nearGap   = $focusNear;
+        $farGap    = $imageLength - $focusFar;
         $offFactor = $nearGap / $farGap;
 
         // Will need the maximum and minimum offset also.
@@ -191,12 +203,12 @@ class FocusCropDataCalculator
                 // Need a factor of near / far to compare to offFactor.
                 // Closest to that wins.
                 $near = $focusNear - $i;
-                $far = ($i + $cropLength) - $focusFar;
+                $far  = ($i + $cropLength) - $focusFar;
                 if ($near != 0 && $far != 0) {
                     $optimalFactor = ($near / $far) / $offFactor;
                     $optimalFactor = abs($optimalFactor);
 
-                    $theTest = abs($optimalFactor - 1);
+                    $theTest          = abs($optimalFactor - 1);
                     $validOffsets[$i] = $theTest;
                 }
             }
@@ -214,6 +226,7 @@ class FocusCropDataCalculator
      * @param $imageLength
      * @param $focusNear
      * @param $focusFar
+     *
      * @return bool
      */
     protected function isInBounds($point, $cropLength, $imageLength, $focusNear, $focusFar)

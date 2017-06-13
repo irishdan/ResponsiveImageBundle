@@ -41,47 +41,32 @@ class Uploader implements UploaderInterface
      */
     protected $fileValidator;
 
-    /**
-     * Uploader constructor.
-     *
-     * @param EventDispatcherInterface             $eventDispatcher
-     * @param FilenameTransliteratorInterface|null $transliterator
-     * @param FileValidatorInterface|null          $fileValidator
-     */
     public function __construct(
-        //EventDispatcherInterface $eventDispatcher,
         PrimaryFileSystemWrapper $PrimaryFileSystemWrapper,
         FilenameTransliteratorInterface $transliterator = null,
-        FileValidatorInterface $fileValidator = null
-    )
-    {
-        // $this->eventDispatcher = $eventDispatcher;
-        $this->transliterator = $transliterator;
-        $this->fileValidator = $fileValidator;
-        $this->fileSystem = $PrimaryFileSystemWrapper->getFileSystem();
+        FileValidatorInterface $fileValidator = null,
+        EventDispatcherInterface $eventDispatcher = null
+    ) {
+        $this->fileSystem      = $PrimaryFileSystemWrapper->getFileSystem();
+        $this->transliterator  = $transliterator;
+        $this->fileValidator   = $fileValidator;
+        $this->eventDispatcher = $eventDispatcher;
     }
-
-    // public function setFilesystem(FilesystemInterface $fileSystem)
-    // {
-    //     $this->fileSystem = $fileSystem;
-    // }
-//
-    // public function getFilesystem()
-    // {
-    //     return $this->fileSystem;
-    // }
 
     public function upload(ResponsiveImageInterface $image)
     {
-        // $uploaderEvent = new UploaderEvent($this);
-        // Dispatch pre-upload event
-        // $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_PRE_UPLOAD, $uploaderEvent);
+        // Dispatch pre-upload event.
+        if (!empty($this->eventDispatcher)) {
+            $uploaderEvent = new UploaderEvent($this);
+            $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_PRE_UPLOAD, $uploaderEvent);
+        }
 
         $this->file = $image->getFile();
 
         // Use UploadedFile's inbuilt validation and allow
         // implementation specific custom checks on uploaded file
         if ($this->file->isValid() && $this->isValid()) {
+
             // Alter name for uniqueness
             $path = $this->formatPath();
 
@@ -97,10 +82,12 @@ class Uploader implements UploaderInterface
             $image->setHeight($length);
             $image->setWidth($height);
 
-            // @TODO: if it is configured to do so
-            $storageData = $this->getStorageDataFormFileSystem();
-            if (!empty($storageData)) {
-                $image->setFileSystem(serialize($storageData));
+            // If the image has a setFileSystem method set the filesystem data.
+            if (method_exists($image, 'setFileSystem')) {
+                $storageData = $this->getStorageDataFormFileSystem();
+                if (!empty($storageData)) {
+                    $image->setFileSystem(serialize($storageData));
+                }
             }
 
             // Clean up the file property as you won't need it anymore.
@@ -108,8 +95,11 @@ class Uploader implements UploaderInterface
             $image->setFile(null);
 
             // Dispatch uploaded event
-            // $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_UPLOADED, $uploaderEvent);
-        } else {
+            if (!empty($uploaderEvent)) {
+                $this->eventDispatcher->dispatch(UploaderEvents::UPLOADER_UPLOADED, $uploaderEvent);
+            }
+        }
+        else {
             $error = empty($this->error) ? $this->file->getErrorMessage() : $this->error;
             throw new FileException(
                 $error
@@ -119,7 +109,7 @@ class Uploader implements UploaderInterface
 
     protected function getStorageDataFormFileSystem()
     {
-        $adapter = $this->fileSystem->getAdapter();
+        $adapter     = $this->fileSystem->getAdapter();
         $adapterType = $this->getAdapterType($adapter);
 
         switch ($adapterType) {
@@ -130,9 +120,9 @@ class Uploader implements UploaderInterface
 
                 return [
                     'adapter' => $adapterType,
-                    'prefix' => $prefix,
-                    'bucket' => $bucket,
-                    'region' => $region,
+                    'prefix'  => $prefix,
+                    'bucket'  => $bucket,
+                    'region'  => $region,
                 ];
 
                 break;
@@ -140,7 +130,7 @@ class Uploader implements UploaderInterface
             case 'Local':
                 return [
                     'adapter' => $adapterType,
-                    'prefix' => 'test/images',
+                    'prefix'  => 'test/images',
                 ];
 
                 break;
@@ -151,7 +141,7 @@ class Uploader implements UploaderInterface
 
     protected function getAdapterType(AdapterInterface $adapter)
     {
-        $class = get_class($adapter);
+        $class          = get_class($adapter);
         $namespaceArray = explode("\\", $class);
 
         return array_pop($namespaceArray);

@@ -58,8 +58,8 @@ class ImageStyler
     public function setCoordinateGroups($cropFocusCoords)
     {
         // x1, y1, x2, y2:x3, y3, x4, y4
-        $coordsSets = explode(':', $cropFocusCoords);
-        $this->cropCoordinates = explode(', ', $coordsSets[0]);
+        $coordsSets             = explode(':', $cropFocusCoords);
+        $this->cropCoordinates  = explode(', ', $coordsSets[0]);
         $this->focusCoordinates = explode(', ', $coordsSets[1]);
     }
 
@@ -70,22 +70,25 @@ class ImageStyler
      */
     public function setStyleData($style = [])
     {
-        $this->styleData['effect'] = empty($style['effect']) ? null : $style['effect'];
-        $this->styleData['width'] = empty($style['width']) ? null : $style['width'];
-        $this->styleData['height'] = empty($style['height']) ? null : $style['height'];
+        $this->styleData['effect']    = empty($style['effect']) ? null : $style['effect'];
+        $this->styleData['width']     = empty($style['width']) ? null : $style['width'];
+        $this->styleData['height']    = empty($style['height']) ? null : $style['height'];
         $this->styleData['greyscale'] = empty($style['greyscale']) ? null : $style['greyscale'];
     }
 
     protected function scaleImage($width, $height)
     {
-        $this->image->resize($width, $height, function ($constraint) {
-            $constraint->aspectRatio();
-        });
+        $this->image->resize(
+            $width,
+            $height,
+            function ($constraint) {
+                $constraint->aspectRatio();
+            }
+        );
     }
 
     protected function setImage($source, $driver = 'gd')
     {
-        // @TODO: Perhaps rename this method , it makes no sense 
         if (empty($this->manager)) {
             $this->manager = new Intervention(['driver' => $driver]);
         }
@@ -100,6 +103,7 @@ class ImageStyler
      * @param       $destination
      * @param array $style
      * @param null  $cropFocusCoords
+     *
      * @return string
      */
     public function createImage($source, $destination, array $style = [], $cropFocusCoords = null)
@@ -128,7 +132,8 @@ class ImageStyler
                     // just cut out the crop rectangle.
                     if (empty($this->getCoordinates('focus'))) {
                         $this->doCropRectangle();
-                    } else {
+                    }
+                    else {
 
                         $focusOffsetFinder = new FocusCropDataCalculator(
                             $this->getCoordinates('crop'),
@@ -139,13 +144,22 @@ class ImageStyler
 
                         $focusCropData = $focusOffsetFinder->getFocusCropData();
                         if (!empty($focusCropData)) {
-                            $this->cropImage($focusCropData['width'], $focusCropData['height'], $focusCropData['x'], $focusCropData['y']);
+                            $this->cropImage(
+                                $focusCropData['width'],
+                                $focusCropData['height'],
+                                $focusCropData['x'],
+                                $focusCropData['y']
+                            );
                         }
                     }
 
-                    $this->image->fit($this->styleData['width'], $this->styleData['height'], function ($constraint) {
-                        $constraint->upsize();
-                    });
+                    $this->image->fit(
+                        $this->styleData['width'],
+                        $this->styleData['height'],
+                        function ($constraint) {
+                            $constraint->upsize();
+                        }
+                    );
 
                     break;
             }
@@ -180,7 +194,7 @@ class ImageStyler
             $geometry = new CoordinateGeometry($cropCoords[0], $cropCoords[1], $cropCoords[2], $cropCoords[3]);
 
             // Get the lengths.
-            $newWidth = $geometry->axisLength('x');
+            $newWidth  = $geometry->axisLength('x');
             $newHeight = $geometry->axisLength('y');
 
             // Do the initial crop.
@@ -188,16 +202,10 @@ class ImageStyler
         }
     }
 
-    /**
-     * Returns either the crop or focus rectangle coordinates.
-     *
-     * @param string $type
-     * @return mixed
-     */
     protected function getCoordinates($type = 'crop')
     {
         $coords = $this->{$type . 'Coordinates'};
-        $valid = 0;
+        $valid  = 0;
         foreach ($coords as $id => $coord) {
             if ($coord > 0) {
                 $valid++;

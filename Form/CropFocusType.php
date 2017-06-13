@@ -20,7 +20,6 @@ class CropFocusType extends AbstractType
     private $styleManager;
     private $displayCoordinates = true;
     private $includeJsCss = true;
-    private $widgetImageStyle = 'thumb';
 
     public function __construct(StyleManager $styleManager, array $configuration)
     {
@@ -29,7 +28,6 @@ class CropFocusType extends AbstractType
         if (!empty($configuration['crop_focus_widget'])) {
             $this->includeJsCss       = empty($configuration['crop_focus_widget']['include_js_css']) ? false : true;
             $this->displayCoordinates = empty($configuration['crop_focus_widget']['display_coordinates']) ? false : true;
-            $this->widgetImageStyle   = 'thumb'; // @TODO: add to configuration.
         }
     }
 
@@ -49,7 +47,6 @@ class CropFocusType extends AbstractType
                 'display_coordinates'   => $this->displayCoordinates,
                 'include_js_css'        => $this->includeJsCss,
                 'coordinate_field_type' => $this->displayCoordinates ? 'text' : 'hidden',
-                'image_style'           => $this->widgetImageStyle,
             ]
         );
     }

@@ -32,17 +32,21 @@ class CoordinateGeometry
 
     public function scaleSize($scaleX, $scaleY)
     {
-        $width = $this->axisLength('x');
+        $width  = $this->axisLength('x');
         $height = $this->axisLength('y');
 
         $size = new Size($width, $height);
 
-        $size->resize($scaleX, $scaleY, function ($constraint) {
-            $constraint->aspectRatio();
-        });
+        $size->resize(
+            $scaleX,
+            $scaleY,
+            function ($constraint) {
+                $constraint->aspectRatio();
+            }
+        );
 
         return [
-            'width' => $size->width,
+            'width'  => $size->width,
             'height' => $size->height,
         ];
     }
@@ -65,7 +69,8 @@ class CoordinateGeometry
         $axis = strtolower($axis);
         if ($axis == 'x') {
             return $this->x2 - $this->x1;
-        } else {
+        }
+        else {
             return $this->y2 - $this->y1;
         }
     }
@@ -83,20 +88,6 @@ class CoordinateGeometry
         $aspectRatio = $this->aspectRatio($width, $height);
 
         return $this->aspectRatio / $aspectRatio;
-    }
-
-    public function scaleRectangle($axis, $length)
-    {
-        // @TODO: Implement.
-
-        return [
-            'x1' => $this->x1,
-            'y1' => $this->y1,
-            'x2' => 0,
-            'y2' => 0,
-            'width' => 100,
-            'lenght' => 100,
-        ];
     }
 
     protected function shouldScaleAxis($x, $y)

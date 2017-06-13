@@ -99,7 +99,12 @@ class StyleManager
 
     public function styleExists($styleName)
     {
-        // @TODO: Allow for custom styles. ie styles beginning with custom_scale or custom_scale
+        // If its's a custom style, grab the data and add the styles array.
+        if (0 === strpos($styleName, 'custom_')) {
+            $styleData = $this->styleDataFromCustomStyleString($styleName);
+            $this->addStyle($styleName, $styleData);
+        }
+
         $style = $this->getStyleData($styleName);
 
         return !empty($style);
