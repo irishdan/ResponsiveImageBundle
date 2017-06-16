@@ -106,6 +106,8 @@ class CoordinateGeometry
 
     public function isInside($x1, $y1, $x2, $y2)
     {
+        dump($this->x1 . ',' . $this->y1 . ':' . $this->x2 . ',' . $this->y2);
+        dump($x1 . ',' . $y1 . ':' . $x2 . ',' . $y2);
         $inside = true;
         if ($x1 < $this->x1) {
             $inside = false;

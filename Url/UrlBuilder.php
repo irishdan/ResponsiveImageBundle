@@ -45,7 +45,7 @@ class UrlBuilder
     {
         $url = $base . '/' . trim($path, '/');
 
-        // CHeck it the protocol is included.
+        // Check it the protocol is included.
         $urlBits = explode('://', $url);
         if ($urlBits[0] == 'http' || $urlBits[0] == 'https') {
             $urlPrefix = $urlBits[0] . '://';
