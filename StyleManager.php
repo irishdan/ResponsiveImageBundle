@@ -15,6 +15,7 @@ class StyleManager
 {
     private $breakpoints = [];
     private $pictureSets = [];
+    private $sizeSets = [];
     private $styles = [];
     private $styleDirectory = 'styles';
 
@@ -30,17 +31,14 @@ class StyleManager
             $this->styles = $configuration['image_styles'];
         }
 
-        // Set the picture sets array
+        // Set the picture sets array.
         if (!empty($configuration['picture_sets'])) {
             $this->pictureSets = $configuration['picture_sets'];
-            // Get the any picture set styles and incorporate into the configured styles array.
-            foreach ($configuration['picture_sets'] as $pictureSetName => $picture_set) {
-                foreach ($picture_set as $breakpoint => $set_style) {
-                    if (is_array($set_style)) {
-                        $this->styles[$pictureSetName . '-' . $breakpoint] = $set_style;
-                    }
-                }
-            }
+        }
+
+        // Set the size sets array.
+        if (!empty($configuration['size_sets'])) {
+            $this->sizeSets = $configuration['size_sets'];
         }
 
         // Set the breakpoints array.
@@ -63,23 +61,7 @@ class StyleManager
                         break;
 
                     case 'scale':
-                        $coordinates = $image->getCropCoordinates();
-
-                        if (empty($coordinates)) {
-                            $geometry = new CoordinateGeometry(0, 0, $image->getWidth(), $image->getHeight());
-                        }
-                        else {
-                            $cropCoordinates = explode(':', $coordinates)[0];
-                            $points          = explode(',', $cropCoordinates);
-                            $geometry        = new CoordinateGeometry(
-                                trim($points[0]),
-                                trim($points[1]),
-                                trim($points[2]),
-                                trim($points[3])
-                            );
-                        }
-
-                        $scaledDimensions = $geometry->scaleSize($styleData['width'], $styleData['height']);
+                        $scaledDimensions = $this->getScaledDimensions($image, $styleData);
 
                         $image->setWidth($scaledDimensions['width']);
                         $image->setHeight($scaledDimensions['height']);
@@ -95,6 +77,27 @@ class StyleManager
         }
 
         return $image;
+    }
+
+    protected function getScaledDimensions(ResponsiveImageInterface $image, array $styleData)
+    {
+        $coordinates = $image->getCropCoordinates();
+
+        if (empty($coordinates)) {
+            $geometry = new CoordinateGeometry(0, 0, $image->getWidth(), $image->getHeight());
+        }
+        else {
+            $cropCoordinates = explode(':', $coordinates)[0];
+            $points          = explode(',', $cropCoordinates);
+            $geometry        = new CoordinateGeometry(
+                trim($points[0]),
+                trim($points[1]),
+                trim($points[2]),
+                trim($points[3])
+            );
+        }
+
+        return $geometry->scaleSize($styleData['width'], $styleData['height']);
     }
 
     public function styleExists($styleName)
@@ -164,6 +167,54 @@ class StyleManager
         return $mappings;
     }
 
+    public function getImageSizesMappings(ResponsiveImageInterface $image, $imageSizesSetName)
+    {
+        $mappings = [
+            'src'     => $image->getSrc(),
+            'sizes'   => [],
+            'srcsets' => [],
+        ];
+
+        $sizeData = $this->getSizesSet($imageSizesSetName);
+
+        if ($sizeData) {
+            // Sort out the sizes data.
+            $mappings['sizes'] = [];
+            foreach ($sizeData['sizes'] as $vw => $mediaQuery) {
+                // Get the media query from the breakpoint data.
+                $breakpoint = $this->breakpoints[$mediaQuery['breakpoint']];
+
+                if ($breakpoint) {
+                    // $mappings['sizes'][$vw] = $breakpoint['media_query'];
+                    $mappings['sizes'][] = '(' . $breakpoint['media_query'] . ') ' . $vw;
+                }
+            }
+
+            // Get the image paths and widths.
+            // In most case the width will be apart of the style (crop or scale)
+            // If it's not we can need to derive it.
+            foreach ($sizeData['srcsets'] as $styleName) {
+                $styleData = $this->getStyleData($styleName);
+                if ($styleData) {
+                    if (empty($styleData['width'])) {
+                        // We need to derive the width.
+                        $scaledDimensions = $this->getScaledDimensions($image, $styleData);
+                        $width            = $scaledDimensions['width'];
+                    }
+                    else {
+                        $width = $styleData['width'];
+                    }
+
+                    $path = $this->getStylePath($image, $styleName);
+                    // Stick it into that array there.
+                    $mappings['srcsets'][$path] = $width;
+                }
+            }
+        }
+
+        return $mappings;
+    }
+
     protected function buildStylePath($styleName, $fileName)
     {
         $path = $this->styleDirectory . '/' . $styleName . '/' . $fileName;
@@ -201,5 +252,10 @@ class StyleManager
             'width'  => $width,
             'height' => $height,
         ];
+    }
+
+    public function getSizesSet($setName)
+    {
+        return isset($this->sizeSets[$setName]) ? $this->sizeSets[$setName] : false;
     }
 }

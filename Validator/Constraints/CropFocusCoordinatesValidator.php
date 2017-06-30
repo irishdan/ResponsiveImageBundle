@@ -11,18 +11,13 @@ class CropFocusCoordinatesValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
+        $valid = true;
+
         // Check it is in the format: 0,0,0,0:0,0,0,0
         $testValue = str_replace(' ', '', $value);
-        if (!preg_match(
-            '/^(\d+),(\d+),(\d+),(\d+):(\d+),(\d+),(\d+),(\d+)$/',
-            $testValue,
-            $matches
-        )
+        if (!preg_match('/^(\d+),(\d+),(\d+),(\d+):(\d+),(\d+),(\d+),(\d+)$/', $testValue, $matches)
         ) {
-            $this->context->buildViolation($constraint->message)
-                          ->setParameter('{{ string }}', $value)
-                          ->addViolation()
-            ;
+            $valid = false;
         }
         else {
             // Check the focus rectangle is inside the crop rectangle.
@@ -34,11 +29,15 @@ class CropFocusCoordinatesValidator extends ConstraintValidator
             $geometry = new CoordinateGeometry($crop[0], $crop[1], $crop[2], $crop[3]);
 
             if (!$geometry->isInside($focus[0], $focus[1], $focus[2], $focus[3])) {
-                $this->context->buildViolation($constraint->message)
-                              ->setParameter('{{ string }}', $value)
-                              ->addViolation()
-                ;
+                $valid = false;
             }
+        }
+
+        if (!$valid) {
+            $this->context->buildViolation($constraint->message)
+                          ->setParameter('{{ string }}', $value)
+                          ->addViolation()
+            ;
         }
     }
 }
