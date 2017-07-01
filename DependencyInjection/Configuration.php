@@ -62,9 +62,6 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->children()
                             ->scalarNode('media_query')->end()
-                            ->arrayNode('multipliers')
-                                ->prototype('scalar')->end()
-                            ->end()
                         ->end()
                     ->end()
                 ->end()
@@ -91,13 +88,20 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('picture_sets')
                     ->useAttributeAsKey('name')
                     ->prototype('array')
-                        ->prototype('scalar')->end()
+                        ->children()
+                            ->scalarNode('fallback')->end()
+                            ->booleanNode('multipliers')->end()
+                            ->arrayNode('sources')
+                                ->prototype('scalar')->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('size_sets')
                     ->useAttributeAsKey('name')
                     ->prototype('array')
                         ->children()
+                            ->scalarNode('fallback')->end()
                             ->arrayNode('sizes')
                                 ->useAttributeAsKey('name')
                                 ->prototype('array')
@@ -137,7 +141,7 @@ class Configuration implements ConfigurationInterface
         }
 
         foreach ($config['picture_sets'] as $pictureSet) {
-            foreach ($pictureSet as $breakpoint => $style) {
+            foreach ($pictureSet['sources'] as $breakpoint => $style) {
                 if (!in_array($style, $styles)) {
                     return true;
                 }
@@ -164,7 +168,7 @@ class Configuration implements ConfigurationInterface
 
         // Validate that the picture sets are defined using valid breakpoints
         foreach ($config['picture_sets'] as $pictureSet) {
-            foreach ($pictureSet as $breakpoint => $style) {
+            foreach ($pictureSet['sources'] as $breakpoint => $style) {
                 if (!in_array($breakpoint, $breakpoints)) {
                     return true;
                 }

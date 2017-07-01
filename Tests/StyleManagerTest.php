@@ -36,7 +36,7 @@ class StyleManagerTest extends ResponsiveImageTestCase
     public function testGetMediaQuerySourceMappings()
     {
         $this->styleManager->setImageStyle($this->image, 'thumb');
-        $mq = $this->styleManager->getMediaQuerySourceMappings($this->image, 'thumb_picture');
+        $mq = $this->styleManager->getPictureData($this->image, 'thumb_picture');
 
         $this->assertArrayHasKey(0, $mq);
         $this->assertArrayHasKey('min-width: 0px', $mq);

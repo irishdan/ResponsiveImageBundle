@@ -19,6 +19,11 @@ class StyleManager
     private $styles = [];
     private $styleDirectory = 'styles';
 
+    /**
+     * StyleManager constructor.
+     *
+     * @param array $configuration
+     */
     public function __construct(array $configuration)
     {
         // Set the styles directory;
@@ -140,41 +145,43 @@ class StyleManager
         return false;
     }
 
-    public function getMediaQuerySourceMappings(ResponsiveImageInterface $image, $pictureSetName)
+    public function getPictureData(ResponsiveImageInterface $image, $pictureSetName)
     {
-        $mappings = [];
+        $mappings = [
+            'fallback' => '',
+            'sources'  => [],
+        ];
         $filename = $image->getPath();
-
-        // First mapping is the default image.
-        $mappings[] = $image->getPath();
 
         if (!empty($this->pictureSets[$pictureSetName])) {
             $set = $this->pictureSets[$pictureSetName];
 
-            foreach ($set as $break => $style) {
-                if (is_array($style)) {
-                    $styleName = $pictureSetName . '-' . $break;
-                }
-                else {
-                    $styleName = $style;
-                }
+            foreach ($set['sources'] as $break => $styleName) {
                 $path = $this->buildStylePath($styleName, $filename);
 
-                $mappings[$this->breakpoints[$break]] = $path;
+                // Mappings should be in 'media_query' => '/path/to/image'
+                if ($this->breakpoints[$break]) {
+                    $mediaQuery                       = $this->breakpoints[$break]['media_query'];
+                    $mappings['sources'][$mediaQuery] = $path;
+                }
+            }
+
+            // Set the fallback image path.
+            if (isset($set['fallback'])) {
+                $mappings['fallback'] = $this->getStylePath($image, $set['fallback']);
             }
         }
 
         return $mappings;
     }
 
-    public function getImageSizesMappings(ResponsiveImageInterface $image, $imageSizesSetName)
+    public function getImageSizesData(ResponsiveImageInterface $image, $imageSizesSetName)
     {
         $mappings = [
             'src'     => $image->getSrc(),
             'sizes'   => [],
             'srcsets' => [],
         ];
-
         $sizeData = $this->getSizesSet($imageSizesSetName);
 
         if ($sizeData) {

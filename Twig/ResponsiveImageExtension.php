@@ -84,52 +84,57 @@ class ResponsiveImageExtension extends \Twig_Extension
      */
     public function generateBackgroundImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $selector)
     {
-        $mq = $this->styleManager->getMediaQuerySourceMappings($image, $pictureSetName);
-
-        foreach ($mq as $index => $path) {
-            $mq[$index] = $this->urlBuilder->filePublicUrl($path);
-        }
-
-        $original = $mq[0];
-        unset($mq[0]);
+        $cssData = $this->styleManager->getPictureData($image, $pictureSetName);
+        $this->convertPathsToUrls($cssData, ['fallback', 'sources']);
 
         return $environment->render(
             'ResponsiveImageBundle::css.html.twig',
             [
-                'original'    => $original,
-                'mq_mappings' => $mq,
-                'selector'    => $selector,
-                'image'       => $image,
+                'fallback' => $cssData['fallback'],
+                'sources'  => $cssData['sources'],
+                'image'    => $image,
+                'selector' => $selector,
             ]
         );
     }
 
     public function generatePictureImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $generate = false)
     {
-        // @TODO: Implement generate if missing.
-
-        $mq = $this->styleManager->getMediaQuerySourceMappings($image, $pictureSetName);
-
-        foreach ($mq as $index => $path) {
-            $mq[$index] = $this->urlBuilder->filePublicUrl($path);
-        }
-
-        $original = $mq[0];
-        unset($mq[0]);
+        $pictureData = $this->styleManager->getPictureData($image, $pictureSetName);
+        $this->convertPathsToUrls($pictureData, ['fallback', 'sources']);
 
         return $environment->render(
             'ResponsiveImageBundle::picture.html.twig',
             [
-                'original'    => $original,
-                'mq_mappings' => $mq,
-                'image'       => $image,
+                'fallback' => $pictureData['fallback'],
+                'sources'  => $pictureData['sources'],
+                'image'    => $image,
             ]
         );
     }
 
+    /**
+     * @internal
+     */
+    private function convertPathsToUrls(array &$data, array $keys)
+    {
+        foreach ($keys as $key) {
+            if (is_array($data[$key])) {
+                $subData = [];
+                foreach ($data[$key] as $item => $path) {
+                    $subData[$item] = $this->urlBuilder->filePublicUrl($path);
+                }
+                $data[$key] = $subData;
+            }
+            else {
+                $data[$key] = $this->urlBuilder->filePublicUrl($data[$key]);
+            }
+        }
+    }
+
     public function generateSizesImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $generate = false)
     {
-        $sizesData = $this->styleManager->getImageSizesMappings($image, $pictureSetName);
+        $sizesData = $this->styleManager->getImageSizesData($image, $pictureSetName);
 
         // Replace the relative path with the real path.
         foreach ($sizesData['srcsets'] as $path => $width) {
