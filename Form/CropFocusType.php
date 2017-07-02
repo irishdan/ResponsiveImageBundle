@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Form;
 
@@ -17,10 +25,25 @@ use Symfony\Component\Form\AbstractType;
  */
 class CropFocusType extends AbstractType
 {
+    /**
+     * @var StyleManager
+     */
     private $styleManager;
+    /**
+     * @var bool
+     */
     private $displayCoordinates = true;
+    /**
+     * @var bool
+     */
     private $includeJsCss = true;
 
+    /**
+     * CropFocusType constructor.
+     *
+     * @param StyleManager $styleManager
+     * @param array        $configuration
+     */
     public function __construct(StyleManager $styleManager, array $configuration)
     {
         $this->styleManager = $styleManager;

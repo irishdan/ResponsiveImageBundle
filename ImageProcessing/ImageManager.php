@@ -1,11 +1,18 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvent;
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvents;
 use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
-use IrishDan\ResponsiveImageBundle\ImageProcessing\ImageStyler;
+
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\StyleManager;
 use League\Flysystem\FilesystemInterface;
@@ -31,18 +38,16 @@ class ImageManager
         PrimaryFileSystemWrapper $fileSystem,
         FilesystemInterface $temporaryFileSystem = null,
         EventDispatcherInterface $eventDispatcher = null
-    )
-    {
-        $this->styleManager = $styleManager;
-        $this->ImageStyler = $imageStyler;
-        $this->fileSystem = $fileSystem->getFileSystem();
+    ) {
+        $this->styleManager        = $styleManager;
+        $this->ImageStyler         = $imageStyler;
+        $this->fileSystem          = $fileSystem->getFileSystem();
         $this->temporaryFileSystem = $temporaryFileSystem;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->eventDispatcher     = $eventDispatcher;
 
         // @TODO: In terms of configuration for the temporary directory, change the name, and..
         // @TODO: If there's only on local directory configured then intervention will simply use that
         // @TODO: That should be out of the box configuration
-
         // @TODO: Filesystem store info save will be enabled simply if the getter exists. Add to generated image entity, commented out
     }
 
@@ -83,10 +88,10 @@ class ImageManager
         // @TODO: Ensure that file system is Local
 
         $directory = $this->temporaryFileSystem->getAdapter()->getPathPrefix();
-        $source = $directory . $image->getPath();
+        $source    = $directory . $image->getPath();
 
         if (!empty($styleData)) {
-            $cropFocusData = $image->getCropCoordinates();
+            $cropFocusData     = $image->getCropCoordinates();
             $relativeStylePath = $this->styleManager->getStylePath($image, $style);
 
             $destination = $directory . $relativeStylePath;
@@ -100,7 +105,8 @@ class ImageManager
             } catch (\Exception $e) {
                 // @TODO: Throw exception
             }
-        } else {
+        }
+        else {
             // throw InvalidArgumentException::
         }
     }
@@ -126,7 +132,8 @@ class ImageManager
     {
         if (!empty($style)) {
             $path = $this->styleManager->getStylePath($image, $style);
-        } else {
+        }
+        else {
             $path = $image->getPath();
         }
         $this->fileSystem->delete($path);
@@ -134,7 +141,7 @@ class ImageManager
 
     protected function createStyleDirectory($destination)
     {
-        $filename = basename($destination);
+        $filename  = basename($destination);
         $directory = explode($filename, $destination)[0];
 
         if (!$this->temporaryFileSystem->has($directory)) {

@@ -1,4 +1,11 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\DependencyInjection;
 
@@ -133,6 +140,11 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
+    /**
+     * @param $config
+     *
+     * @return bool
+     */
     private function validateStyleKeys($config) {
         // Get a list of image styles and break points to validate against.
         $styles = [];
@@ -159,6 +171,11 @@ class Configuration implements ConfigurationInterface
         return false;
     }
 
+    /**
+     * @param $config
+     *
+     * @return bool
+     */
     private function validateBreakpointKeys($config) {
         // Get a list of breakpoints to validate against.
         $breakpoints = [];

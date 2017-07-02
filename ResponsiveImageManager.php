@@ -22,24 +22,23 @@ class ResponsiveImageManager
 
     public function __construct(StyleManager $styleManager, array $config, $uploader)
     {
+        // @TODO: Decide if this staying or going
+
         $this->styleManager = $styleManager;
-        $this->config = $config;
-        $this->uploader = $uploader;
+        $this->config       = $config;
+        $this->uploader     = $uploader;
     }
 
     public function createStyledImages(ResponsiveImageInterface $image, $stylename = null)
     {
     }
 
-
     public function deleteStyleFiles(array $styles)
     {
     }
 
-
     public function setImageStyle(ResponsiveImageInterface $image, $styleName)
     {
-
     }
 
     public function setPictureSet(ResponsiveImageInterface $image, $pictureSet)
@@ -48,6 +47,5 @@ class ResponsiveImageManager
 
     public function uploadImage(ResponsiveImageInterface $image)
     {
-
     }
 }

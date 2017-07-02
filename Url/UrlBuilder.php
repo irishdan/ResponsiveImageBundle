@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Url;
 
@@ -12,10 +20,25 @@ use League\Flysystem\AdapterInterface;
  */
 class UrlBuilder
 {
+    /**
+     * @var \League\Flysystem\FilesystemInterface|null
+     */
     private $fileSystem;
+    /**
+     * @var array
+     */
     private $config;
+    /**
+     * @var array
+     */
     private $adapterUrlEncoders = [];
 
+    /**
+     * UrlBuilder constructor.
+     *
+     * @param PrimaryFileSystemWrapper|null $PrimaryFileSystemWrapper
+     * @param array|null                    $config
+     */
     public function __construct(PrimaryFileSystemWrapper $PrimaryFileSystemWrapper = null, array $config = null)
     {
         if (!empty($PrimaryFileSystemWrapper)) {
@@ -24,11 +47,21 @@ class UrlBuilder
         $this->config = $config;
     }
 
+    /**
+     * @param                     $key
+     * @param UrlEncoderInterface $encoder
+     */
     public function adapterUrlEncoder($key, UrlEncoderInterface $encoder)
     {
         $this->adapterUrlEncoders[$key] = $encoder;
     }
 
+    /**
+     * @param        $relativeFilePath
+     * @param string $adapterUrlData
+     *
+     * @return string
+     */
     public function filePublicUrl($relativeFilePath, $adapterUrlData = '')
     {
         if (!empty($adapterUrlData)) {
@@ -41,6 +74,12 @@ class UrlBuilder
         return $this->formatAsUrl($urlBase, $relativeFilePath);
     }
 
+    /**
+     * @param $base
+     * @param $path
+     *
+     * @return string
+     */
     protected function formatAsUrl($base, $path)
     {
         $url = $base . '/' . trim($path, '/');
@@ -69,6 +108,11 @@ class UrlBuilder
         return $urlPrefix . $urlPath;
     }
 
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
     protected function getUrlDataFromFileSystem($data = [])
     {
         $path = '/';
@@ -94,6 +138,11 @@ class UrlBuilder
         return $path;
     }
 
+    /**
+     * @param AdapterInterface $adapter
+     *
+     * @return mixed
+     */
     protected function getAdapterType(AdapterInterface $adapter)
     {
         $class          = get_class($adapter);

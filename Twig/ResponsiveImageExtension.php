@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Twig;
 
@@ -19,9 +27,22 @@ class ResponsiveImageExtension extends \Twig_Extension
      * @var StyleManager
      */
     private $styleManager;
+    /**
+     * @var UrlBuilder
+     */
     private $urlBuilder;
+    /**
+     * @var ImageManager
+     */
     private $imageManager;
 
+    /**
+     * ResponsiveImageExtension constructor.
+     *
+     * @param StyleManager      $styleManager
+     * @param UrlBuilder        $urlBuilder
+     * @param ImageManager|null $imageManager
+     */
     public function __construct(StyleManager $styleManager, UrlBuilder $urlBuilder, ImageManager $imageManager = null)
     {
         $this->styleManager = $styleManager;
@@ -98,6 +119,14 @@ class ResponsiveImageExtension extends \Twig_Extension
         );
     }
 
+    /**
+     * @param \Twig_Environment        $environment
+     * @param ResponsiveImageInterface $image
+     * @param                          $pictureSetName
+     * @param bool                     $generate
+     *
+     * @return mixed|string
+     */
     public function generatePictureImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $generate = false)
     {
         $pictureData = $this->styleManager->getPictureData($image, $pictureSetName);
@@ -115,6 +144,9 @@ class ResponsiveImageExtension extends \Twig_Extension
 
     /**
      * @internal
+     *
+     * @param array $data
+     * @param array $keys
      */
     private function convertPathsToUrls(array &$data, array $keys)
     {
@@ -150,6 +182,14 @@ class ResponsiveImageExtension extends \Twig_Extension
         return implode(', ', $pathArray);
     }
 
+    /**
+     * @param \Twig_Environment        $environment
+     * @param ResponsiveImageInterface $image
+     * @param                          $pictureSetName
+     * @param bool                     $generate
+     *
+     * @return mixed|string
+     */
     public function generateSizesImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $generate = false)
     {
         $sizesData = $this->styleManager->getImageSizesData($image, $pictureSetName);
@@ -170,6 +210,14 @@ class ResponsiveImageExtension extends \Twig_Extension
         );
     }
 
+    /**
+     * @param \Twig_Environment        $environment
+     * @param ResponsiveImageInterface $image
+     * @param null                     $styleName
+     * @param bool                     $generate
+     *
+     * @return mixed|string
+     */
     public function generateStyledImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $styleName = null, $generate = false)
     {
         // @TODO: Implement generate if missing.
@@ -177,6 +225,14 @@ class ResponsiveImageExtension extends \Twig_Extension
         return $this->renderImage($environment, $image, $styleName);
     }
 
+    /**
+     * @param \Twig_Environment        $environment
+     * @param ResponsiveImageInterface $image
+     * @param string                   $width
+     * @param null                     $height
+     *
+     * @return mixed|string
+     */
     public function cropImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = '', $height = null)
     {
         $styleName = 'custom_crop_' . $width . '_' . $height;
@@ -188,6 +244,14 @@ class ResponsiveImageExtension extends \Twig_Extension
         return $this->renderImage($environment, $image, $styleName);
     }
 
+    /**
+     * @param \Twig_Environment        $environment
+     * @param ResponsiveImageInterface $image
+     * @param string                   $width
+     * @param string                   $height
+     *
+     * @return mixed|string
+     */
     public function scaleImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $width = '', $height = '')
     {
         $styleName = 'custom_scale_' . $width . '_' . $height;
@@ -199,6 +263,13 @@ class ResponsiveImageExtension extends \Twig_Extension
         return $this->renderImage($environment, $image, $styleName);
     }
 
+    /**
+     * @param \Twig_Environment        $environment
+     * @param ResponsiveImageInterface $image
+     * @param null                     $styleName
+     *
+     * @return mixed|string
+     */
     protected function renderImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $styleName = null)
     {
         if (!empty($styleName)) {

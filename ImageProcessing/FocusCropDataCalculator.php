@@ -1,7 +1,20 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
+/**
+ * Class FocusCropDataCalculator
+ *
+ * @package IrishDan\ResponsiveImageBundle\ImageProcessing
+ */
 class FocusCropDataCalculator
 {
     private $cropCoordinates;
@@ -10,6 +23,14 @@ class FocusCropDataCalculator
     private $styleHeight;
     private $geometry;
 
+    /**
+     * FocusCropDataCalculator constructor.
+     *
+     * @param $cropCoordinates
+     * @param $focusCoordinates
+     * @param $styleWidth
+     * @param $styleHeight
+     */
     public function __construct($cropCoordinates, $focusCoordinates, $styleWidth, $styleHeight)
     {
         $this->cropCoordinates  = $cropCoordinates;
@@ -18,6 +39,9 @@ class FocusCropDataCalculator
         $this->styleHeight      = $styleHeight;
     }
 
+    /**
+     * @return array
+     */
     public function getFocusCropData()
     {
         // If there is a focus rectangle,
@@ -70,6 +94,15 @@ class FocusCropDataCalculator
         return $this->calculateAxisCropData($axis, $this->cropCoordinates, $styleAspectRatio, $newWidth, $newHeight);
     }
 
+    /**
+     * @param string $axis
+     * @param        $cropCoordinates
+     * @param        $aspectRatio
+     * @param        $newWidth
+     * @param        $newHeight
+     *
+     * @return array
+     */
     protected function calculateAxisCropData($axis = 'x', $cropCoordinates, $aspectRatio, $newWidth, $newHeight)
     {
         $cropWidth  = ($axis == 'y') ? $newWidth : $newHeight * $aspectRatio;
@@ -94,6 +127,13 @@ class FocusCropDataCalculator
         ];
     }
 
+    /**
+     * @param string $axis
+     * @param        $point
+     * @param        $start
+     *
+     * @return mixed
+     */
     protected function getFloatingOffset($axis = 'y', $point, $start)
     {
         $offset = $this->findFocusOffset($axis, $point);
@@ -102,6 +142,12 @@ class FocusCropDataCalculator
         return $offset;
     }
 
+    /**
+     * @param        $axis
+     * @param string $type
+     *
+     * @return mixed
+     */
     protected function getFocusPointForAxis($axis, $type = 'near')
     {
         $cropX1 = $this->cropCoordinates[0];
@@ -174,6 +220,11 @@ class FocusCropDataCalculator
         }
     }
 
+    /**
+     * @param array $validOffsets
+     *
+     * @return int|mixed
+     */
     protected function getOptimalOffset(array $validOffsets)
     {
         $offset = 0;
@@ -187,6 +238,14 @@ class FocusCropDataCalculator
         return $offset;
     }
 
+    /**
+     * @param $focusNear
+     * @param $focusFar
+     * @param $cropLength
+     * @param $imageLength
+     *
+     * @return array
+     */
     protected function getValidOffsets($focusNear, $focusFar, $cropLength, $imageLength)
     {
         $nearGap   = $focusNear;

@@ -156,8 +156,8 @@ class TestImage implements ResponsiveImageInterface
     /**
      * Generates an <img> tag for a given style.
      *
-     * @param null $style
      * @return string
+     * @internal param null $style
      */
     public function img()
     {

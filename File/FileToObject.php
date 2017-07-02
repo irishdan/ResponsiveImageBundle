@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\File;
 
@@ -22,10 +30,11 @@ class FileToObject
      * FileToObject constructor.
      *
      * @param EntityManager $manager
+     * @param               $entityClassName
      */
     public function __construct(EntityManager $manager, $entityClassName)
     {
-        $this->manager = $manager;
+        $this->manager         = $manager;
         $this->entityClassName = $entityClassName;
     }
 
@@ -33,8 +42,9 @@ class FileToObject
      * Fetches and returns the image object based on the file name.
      *
      * @param $filename
-     * @param $entityClassName
+     *
      * @return mixed
+     * @internal param $entityClassName
      */
     public function getObjectFromFilename($filename)
     {

@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle;
 
@@ -41,6 +49,14 @@ class Uploader implements UploaderInterface
      */
     protected $fileValidator;
 
+    /**
+     * Uploader constructor.
+     *
+     * @param PrimaryFileSystemWrapper             $PrimaryFileSystemWrapper
+     * @param FilenameTransliteratorInterface|null $transliterator
+     * @param FileValidatorInterface|null          $fileValidator
+     * @param EventDispatcherInterface|null        $eventDispatcher
+     */
     public function __construct(
         PrimaryFileSystemWrapper $PrimaryFileSystemWrapper,
         FilenameTransliteratorInterface $transliterator = null,

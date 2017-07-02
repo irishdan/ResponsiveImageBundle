@@ -1,26 +1,53 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\EventSubscriber;
 
-use IrishDan\ResponsiveImageBundle\Event\FileSystemEvent;
-use IrishDan\ResponsiveImageBundle\Event\FileSystemEvents;
+
 use IrishDan\ResponsiveImageBundle\Event\ImageEvent;
 use IrishDan\ResponsiveImageBundle\Event\ImageEvents;
 use IrishDan\ResponsiveImageBundle\ImageProcessing\ImageManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Class ImageSubscriber
+ *
+ * @package IrishDan\ResponsiveImageBundle\EventSubscriber
+ */
 class ImageSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+    /**
+     * @var ImageManager
+     */
     private $imageManager;
 
+    /**
+     * ImageSubscriber constructor.
+     *
+     * @param ImageManager         $imageManager
+     * @param LoggerInterface|null $logger
+     */
     public function __construct(ImageManager $imageManager, LoggerInterface $logger = null)
     {
         $this->imageManager = $imageManager;
-        $this->logger = $logger;
+        $this->logger       = $logger;
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -30,6 +57,9 @@ class ImageSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param ImageEvent $event
+     */
     public function onImageCreated(ImageEvent $event)
     {
         // Generate all styled images.
@@ -41,6 +71,9 @@ class ImageSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @param ImageEvent $event
+     */
     public function onImageUpdated(ImageEvent $event)
     {
         // Re-generate all styled images.
@@ -53,6 +86,9 @@ class ImageSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @param ImageEvent $event
+     */
     public function onImageDeleted(ImageEvent $event)
     {
         // Delete all styled images

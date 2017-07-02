@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
@@ -40,6 +48,11 @@ class ImageStyler
      */
     private $styleData = [];
 
+    /**
+     * ImageStyler constructor.
+     *
+     * @param array $responsiveImageConfig
+     */
     public function __construct($responsiveImageConfig = [])
     {
         if (!empty($responsiveImageConfig['image_driver'])) {
@@ -76,6 +89,10 @@ class ImageStyler
         $this->styleData['greyscale'] = empty($style['greyscale']) ? null : $style['greyscale'];
     }
 
+    /**
+     * @param $width
+     * @param $height
+     */
     protected function scaleImage($width, $height)
     {
         $this->image->resize(
@@ -87,6 +104,10 @@ class ImageStyler
         );
     }
 
+    /**
+     * @param        $source
+     * @param string $driver
+     */
     protected function setImage($source, $driver = 'gd')
     {
         if (empty($this->manager)) {
@@ -173,6 +194,12 @@ class ImageStyler
         return $this->saveImage($destination);
     }
 
+    /**
+     * @param $width
+     * @param $height
+     * @param $xOffset
+     * @param $yOffset
+     */
     protected function cropImage($width, $height, $xOffset, $yOffset)
     {
         $this->image->crop(
@@ -202,6 +229,11 @@ class ImageStyler
         }
     }
 
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
     protected function getCoordinates($type = 'crop')
     {
         $coords = $this->{$type . 'Coordinates'};
@@ -220,6 +252,11 @@ class ImageStyler
         return $coords;
     }
 
+    /**
+     * @param $destination
+     *
+     * @return mixed
+     */
     protected function saveImage($destination)
     {
         $this->image->save($destination, $this->compression);

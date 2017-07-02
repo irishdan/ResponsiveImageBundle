@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Generator;
 
@@ -30,22 +38,22 @@ class ImageEntityGenerator extends Generator
      */
     public function generate(BundleInterface $bundle, $name)
     {
-        $bundleDir = $bundle->getPath();
+        $bundleDir       = $bundle->getPath();
         $notificationDir = $bundleDir . '/Entity';
         self::mkdir($notificationDir);
 
         $notificationClassName = $name;
-        $notificationFile = $notificationDir . '/' . $notificationClassName . '.php';
+        $notificationFile      = $notificationDir . '/' . $notificationClassName . '.php';
 
         $parameters = [
-            'namespace' => $bundle->getNamespace(),
+            'namespace'  => $bundle->getNamespace(),
             'class_name' => $notificationClassName,
-            'name' => $name,
-            'table' => strtolower($name), // @TODO: Use the tablize function
+            'name'       => $name,
+            'table'      => strtolower($name), // @TODO: Use the tableize function
         ];
 
         // Build an array of files to be created
-        $filesArray = [];
+        $filesArray   = [];
         $filesArray[] = [
             'entity/Image.php.twig',
             $notificationFile,
@@ -57,6 +65,9 @@ class ImageEntityGenerator extends Generator
         }
     }
 
+    /**
+     * @param array $files
+     */
     protected function generateFiles(array $files)
     {
         // Set generator to look in correct directory for notifications template.

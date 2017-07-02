@@ -2,7 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
-use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+
 use IrishDan\ResponsiveImageBundle\ImageProcessing\FocusCropDataCalculator;
 
 class FocusCropDataCalculatorTest extends ResponsiveImageTestCase

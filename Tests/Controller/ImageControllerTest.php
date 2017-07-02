@@ -2,7 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Test\Controller;
 
-use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
+
 use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 
 class ImageControllerTest extends ResponsiveImageTestCase

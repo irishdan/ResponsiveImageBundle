@@ -1,14 +1,33 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Validator\Constraints;
 
 use IrishDan\ResponsiveImageBundle\ImageProcessing\CoordinateGeometry;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Twig\Extension\CoreExtension;
 
+/**
+ * Class CropFocusCoordinatesValidator
+ *
+ * @package IrishDan\ResponsiveImageBundle\Validator\Constraints
+ */
 class CropFocusCoordinatesValidator extends ConstraintValidator
 {
+    /**
+     * Validate a crop focus coordinate string to ensure the syntax is correct
+     * and to ensure that the focus rectangle inside the crop rectangle
+     *
+     * @param mixed      $value
+     * @param Constraint $constraint
+     */
     public function validate($value, Constraint $constraint)
     {
         $valid = true;

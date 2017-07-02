@@ -3,11 +3,10 @@
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
 
-use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+
 use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
 use IrishDan\ResponsiveImageBundle\FileManager;
-use IrishDan\ResponsiveImageBundle\FileSystem;
-use IrishDan\ResponsiveImageBundle\StyleManager;
+
 
 class StyleManagerTest extends ResponsiveImageTestCase
 {

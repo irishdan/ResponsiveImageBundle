@@ -2,7 +2,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
-use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
+
 
 class ImageStylerTest extends ResponsiveImageTestCase
 {

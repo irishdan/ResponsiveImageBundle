@@ -1,14 +1,36 @@
 <?php
-
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Url;
 
 
-use League\Flysystem\FilesystemInterface;
-
+/**
+ * Interface UrlEncoderInterface
+ *
+ * @package IrishDan\ResponsiveImageBundle\Url
+ */
 interface UrlEncoderInterface
 {
+    /**
+     * @param            $adapter
+     * @param array|null $config
+     *
+     * @return mixed
+     */
     public function getUrlFromAdapter($adapter, array $config = null);
 
+    /**
+     * @param            $data
+     * @param array|null $config
+     *
+     * @return mixed
+     */
     public function getUrlFromData($data, array $config = null);
 }

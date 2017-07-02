@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\FileSystem;
 
@@ -37,7 +45,7 @@ class PrimaryFileSystemWrapper
     public function __construct(EventDispatcherInterface $eventDispatcher = null, FilesystemInterface $fileSystem = null)
     {
         $this->eventDispatcher = $eventDispatcher;
-        $this->fileSystem = $fileSystem;
+        $this->fileSystem      = $fileSystem;
     }
 
     /**
@@ -53,7 +61,8 @@ class PrimaryFileSystemWrapper
         return $this->fileSystem;
     }
 
-    public function getAdapter() {
+    public function getAdapter()
+    {
         if (!empty($this->fileSystem)) {
             return $this->fileSystem->getAdapter();
         }
@@ -102,6 +111,7 @@ class PrimaryFileSystemWrapper
 
     /**
      * @param $path
+     *
      * @return false|string
      */
     public function read($path)
@@ -111,6 +121,7 @@ class PrimaryFileSystemWrapper
 
     /**
      * @param $path
+     *
      * @return bool
      */
     public function has($path)
@@ -128,6 +139,7 @@ class PrimaryFileSystemWrapper
 
     /**
      * @param $path
+     *
      * @return false|string
      */
     public function readAndDelete($path)
@@ -155,6 +167,7 @@ class PrimaryFileSystemWrapper
 
     /**
      * @param $path
+     *
      * @return false|string
      */
     public function getMimetype($path)
@@ -164,6 +177,7 @@ class PrimaryFileSystemWrapper
 
     /**
      * @param $path
+     *
      * @return false|string
      */
     public function getTimeStamp($path)
@@ -173,6 +187,7 @@ class PrimaryFileSystemWrapper
 
     /**
      * @param $path
+     *
      * @return false|int
      */
     public function getSize($path)
