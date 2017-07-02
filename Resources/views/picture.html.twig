@@ -2,5 +2,6 @@
     {% for mq, source in sources | reverse %}
         <source srcset="{{ source }}" media="({{ mq }})">
     {% endfor %}
-    <img src="{{ fallback }}" height="{{ image.height }}" width="{{ image.width }}" title="{{ image.title }}" alt="{{ image.alt }}"/>
+    <img src="{{ fallback }}" height="{{ image.height }}" width="{{ image.width }}" title="{{ image.title }}"
+         alt="{{ image.alt }}"/>
 </picture>

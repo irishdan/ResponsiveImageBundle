@@ -15,8 +15,7 @@ class CropFocusCoordinatesValidator extends ConstraintValidator
 
         // Check it is in the format: 0,0,0,0:0,0,0,0
         $testValue = str_replace(' ', '', $value);
-        if (!preg_match('/^(\d+),(\d+),(\d+),(\d+):(\d+),(\d+),(\d+),(\d+)$/', $testValue, $matches)
-        ) {
+        if (!preg_match('/^(\d+),(\d+),(\d+),(\d+):(\d+),(\d+),(\d+),(\d+)$/', $testValue, $matches)) {
             $valid = false;
         }
         else {

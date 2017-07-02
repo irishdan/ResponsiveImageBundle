@@ -157,12 +157,21 @@ class StyleManager
             $set = $this->pictureSets[$pictureSetName];
 
             foreach ($set['sources'] as $break => $styleName) {
-                $path = $this->buildStylePath($styleName, $filename);
+                $paths   = [];
+                $paths[] = $this->buildStylePath($styleName, $filename);
+
+                // Check to for multiplier styles
+                $multiplierStyles = $this->findMultiplierStyles($styleName);
+                if (!empty($multiplierStyles)) {
+                    foreach ($multiplierStyles as $multiplier => $style) {
+                        $paths[] = $this->buildStylePath($style, $filename) . ' ' . $multiplier;
+                    }
+                }
 
                 // Mappings should be in 'media_query' => '/path/to/image'
                 if ($this->breakpoints[$break]) {
                     $mediaQuery                       = $this->breakpoints[$break]['media_query'];
-                    $mappings['sources'][$mediaQuery] = $path;
+                    $mappings['sources'][$mediaQuery] = implode(', ', $paths);
                 }
             }
 
@@ -173,6 +182,22 @@ class StyleManager
         }
 
         return $mappings;
+    }
+
+    protected function findMultiplierStyles($styleName)
+    {
+        $multiplierStyles = [];
+        foreach ($this->styles as $style => $styleData) {
+            // ^thumb_[0-9]+([.][0-9])?x$
+            $regex = '/^' . $styleName . '_([0-9]+([.][0-9])?x$)/';
+            preg_match($regex, $style, $matches);
+
+            if ($matches) {
+                $multiplierStyles[$matches[1]] = $style;
+            }
+        }
+
+        return $multiplierStyles;
     }
 
     public function getImageSizesData(ResponsiveImageInterface $image, $imageSizesSetName)

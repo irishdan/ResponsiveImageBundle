@@ -122,14 +122,32 @@ class ResponsiveImageExtension extends \Twig_Extension
             if (is_array($data[$key])) {
                 $subData = [];
                 foreach ($data[$key] as $item => $path) {
-                    $subData[$item] = $this->urlBuilder->filePublicUrl($path);
+                    $subData[$item] = $this->createPublicFileUrl($path);
                 }
                 $data[$key] = $subData;
             }
             else {
-                $data[$key] = $this->urlBuilder->filePublicUrl($data[$key]);
+                $data[$key] = $this->createPublicFileUrl($data[$key]);
             }
         }
+    }
+
+    /**
+     * Some path strings could contain more than one path, eg 1x and 2x paths.
+     * This function breaks them up and converts to the full public url.
+     *
+     * @param $path
+     *
+     * @return string
+     */
+    private function createPublicFileUrl($path)
+    {
+        $pathArray = explode(',', $path);
+        foreach ($pathArray as $key => $item) {
+            $pathArray[$key] = $this->urlBuilder->filePublicUrl(trim($item));
+        }
+
+        return implode(', ', $pathArray);
     }
 
     public function generateSizesImage(\Twig_Environment $environment, ResponsiveImageInterface $image, $pictureSetName, $generate = false)
