@@ -16,13 +16,14 @@ use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 class ImageStylerTest extends ResponsiveImageTestCase
 {
     private $imager;
-    private $testImagePath = __DIR__ . '/Resources/dummy.jpg';
-    private $generatedDirectory = __DIR__ . '/Resources/generated/';
+    private $testImagePath = __DIR__ . '/../Resources/dummy.jpg';
+    private $generatedDirectory = __DIR__ . '/../Resources/generated/';
     private $coordinates = '100, 100, 900, 900:400, 500, 700, 800';
 
     public function setUp()
     {
-        $this->imager = $this->getService('responsive_image.image_maker');
+        $this->imager = $this->getService('responsive_image.image_styler');
+        $this->createDirectory($this->generatedDirectory);
     }
 
     public function tearDown()
@@ -38,12 +39,11 @@ class ImageStylerTest extends ResponsiveImageTestCase
             'width'  => 200,
         ];
 
-        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
+        $destination = $this->generatedDirectory . 'dummy.jpg';
+        $this->imager->createImage($this->testImagePath, $destination, $style);
 
-        $generateImage = $this->generatedDirectory . 'dummy.jpg';
-
-        $this->assertFileExists($generateImage);
-        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
+        $this->assertFileExists($destination);
+        $this->assertEquals("image/jpeg", mime_content_type($destination));
     }
 
     public function testCreateImageWithScale()
@@ -53,13 +53,12 @@ class ImageStylerTest extends ResponsiveImageTestCase
             'width'  => 200,
         ];
 
-        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
+        $destination = $this->generatedDirectory . 'dummy.jpg';
+        $this->imager->createImage($this->testImagePath, $destination, $style);
 
-        $generateImage = $this->generatedDirectory . 'dummy.jpg';
-
-        $this->assertFileExists($generateImage);
-        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
-        $this->assertTrue(filesize($this->testImagePath) > filesize($generateImage));
+        $this->assertFileExists($destination);
+        $this->assertEquals("image/jpeg", mime_content_type($destination));
+        $this->assertTrue(filesize($this->testImagePath) > filesize($destination));
     }
 
     public function testCreateImageWithCrop()
@@ -70,13 +69,12 @@ class ImageStylerTest extends ResponsiveImageTestCase
             'height' => 200,
         ];
 
-        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
+        $destination = $this->generatedDirectory . 'dummy.jpg';
+        $this->imager->createImage($this->testImagePath, $destination, $style);
 
-        $generateImage = $this->generatedDirectory . 'dummy.jpg';
-
-        $this->assertFileExists($generateImage);
-        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
-        $this->assertTrue(filesize($this->testImagePath) > filesize($generateImage));
+        $this->assertFileExists($destination);
+        $this->assertEquals("image/jpeg", mime_content_type($destination));
+        $this->assertTrue(filesize($this->testImagePath) > filesize($destination));
     }
 
     public function testCreateImageWithCoordinates()
@@ -87,12 +85,11 @@ class ImageStylerTest extends ResponsiveImageTestCase
             'height' => 200,
         ];
 
-        $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style, $this->coordinates);
+        $destination = $this->generatedDirectory . 'dummy.jpg';
+        $this->imager->createImage($this->testImagePath, $destination, $style, $this->coordinates);
 
-        $generateImage = $this->generatedDirectory . 'dummy.jpg';
-
-        $this->assertFileExists($generateImage);
-        $this->assertEquals("image/jpeg", mime_content_type($generateImage));
-        $this->assertTrue(filesize($this->testImagePath) > filesize($generateImage));
+        $this->assertFileExists($destination);
+        $this->assertEquals("image/jpeg", mime_content_type($destination));
+        $this->assertTrue(filesize($this->testImagePath) > filesize($destination));
     }
 }

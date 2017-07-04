@@ -29,6 +29,13 @@ class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
         $this->testKernel->boot();
     }
 
+    protected function createDirectory($directory)
+    {
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+    }
+
     protected function deleteDirectory($directory)
     {
         if (!is_dir($directory)) {
