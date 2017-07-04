@@ -13,7 +13,7 @@ namespace IrishDan\ResponsiveImageBundle\Tests\ImageProcessing;
 
 use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 
-class ImageManagerTest extends ResponsiveImageTestCase
+class ImageStylerTest extends ResponsiveImageTestCase
 {
     private $imager;
     private $testImagePath = __DIR__ . '/Resources/dummy.jpg';

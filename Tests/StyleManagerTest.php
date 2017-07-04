@@ -17,7 +17,6 @@ use IrishDan\ResponsiveImageBundle\File\FileManager;
 class StyleManagerTest extends ResponsiveImageTestCase
 {
     private $image;
-    private $fileManager;
     private $styleManager;
 
     public function setUp()
@@ -25,31 +24,51 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->image = new TestImage();
         $this->image->setPath('dummy.jpg');
 
-        $this->fileManager  = $this->getService('responsive_image.file_manager');
         $this->styleManager = $this->getService('responsive_image.style_manager');
     }
 
-    public function testSetImageStyle()
+    public function testSetImageAttributes()
     {
-        $this->image = $this->styleManager->setImageStyle($this->image, 'thumb');
+        // Test with cropped styles
+        $this->styleManager->setImageAttributes($this->image, 'thumb', 'src/dummy.jpg');
 
-        // Assert that the web path is correct
-        $expectedPath = '/test/images/styles/thumb/dummy.jpg';
-        $this->assertEquals($expectedPath, $this->image->getStyleData());
+        $this->assertEquals(180, $this->image->getWidth());
+        $this->assertEquals(180, $this->image->getHeight());
+        $this->assertEquals('src/dummy.jpg', $this->image->getSrc());
+
+        // Test with scaled styled
+        $this->styleManager->setImageAttributes($this->image, 'test_scale');
+
+        $this->assertEquals(344, $this->image->getWidth());
+        $this->assertEquals(800, $this->image->getHeight());
     }
 
-    public function testGetMediaQuerySourceMappings()
+    public function testGetImagesSizesData()
     {
-        $this->styleManager->setImageStyle($this->image, 'thumb');
+        $sizesData = $this->styleManager->getImageSizesData($this->image, 'blog_sizes');
+
+        // Check the returned array structure.
+        $this->assertArrayHasKey('fallback', $sizesData);
+        $this->assertArrayHasKey('sizes', $sizesData);
+        $this->assertArrayHasKey('srcsets', $sizesData);
+
+        $this->assertEquals('(min-width: 1100px) 10vw', $sizesData['sizes'][0]);
+        $this->assertEquals(180, $sizesData['srcsets']['styles/thumb/dummy.jpg']);
+        $this->assertEquals(300, $sizesData['srcsets']['styles/big_thumb/dummy.jpg']);
+    }
+
+    public function testGetPictureData()
+    {
         $mq = $this->styleManager->getPictureData($this->image, 'thumb_picture');
 
-        $this->assertArrayHasKey(0, $mq);
-        $this->assertArrayHasKey('min-width: 0px', $mq);
-        $this->assertArrayHasKey('min-width: 1100px', $mq);
+        // Check the returned array structure.
+        $this->assertArrayHasKey('fallback', $mq);
+        $this->assertArrayHasKey('sources', $mq);
 
-        $this->assertEquals('/test/images/styles/thumb/dummy.jpg', $mq[0]);
-        $this->assertEquals('/test/images/styles/thumb_picture-base/dummy.jpg', $mq['min-width: 0px']);
-        $this->assertEquals('/test/images/styles/thumb/dummy.jpg', $mq['min-width: 1100px']);
+        // Check the data.
+        $this->assertEquals('styles/thumb/dummy.jpg', $mq['fallback']);
+        $this->assertArrayHasKey('min-width: 0px', $mq['sources']);
+        $this->assertArrayHasKey('min-width: 1100px', $mq['sources']);
     }
 
     public function testGetStyleData()
@@ -67,5 +86,11 @@ class StyleManagerTest extends ResponsiveImageTestCase
 
         $expected = $parameters['image_styles']['thumb'];
         $this->assertEquals($expected, $style);
+
+        // Test a custom styles.
+        $style = $this->styleManager->getStyleData('custom_scale_30_100');
+        $this->assertArrayHasKey('effect', $style);
+        $this->assertArrayHasKey('width', $style);
+        $this->assertArrayHasKey('height', $style);
     }
 }

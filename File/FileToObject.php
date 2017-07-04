@@ -11,6 +11,7 @@
 namespace IrishDan\ResponsiveImageBundle\File;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageRepositoryInterface;
 
 /**
@@ -32,7 +33,7 @@ class FileToObject
      * @param EntityManager $manager
      * @param               $entityClassName
      */
-    public function __construct(EntityManager $manager, $entityClassName)
+    public function __construct(EntityManagerInterface $manager, $entityClassName)
     {
         $this->manager         = $manager;
         $this->entityClassName = $entityClassName;

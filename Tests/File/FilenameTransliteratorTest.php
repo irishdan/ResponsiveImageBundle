@@ -12,13 +12,13 @@ namespace IrishDan\ResponsiveImageBundle\Tests\File;
 
 use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 
-class FilenameTransliterator extends ResponsiveImageTestCase
+class FilenameTransliteratorTest extends ResponsiveImageTestCase
 {
     private $transliterator;
 
     public function setUp()
     {
-        $this->transliterator = new \IrishDan\ResponsiveImageBundle\File\FilenameTransliterator();
+        // $this->transliterator = new \IrishDan\ResponsiveImageBundle\File\FilenameTransliterator();
     }
 
     public function testTransliterate()

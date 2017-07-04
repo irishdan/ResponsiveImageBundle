@@ -142,7 +142,7 @@ class StyleManager
     {
         if (!in_array($styleName, array_keys($this->styles))) {
             // If is custom style string.
-            if (strpos('custom', $styleName) == 0) {
+            if (strpos($styleName, 'custom_') === 0) {
                 return $this->styleDataFromCustomStyleString($styleName);
             }
         }
@@ -211,9 +211,9 @@ class StyleManager
     public function getImageSizesData(ResponsiveImageInterface $image, $imageSizesSetName)
     {
         $mappings = [
-            'src'     => $image->getSrc(),
-            'sizes'   => [],
-            'srcsets' => [],
+            'fallback' => '',
+            'sizes'    => [],
+            'srcsets'  => [],
         ];
         $sizeData = $this->getSizesSet($imageSizesSetName);
 
