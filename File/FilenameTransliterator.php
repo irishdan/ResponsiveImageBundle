@@ -43,6 +43,7 @@ class FilenameTransliterator implements FilenameTransliteratorInterface
         // Sanitize and transliterate
         $str      = strtolower($filename);
         $str      = strip_tags($str);
+        $str      = str_replace([' ', '-'], '_', $str);
         $safeName = preg_replace('/[^a-z0-9-_\.]/', '', $str);
 
         // Create unique filename.
