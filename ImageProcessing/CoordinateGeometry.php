@@ -33,6 +33,9 @@ class CoordinateGeometry
         $this->setAspectRatio();
     }
 
+    /**
+     * @return mixed
+     */
     public function getAspectRatio()
     {
         return $this->aspectRatio;
@@ -141,7 +144,7 @@ class CoordinateGeometry
         }
 
         foreach ($data as $property => $value) {
-            $this->propertyAccessor->setValue($data, $property, round($value));
+            $this->propertyAccessor->setValue($data, '[' . $property . ']', round($value));
         }
 
         return $data;

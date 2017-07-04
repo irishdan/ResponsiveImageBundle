@@ -1,10 +1,19 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
-namespace IrishDan\ResponsiveImageBundle\Tests;
+namespace IrishDan\ResponsiveImageBundle\Tests\ImageProcessing;
 
 
+use IrishDan\ResponsiveImageBundle\Tests\ResponsiveImageTestCase;
 
-class ImageStylerTest extends ResponsiveImageTestCase
+class ImageManagerTest extends ResponsiveImageTestCase
 {
     private $imager;
     private $testImagePath = __DIR__ . '/Resources/dummy.jpg';
@@ -26,7 +35,7 @@ class ImageStylerTest extends ResponsiveImageTestCase
     {
         $style = [
             'effect' => 'scale',
-            'width' => 200,
+            'width'  => 200,
         ];
 
         $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
@@ -41,7 +50,7 @@ class ImageStylerTest extends ResponsiveImageTestCase
     {
         $style = [
             'effect' => 'scale',
-            'width' => 200,
+            'width'  => 200,
         ];
 
         $this->imager->createImage($this->testImagePath, $this->generatedDirectory, $style);
@@ -57,7 +66,7 @@ class ImageStylerTest extends ResponsiveImageTestCase
     {
         $style = [
             'effect' => 'crop',
-            'width' => 200,
+            'width'  => 200,
             'height' => 200,
         ];
 
@@ -74,7 +83,7 @@ class ImageStylerTest extends ResponsiveImageTestCase
     {
         $style = [
             'effect' => 'crop',
-            'width' => 200,
+            'width'  => 200,
             'height' => 200,
         ];
 

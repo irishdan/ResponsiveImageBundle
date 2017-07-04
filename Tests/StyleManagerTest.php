@@ -1,11 +1,17 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
-
-
 use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
-use IrishDan\ResponsiveImageBundle\FileManager;
+use IrishDan\ResponsiveImageBundle\File\FileManager;
 
 
 class StyleManagerTest extends ResponsiveImageTestCase
@@ -19,7 +25,7 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->image = new TestImage();
         $this->image->setPath('dummy.jpg');
 
-        $this->fileManager = $this->getService('responsive_image.file_manager');
+        $this->fileManager  = $this->getService('responsive_image.file_manager');
         $this->styleManager = $this->getService('responsive_image.style_manager');
     }
 
@@ -46,7 +52,7 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $this->assertEquals('/test/images/styles/thumb/dummy.jpg', $mq['min-width: 1100px']);
     }
 
-    public function testgetStyleData()
+    public function testGetStyleData()
     {
         // Non existant style returns FALSE.
         $style = $this->styleManager->getStyleData('nonExistingStyle');
@@ -62,28 +68,4 @@ class StyleManagerTest extends ResponsiveImageTestCase
         $expected = $parameters['image_styles']['thumb'];
         $this->assertEquals($expected, $style);
     }
-
-    // public function prefixProvider()
-    // {
-    //     return [
-    //         ['path', 'style', 'http://prefix.', 'ALL', 'http://prefix.path'],
-    //         ['path', 'style', '', 'ALL', '/path'],
-    //         ['path', 'style', '', 'STYLED_ONLY', '/path'],
-    //         ['path', null, 'http://prefix.', 'ALL', 'http://prefix.path'],
-    //         ['path', null, 'http://prefix.', 'STYLED_ONLY', '/path'],
-    //     ];
-    // }
-
-    // /**
-    //  * @dataProvider prefixProvider
-    //  */
-    // public function testPrefixPath($path, $style, $prefix, $policy, $expected)
-    // {
-    //     $this->styleManager->setDisplayPathPrefix($prefix);
-    //     $this->styleManager->setRemoteFilePolicy($policy);
-
-    //     $result = $this->styleManager->prefixPath($path, $style);
-
-    //     $this->assertEquals($expected, $result);
-    // }
 }
