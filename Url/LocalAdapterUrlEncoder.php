@@ -31,10 +31,6 @@ class LocalAdapterUrlEncoder implements UrlEncoderInterface
         return $path;
     }
 
-    /**
-     * @param            $data
-     * @param array|null $config
-     */
     public function getUrlFromData($data, array $config = null)
     {
         // TODO: Implement getUrlFromData() method.

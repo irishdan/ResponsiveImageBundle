@@ -38,16 +38,16 @@ class ImageEntityGenerator extends Generator
      */
     public function generate(BundleInterface $bundle, $name)
     {
-        $bundleDir       = $bundle->getPath();
-        $notificationDir = $bundleDir . '/Entity';
-        self::mkdir($notificationDir);
+        $bundleDir = $bundle->getPath();
+        $imageDir  = $bundleDir . '/Entity';
+        self::mkdir($imageDir);
 
-        $notificationClassName = $name;
-        $notificationFile      = $notificationDir . '/' . $notificationClassName . '.php';
+        $imageClassName = $name;
+        $imageFile      = $imageDir . '/' . $imageClassName . '.php';
 
         $parameters = [
             'namespace'  => $bundle->getNamespace(),
-            'class_name' => $notificationClassName,
+            'class_name' => $imageClassName,
             'name'       => $name,
             'table'      => strtolower($name), // @TODO: Use the tableize function
         ];
@@ -56,7 +56,7 @@ class ImageEntityGenerator extends Generator
         $filesArray   = [];
         $filesArray[] = [
             'entity/Image.php.twig',
-            $notificationFile,
+            $imageFile,
             $parameters,
         ];
 

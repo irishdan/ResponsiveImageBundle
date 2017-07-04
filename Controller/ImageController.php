@@ -12,6 +12,7 @@ namespace IrishDan\ResponsiveImageBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Class ImageController
@@ -26,7 +27,7 @@ class ImageController extends Controller
      * @param $stylename
      * @param $filename
      *
-     * @return BinaryFileResponse
+     *
      */
     public function indexAction($stylename, $filename)
     {
@@ -40,20 +41,38 @@ class ImageController extends Controller
         $imageObject      = $this->get('responsive_image.file_to_object')->getObjectFromFilename(
             $filename,
             $imageEntityClass
-        )
-        ;
+        );
 
         if (!empty($imageObject)) {
-            if (!empty($imageObject)) {
-                $generatedImageArray = $this->get('responsive_image.image_manager')->createStyledImages(
-                    $imageObject,
-                    [$stylename]
-                )
-                ;
-            }
+            $generatedImageArray = $this->get('responsive_image.image_manager')->createStyledImages(
+                $imageObject,
+                [$stylename]
+            );
 
             if (!empty($generatedImageArray[$stylename])) {
-                $response = new BinaryFileResponse($generatedImageArray[$stylename]);
+                $path = $generatedImageArray[$stylename];
+
+                $cache  = $this->get('responsive_image.file_system_factory')->getAdapter();
+                $stream = $cache->readStream($path);
+
+                $response = new StreamedResponse();
+                $response->headers->set('Content-Type', $cache->getMimetype($path));
+                $response->headers->set('Content-Length', $cache->getSize($path));
+                $response->setPublic();
+                $response->setMaxAge(31536000);
+                $response->setExpires(date_create()->modify('+1 years'));
+
+                $response->setCallback(
+                    function () use ($stream) {
+                        if (ftell($stream['stream']) !== 0) {
+                            rewind($stream['stream']);
+                        }
+                        fpassthru($stream['stream']);
+                        fclose($stream['stream']);
+                    }
+                );
+
+                return $response;
             }
             else {
                 throw $this->createNotFoundException('Derived image could not be created');
@@ -62,7 +81,5 @@ class ImageController extends Controller
         else {
             throw $this->createNotFoundException('The file does not exist');
         }
-
-        return $response;
     }
 }
