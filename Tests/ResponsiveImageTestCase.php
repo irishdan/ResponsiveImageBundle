@@ -10,7 +10,6 @@
 
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
-
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
