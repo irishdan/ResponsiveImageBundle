@@ -15,7 +15,7 @@ use IrishDan\ResponsiveImageBundle\Validator\Constraints\CropFocusCoordinates;
 use IrishDan\ResponsiveImageBundle\Validator\Constraints\CropFocusCoordinatesValidator;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
-class CropFocusCoordinatesValidatorTest extends ConstraintValidatorTestCase
+class CropFocusCoordinatesValidatorNotest extends ConstraintValidatorTestCase
 {
     protected function createValidator()
     {
