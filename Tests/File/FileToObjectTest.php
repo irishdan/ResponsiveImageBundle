@@ -15,9 +15,8 @@ use IrishDan\ResponsiveImageBundle\File\FileToObject;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageRepositoryInterface;
 use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
-use PHPUnit\Framework\TestCase;
 
-class FileToObjectTest extends TestCase
+class FileToObjectTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetObjectFromFileName()
     {

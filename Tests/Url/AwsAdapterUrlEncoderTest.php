@@ -10,9 +10,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Tests\Url;
 
-use PHPUnit\Framework\TestCase;
-
-class AwsAdapterUrlEncoderTest extends TestCase
+class AwsAdapterUrlEncoderTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetUrlFromAdapter()
     {

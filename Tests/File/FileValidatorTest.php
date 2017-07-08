@@ -11,10 +11,9 @@
 namespace IrishDan\ResponsiveImageBundle\Tests\File;
 
 use IrishDan\ResponsiveImageBundle\File\FileValidator;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class FileValidatorTest extends TestCase
+class FileValidatorTest extends \PHPUnit_Framework_TestCase
 {
     protected function getMockFileUpload()
     {

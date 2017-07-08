@@ -13,9 +13,8 @@ namespace IrishDan\ResponsiveImageBundle\Tests\File;
 use IrishDan\ResponsiveImageBundle\File\FilenameTransliterator;
 use IrishDan\ResponsiveImageBundle\File\FileToObject;
 use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
-use PHPUnit\Framework\TestCase;
 
-class FilenameTransliteratorTest extends TestCase
+class FilenameTransliteratorTest extends \PHPUnit_Framework_TestCase
 {
     public function testTransliterate()
     {
