@@ -128,6 +128,7 @@ class Uploader implements UploaderInterface
         $adapter     = $this->fileSystem->getAdapter();
         $adapterType = $this->getAdapterType($adapter);
 
+        // @TODO: This should be part of the urlEncoders
         switch ($adapterType) {
             case 'AwsS3Adapter':
                 $prefix = $adapter->getPathPrefix();
@@ -146,7 +147,7 @@ class Uploader implements UploaderInterface
             case 'Local':
                 return [
                     'adapter' => $adapterType,
-                    'prefix'  => 'test/images',
+                    'prefix'  => 'test/images', // @TODO: what is this?
                 ];
 
                 break;

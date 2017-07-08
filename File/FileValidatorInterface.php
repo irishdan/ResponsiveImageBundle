@@ -25,4 +25,6 @@ interface FileValidatorInterface
      * @return mixed
      */
     public function validate(UploadedFile $file);
+
+    public function getErrors();
 }
