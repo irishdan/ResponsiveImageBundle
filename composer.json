@@ -12,6 +12,7 @@
     "require": {
         "php": ">=5.6.4",
         "symfony/framework-bundle": "^3.0",
+        "symfony/validator": "^3.0",
         "intervention/image": "^2.3",
         "oneup/flysystem-bundle": "^1.13"
     },
