@@ -20,11 +20,18 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 interface FileValidatorInterface
 {
     /**
+     * Validates the UploadedFile object.
+     *
      * @param UploadedFile $file
      *
-     * @return mixed
+     * @return boolean
      */
     public function validate(UploadedFile $file);
 
+    /**
+     * Fetches any errors generated during validation
+     *
+     * @return array
+     */
     public function getErrors();
 }
