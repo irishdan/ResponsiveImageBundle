@@ -11,7 +11,9 @@
     ],
     "require": {
         "php": ">=5.6.4",
-        "symfony/symfony": "^3.2",
+        "symfony/framework-bundle": "^3.2",
+        "symfony/twig-bundle": "^3.2",
+        "symfony/validator": "^3.2",
         "intervention/image": "^2.3",
         "oneup/flysystem-bundle": "^1.13"
     },
