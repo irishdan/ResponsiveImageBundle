@@ -1,6 +1,6 @@
 {
     "name": "irishdan/responsive-image-bundle",
-    "description": "A bundle for creating style and responsive images in symfony framework",
+    "description": "A bundle for creating styled and responsive images for symfony projects",
     "license": "MIT",
     "homepage": "http://danbyrne.me/projects/responsive-image-bundle",
     "authors": [
@@ -11,11 +11,12 @@
     ],
     "require": {
         "php": ">=5.6.4",
+        "doctrine/doctrine-bundle": "^1.6",
+        "intervention/image": "^2.3",
+        "oneup/flysystem-bundle": "^1.13",
         "symfony/framework-bundle": "^3.2",
         "symfony/twig-bundle": "^3.2",
-        "symfony/validator": "^3.2",
-        "intervention/image": "^2.3",
-        "oneup/flysystem-bundle": "^1.13"
+        "symfony/validator": "^3.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8"

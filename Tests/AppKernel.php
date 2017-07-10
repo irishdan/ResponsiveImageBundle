@@ -12,7 +12,7 @@ class AppKernel extends Kernel
         if (in_array($this->getEnvironment(), ['test'])) {
             $bundles[] = new Symfony\Bundle\FrameworkBundle\FrameworkBundle();
             $bundles[] = new Symfony\Bundle\TwigBundle\TwigBundle();
-            $bundles[] = new Symfony\Bundle\MonologBundle\MonologBundle();
+            // $bundles[] = new Symfony\Bundle\MonologBundle\MonologBundle();
             $bundles[] = new Doctrine\Bundle\DoctrineBundle\DoctrineBundle();
             $bundles[] = new IrishDan\ResponsiveImageBundle\ResponsiveImageBundle();
             $bundles[] = new Oneup\FlysystemBundle\OneupFlysystemBundle();
