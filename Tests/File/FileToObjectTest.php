@@ -10,6 +10,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Tests\File;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use IrishDan\ResponsiveImageBundle\File\FileToObject;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
@@ -42,7 +43,7 @@ class FileToObjectTest extends \PHPUnit_Framework_TestCase
                         );
 
         // Mock the EntityManager to return the mock of the repository
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+        $entityManager = $this->getMockBuilder(EntityManager::class)
                               ->disableOriginalConstructor()
                               ->getMock();
 
