@@ -23,15 +23,11 @@ class AwsAdapterUrlEncoder implements UrlEncoderInterface
      *
      * @return mixed|string
      */
-    public function getUrlFromAdapter($adapter, array $config = null)
+    public function getUrl($adapter, array $config = null)
     {
-        $data = [];
+        $data = $this->getDataArray($adapter);
 
-        $data['prefix'] = $adapter->getPathPrefix();
-        $data['bucket'] = $adapter->getBucket();
-        $data['region'] = $adapter->getClient()->getRegion();
-
-        return $this->getUrlFromData($data);
+        return 'https://' . 's3-' . $data['region'] . '.amazonaws.com/' . $data['bucket'] . '/' . $data['prefix'] . '/';
     }
 
     /**
@@ -40,10 +36,21 @@ class AwsAdapterUrlEncoder implements UrlEncoderInterface
      *
      * @return string
      */
-    public function getUrlFromData($data, array $config = null)
+    public function getData($adapter, array $config = null)
     {
-        // @TODO: Get http from the service definition if possible.
+        $data = $this->getDataFromAdapter();
 
-        return 'https://' . 's3-' . $data['region'] . '.amazonaws.com/' . $data['bucket'] . '/' . $data['prefix'] . '/';
+        return $data;
+    }
+
+    private function getDataArray($adapter)
+    {
+        $data = [];
+
+        $data['prefix'] = $adapter->getPathPrefix();
+        $data['bucket'] = $adapter->getBucket();
+        $data['region'] = $adapter->getClient()->getRegion();
+
+        return $data;
     }
 }

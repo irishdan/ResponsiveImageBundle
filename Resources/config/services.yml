@@ -52,8 +52,8 @@ services:
         class: IrishDan\ResponsiveImageBundle\Url\UrlBuilder
         arguments: ['@responsive_image.file_system_factory', '%responsive_image%']
         calls:
-            - [ adapterUrlEncoder, [ 'Local' , '@responsive_image.local_url']]
-            - [ adapterUrlEncoder, [ 'AwsS3Adapter' , '@responsive_image.aws_url']]
+            - [ setAdapterUrlEncoder, [ 'Local' , '@responsive_image.local_url']]
+            - [ setAdapterUrlEncoder, [ 'AwsS3Adapter' , '@responsive_image.aws_url']]
 
     responsive_image.local_url:
         class: IrishDan\ResponsiveImageBundle\Url\LocalAdapterUrlEncoder

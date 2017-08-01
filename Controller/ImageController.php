@@ -26,8 +26,6 @@ class ImageController extends Controller
      *
      * @param $stylename
      * @param $filename
-     *
-     *
      */
     public function indexAction($stylename, $filename)
     {

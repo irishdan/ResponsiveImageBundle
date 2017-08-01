@@ -24,15 +24,17 @@ class LocalAdapterUrlEncoder implements UrlEncoderInterface
      *
      * @return mixed|string
      */
-    public function getUrlFromAdapter($adapter, array $config = null)
+    public function getUrl($adapter, array $config = null)
     {
         $path = empty($config['image_directory']) ? 'image' : $config['image_directory'];
 
         return $path;
     }
 
-    public function getUrlFromData($data, array $config = null)
+    public function getData($adapter, array $config = null)
     {
-        // TODO: Implement getUrlFromData() method.
+        return [
+            empty($config['image_directory']) ? 'image' : $config['image_directory'],
+        ];
     }
 }

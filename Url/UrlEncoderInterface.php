@@ -24,7 +24,7 @@ interface UrlEncoderInterface
      *
      * @return mixed
      */
-    public function getUrlFromAdapter($adapter, array $config = null);
+    public function getUrl($adapter, array $config = null);
 
     /**
      * @param            $data
@@ -32,5 +32,5 @@ interface UrlEncoderInterface
      *
      * @return mixed
      */
-    public function getUrlFromData($data, array $config = null);
+    public function getData($data, array $config = null);
 }

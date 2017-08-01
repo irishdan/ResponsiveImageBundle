@@ -12,6 +12,7 @@ namespace IrishDan\ResponsiveImageBundle\Url;
 
 use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
 use League\Flysystem\AdapterInterface;
+use Psr\Log\InvalidArgumentException;
 
 /**
  * Class UrlBuilder
@@ -32,6 +33,33 @@ class UrlBuilder
      * @var array
      */
     private $adapterUrlEncoders = [];
+    /**
+     * @var array
+     */
+    private $adapterUrlMappings = [];
+
+    /**
+     * @return array
+     */
+    public function getAdapterUrlMappings($adapterType = '')
+    {
+        if (empty($adapterType)) {
+            return $this->adapterUrlMappings;
+        }
+
+        return empty($this->adapterUrlMappings[$adapterType]) ? null : $this->adapterUrlMappings[$adapterType];
+    }
+
+    public function setAdapterUrlMappings($adapterType, $data)
+    {
+        if (!is_string($adapterType)) {
+            throw new InvalidArgumentException(
+                'Adapter type must be a string'
+            );
+        }
+
+        $this->adapterUrlMappings[$adapterType] = $data;
+    }
 
     /**
      * UrlBuilder constructor.
@@ -51,7 +79,7 @@ class UrlBuilder
      * @param                     $key
      * @param UrlEncoderInterface $encoder
      */
-    public function adapterUrlEncoder($key, UrlEncoderInterface $encoder)
+    public function setAdapterUrlEncoder($key, UrlEncoderInterface $encoder)
     {
         $this->adapterUrlEncoders[$key] = $encoder;
     }
@@ -62,16 +90,46 @@ class UrlBuilder
      *
      * @return string
      */
-    public function filePublicUrl($relativeFilePath, $adapterUrlData = '')
+    public function filePublicUrl($relativeFilePath, array $urlData = [])
     {
-        if (!empty($adapterUrlData)) {
-            $urlBase = $this->getUrlDataFromFileSystem(unserialize($adapterUrlData));
-        }
-        else {
-            $urlBase = $this->getUrlDataFromFileSystem();
+        // @TODO: $urlData could be collected when
+        // Either the data needed to build the url is passed in adapterUrlData
+        // Or it should be derived from the Adapter
+
+        // Build path from the provided data if it exists
+        if (!empty($urlData)) {
+            return $this->formatAsUrl($urlData, $relativeFilePath);
         }
 
-        return $this->formatAsUrl($urlBase, $relativeFilePath);
+        // Build the url from any mappings provided.
+        $adapterType = $this->getAdapterTypeFromFilesystem();
+        if (!empty($this->getAdapterUrlMappings($adapterType))) {
+            return $this->formatAsUrl($urlData, $relativeFilePath);
+        }
+
+        // Build the path from adapter.
+        // Most adaptors don't have any direct method to do this.
+        $urlData = $this->getUrlFromFileSystem();
+        if (!empty($urlData)) {
+            return $this->formatAsUrl($urlData, $relativeFilePath);
+        }
+
+        // Use a fallback from config.
+        if (!empty($this->config['default_url'])) {
+            return $this->formatAsUrl($this->config['default_url'], $relativeFilePath);
+        }
+
+        // If all of the above methods fail just return path.
+        // perhaps is being generated elsewhere.
+
+        return $relativeFilePath;
+    }
+
+    private function getAdapterTypeFromFilesystem()
+    {
+        $adapter = $this->fileSystem->getAdapter();
+
+        return $this->getAdapterType($adapter);
     }
 
     /**
@@ -82,6 +140,8 @@ class UrlBuilder
      */
     protected function formatAsUrl($base, $path)
     {
+        // @TODO: $base could also be an array.
+
         $url = $base . '/' . trim($path, '/');
 
         // Check it the protocol is included.
@@ -113,26 +173,15 @@ class UrlBuilder
      *
      * @return string
      */
-    protected function getUrlDataFromFileSystem($data = [])
+    protected function getUrlFromFileSystem()
     {
-        $path = '/';
-        if (empty($data)) {
-            $adapter     = $this->fileSystem->getAdapter();
-            $adapterType = $this->getAdapterType($adapter);
-        }
-        else {
-            $adapterType = $data['adapter'];
-        }
+        $path        = false;
+        $adapter     = $this->fileSystem->getAdapter();
+        $adapterType = $this->getAdapterType($adapter);
 
         if (!empty($this->adapterUrlEncoders[$adapterType])) {
             $encoder = $this->adapterUrlEncoders[$adapterType];
-
-            if (!empty($adapter)) {
-                $path = $encoder->getUrlFromAdapter($adapter, $this->config);
-            }
-            else {
-                $path = $encoder->getUrlFromData($data, $this->config);
-            }
+            $path    = $encoder->getUrl($adapter, $this->config);
         }
 
         return $path;
