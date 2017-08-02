@@ -1,8 +1,119 @@
 # ResponsiveImageBundle
 
+[![Build Status](https://travis-ci.org/irishdan/ResponsiveImageBundle.svg?branch=master)](https://travis-ci.org/irishdan/ResponsiveImageBundle)
+
+## Overview:
+
 The ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped, greyscale) in Symfony3.
 
-[![Build Status](https://travis-ci.org/irishdan/ResponsiveImageBundle.svg?branch=master)](https://travis-ci.org/irishdan/ResponsiveImageBundle)
+This bundle allows for the management and presentation of images in various styles (scaled, cropped, grey scale etc etc)
+and sizes.
+Art directed responsive images, with picture or sizes/srcset, can also be generated.
+
+Define break points, map them to images styles to create reponsive images and css.
+
+The bundle uses flysystem filesystem abstraction layer giving you control over where images are stored.
+Eventas are used to dirvie the system, giving more flexibiltiy and extensibility, can control when images are generated, eg perhaps this should be queued
+
+Images can be created from predefined styles or on the fly
+
+supports retina 2x 1.5x images
+
+ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped, greyscale) in Symfony3.
+
+The general idea:
+ 1 - generate a ResponsiveImage entity - command
+ 2 - create the CRUD as normal - command
+ 3 - define image styles eg
+
+ ```
+ groovy_thumbnail_style:
+     effect: crop
+     width: 180
+     height: 180
+ ```
+ 4 - Display an image with that style in your twig template
+ ```
+ {{ styled_image(image, 'groovy_thumbnail_style') }}
+
+ ```
+
+ (If you want responsive images)
+ 5 - Define some breakpoints and add some more styles. One for each breakpoint works well!
+ ```
+ breakpoints:
+     base: 'min-width: 0px'
+     mobile: 'min-width: 300px'
+     desktop: 'min-width: 1100px'
+
+groovy_thumbnail_style_base:
+      effect: crop
+      width: 180
+      height: 180
+groovy_thumbnail_style_mobile:
+   effect: crop
+   width: 180
+   height: 180
+groovy_thumbnail_style_mobile:
+   effect: crop
+   width: 180
+   height: 180
+
+ ```
+ 6 - Create a picture set eg map breakpoints to styles
+
+```
+groovey_picture_set:
+    base: groovy_thumbnail_style_base
+    mobile: groovy_thumbnail_style_mobile
+    desktop: groovy_thumbnail_style_desktop
+```
+ 7 - Display the picture
+ ```
+ {{ picture_image(image, 'groovey_picture_set') }}
+
+ ```
+ 8 - Create a srssize set:
+
+ ```
+ ```
+
+ 9 - display
+
+ 10 - create a background image
+
+
+
+## Documentation
+- Setup
+    - out of the box, local file system, generate entity, doctrine or no!!
+
+- Styled & responsive images
+    what are they, html structure, twig functions , overriding
+
+- Filesystems
+    out of the box/default, local, remote
+
+- CRUD
+
+- Uploading
+    - form example
+- Urls
+    - encoding, methods
+
+- Art Direction
+    - crop focus rectangles, for widget, example
+- Events
+    - all powered by events
+
+Attribution
+
+- The standalone PHP Imagine Library is used by this bundle for image transformations.
+- Flysystem..
+- OneupFlysystemBundle
+- Crop focus widget...
+
+
 
 Features include:
 
@@ -301,11 +412,6 @@ You can also generate background image css with media queries for each brak poin
 To generate a styled image tag elsewhere, simply set the image style using the responsive_image.style_manager service.
 ```
 $this->get('responsive_image')->setImageStyle($image, 'image_style_name');
-```
-Or you can simply use the setStyle method on the $image object directly. In your template file, printing invokes the _toString method to generate the img tag.
-
-```
-{{ image }}
 ```
 
 To generate a picture element the style manager service is used.
