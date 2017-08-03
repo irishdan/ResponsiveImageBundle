@@ -12,12 +12,12 @@ In this case the largest possible portion of the focus rectangle is included.
 
 For example the image below has a crop and focus applied to it using the widget:
 
-<img src="../images/gougou-widget.jpg" />
+<img src="images/gougou-widget.jpg" />
 
 Images that have been cropped and scaled with various styles might look like this:
 
-<img src="../images/gougou-focus-cropped.jpg" />
+<img src="images/gougou-focus-cropped.jpg" />
 
 If no focus or cropped were applied the images would be like this:
 
-<img src="../images/gougou-nocrop-focus.jpg" />
+<img src="images/gougou-nocrop-focus.jpg" />

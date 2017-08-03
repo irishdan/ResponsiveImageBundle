@@ -36,7 +36,7 @@ Out of the box, ResponsiveImage bundle should work with minimal configuration.
 php bin/console responsive_image:generate:entity
 php bin/console responsive_image:generate:crud
 ```
-With the generated entity and CRUD you can now, create and upload images, apply 'Art Direction' to images.
+With the generated image [entity](Resources/doc/entities.md) and CRUD you can now, create and [upload](Resources/doc/uploading.md) images, apply '[art direction](Resources/doc/art-direction.md)' to images.
 
 ### 2: Define some image styles in your [configuration](Resources/doc/configuration.md) file. (Usually config.yml)
 
@@ -124,6 +124,7 @@ You can now render [responsiveimages](Resources/doc/rendering.md) using srcset a
 - [Configuration](Resources/doc/configuration.md)
 - [Urls](Resources/doc/urls.md)
 - [Events](Resources/doc/events.md)
+- [Tests](Resources/doc/test.md)
     
 ## Attribution
 
