@@ -4,7 +4,7 @@
 
 A custom formType is included which creates a 'crop and focus widget'. This widget allows users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
 
-<img src="../images/cropfocuswidget.jpg" />
+<img src="images/cropfocuswidget.jpg" />
 
 The black area will always be cropped out for all image styles. The inner rectangle will always be fully included in styled images. 
 There are some combinations of styles dimensions and focus dimensions where its just not possible include the whole focus rectangle. 

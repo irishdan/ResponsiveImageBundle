@@ -30,7 +30,29 @@ ResponsiveImageBundle adds the ability to easily created styled responsive image
 
 Out of the box, ResponsiveImage bundle should work with minimal configuration.
 
-### 1: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/commands.md) a [ResponsiveImage entity](Resources/doc/entities.md) and it's CRUD.
+### Step 1: Download and enable the bundle
+
+Download with composer
+```
+composer require irishdan/responsive-image-bundle
+```
+Enable the bundle and OneupFlysystem in the kernel
+```php
+<?php
+// app/AppKernel.php
+
+public function registerBundles()
+{
+    $bundles = array(
+        // ...
+        new IrishDan\ResponsiveImageBundle\ResponsiveImageBundle(),
+        new Oneup\FlysystemBundle\OneupFlysystemBundle(),
+    );
+}
+
+```
+
+### Step 2: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/commands.md) a [ResponsiveImage entity](Resources/doc/entities.md) and it's CRUD.
 
 ```php
 php bin/console responsive_image:generate:entity
@@ -38,7 +60,7 @@ php bin/console responsive_image:generate:crud
 ```
 With the generated image [entity](Resources/doc/entities.md) and CRUD you can now, create and [upload](Resources/doc/uploading.md) images, apply '[art direction](Resources/doc/art-direction.md)' to images.
 
-### 2: Define some image styles in your [configuration](Resources/doc/configuration.md) file. (Usually config.yml)
+### Step 3: Define some image styles in your [configuration](Resources/doc/configuration.md) file. (Usually config.yml)
 
 ```yml
 responsive_image:
@@ -65,7 +87,7 @@ You can now [render](Resources/doc/rendering.md) a styled in your twig template 
     {{ styled_image(image, 'groovy_thumbnail_style') }}
 
  ```
-### 3: Define some breakpoints and "picture sets"
+### Step 4: Define some breakpoints and "picture sets"
 
 ```yml
 responsive_image:
@@ -93,7 +115,7 @@ You can now render [responsive <picture> images](Resources/doc/rendering.md) usi
 </body>
 ```
 
-### 4: Define some size sets
+### Step 5: Define some size sets
 
 ```yml
 responsive_image:
