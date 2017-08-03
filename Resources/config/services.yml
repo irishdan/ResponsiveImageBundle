@@ -27,6 +27,13 @@ services:
         class: IrishDan\ResponsiveImageBundle\File\FileToObject
         arguments: [ '@doctrine.orm.entity_manager', '%responsive_image.entity_class%' ]
 
+    # Command
+    responsive_image.command.generate_crud:
+        class: IrishDan\ResponsiveImageBundle\Command\GenerateImageEntityCrudCommand
+        # parent: Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand
+        tags:
+            - { name: console.command }
+
     # filesystem
     responsive_image.file_system_factory:
         class: IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper
@@ -47,7 +54,7 @@ services:
     responsive_image.file_validator:
         class: IrishDan\ResponsiveImageBundle\File\FileValidator
 
-    # url builder
+    # URL builder
     responsive_image.url_builder:
         class: IrishDan\ResponsiveImageBundle\Url\UrlBuilder
         arguments: ['@responsive_image.file_system_factory', '%responsive_image%']

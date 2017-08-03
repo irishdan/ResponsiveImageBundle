@@ -22,7 +22,7 @@ class CreateImageEntityCommandTest extends ResponsiveImageTestCase
     {
         $output = new NullOutput();
         $input = new ArrayInput([
-                'name' => 'responsive_image:create_entity',
+                'name' => 'responsive_image:generate:entity',
                 '--bundle' => 'ResponsiveImageBundle',
                 '--entity_name' => 'Img',
             ]

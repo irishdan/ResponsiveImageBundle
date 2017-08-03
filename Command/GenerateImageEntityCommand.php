@@ -25,7 +25,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * @package IrishDan\ResponsiveImageBundle\Command
  */
-class CreateImageEntityCommand extends GeneratorCommand
+class GenerateImageEntityCommand extends GeneratorCommand
 {
     /**
      *
@@ -33,15 +33,14 @@ class CreateImageEntityCommand extends GeneratorCommand
     protected function configure()
     {
         $this
-            ->setName('responsive_image:create_entity')
+            ->setName('responsive_image:generate:entity')
             ->setDescription('Create a new responsive image doctrine entity')
             ->setDefinition(
                 [
                     new InputOption('bundle', '', InputOption::VALUE_REQUIRED, 'The bundle for this entity'),
                     new InputOption('entity_name', '', InputOption::VALUE_REQUIRED, 'The name of the entity'),
                 ]
-            )
-        ;
+            );
     }
 
     /**

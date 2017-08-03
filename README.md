@@ -5,69 +5,70 @@
 ## Overview:
 
 The ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped, greyscale) in Symfony3.
-
 This bundle allows for the management and presentation of images in various styles (scaled, cropped, grey scale etc etc)
 and sizes.
 Art directed responsive images, with picture or sizes/srcset, can also be generated.
-
-Define break points, map them to images styles to create reponsive images and css.
-
+Define break points, map them to images styles to create responsive images and css.
 The bundle uses flysystem filesystem abstraction layer giving you control over where images are stored.
 Eventas are used to dirvie the system, giving more flexibiltiy and extensibility, can control when images are generated, eg perhaps this should be queued
-
 Images can be created from predefined styles or on the fly
-
 supports retina 2x 1.5x images
 
 ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped, greyscale) in Symfony3.
 
-The general idea:
- 1 - generate a ResponsiveImage entity - command
- 2 - create the CRUD as normal - command
- 3 - define image styles eg
+## Quick and basic setup
 
- ```
- groovy_thumbnail_style:
-     effect: crop
-     width: 180
-     height: 180
- ```
- 4 - Display an image with that style in your twig template
+### 1: [Install](../blob/master/LICENSE) the bundle and [Install](../blob/master/LICENSE) a [ResponsiveImage entity](../blob/master/LICENSE) and it's CRUD.
+
+```php
+php bin/console responsive_image:generate:entity
+php bin/console responsive_image:generate:crud
+```
+With the generated entity and CRUD you can now, create and upload images, apply 'Art Direction' to images.
+
+### 2: Define some image styles in your [configuration] file. (Usually config.yml)
+
+```yml
+groovy_thumbnail_style:
+    effect: crop
+    width: 180
+    height: 180
+groovy_thumbnail_style_base:
+    effect: scale
+    width: 240
+groovy_thumbnail_style_mobile:
+    effect: scale
+    height:480
+groovy_thumbnail_style_mobile:
+    effect: crop
+    width: 200
+    height: 300
+    greyscale: true
+
+```
+You can now render a styled in your twig template like so:
  ```
  {{ styled_image(image, 'groovy_thumbnail_style') }}
 
  ```
+### 3: Define some breakpoints and "picture sets"
 
- (If you want responsive images)
- 5 - Define some breakpoints and add some more styles. One for each breakpoint works well!
- ```
- breakpoints:
-     base: 'min-width: 0px'
-     mobile: 'min-width: 300px'
-     desktop: 'min-width: 1100px'
-
-groovy_thumbnail_style_base:
-      effect: crop
-      width: 180
-      height: 180
-groovy_thumbnail_style_mobile:
-   effect: crop
-   width: 180
-   height: 180
-groovy_thumbnail_style_mobile:
-   effect: crop
-   width: 180
-   height: 180
-
- ```
- 6 - Create a picture set eg map breakpoints to styles
-
-```
+```yml
+breakpoints:
+    base: 'min-width: 0px'
+    mobile: 'min-width: 300px'
+    desktop: 'min-width: 1100px'
 groovey_picture_set:
     base: groovy_thumbnail_style_base
     mobile: groovy_thumbnail_style_mobile
     desktop: groovy_thumbnail_style_desktop
+
 ```
+You can now render [responsive <picture> images] using and even render [responsive background image css]
+
+### 4: Define some size sets
+
+
  7 - Display the picture
  ```
  {{ picture_image(image, 'groovey_picture_set') }}
@@ -189,78 +190,6 @@ The generated picture element would be like:
     <img srcset="/uploads/documents/styles/thumb_picture-base/example.jpg" alt="Your alt text" title="Your title">
 </picture>
 ```
-
-1: Crop Focus
----------------------------
-
-A custom formType is included which creates a 'crop and focus widget'. This widget allows users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
-
-<img src="/docs/images/cropfocuswidget.jpg" />
-
-The black area will always be cropped out for all image styles. The inner rectangle will always be fully included in styled images. 
-There are some combinations of styles dimensions and focus dimensions where its just not possible include the whole focus rectangle. 
-In this case the largest possible portion of the focus rectangle is included.
-
-For example the image below has a crop and focus applied to it using the widget:
-
-<img src="/docs/images/gougou-widget.jpg" />
-
-Images that have been cropped and scaled with various styles might look like this:
-
-<img src="/docs/images/gougou-focus-cropped.jpg" />
-
-If no focus or cropped were applied the images would be like this:
-
-<img src="/docs/images/gougou-nocrop-focus.jpg" />
-
-2: Installation
----------------------------
-
-With composer
-```
-composer require irishdan/responsive-image-bundle
-```
-
-3: Enable the Bundle
--------------------------
-
-Enable the bundle by adding it to the list of registered bundles
-in the `app/AppKernel.php` file of your project:
-
-```
-<?php
-// app/AppKernel.php
-
-// ...
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ...
-
-            new ResponsiveImageBundle\ResponsiveImageBundle(),
-        );
-
-        // ...
-    }
-
-    // ...
-}
-```
-
-Import the service definitions in to your config.yml file.
-```php
-    - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
-```
-
-Import the routing in to routing.yml file.
-```php
-responsive_image:
-    resource: "@ResponsiveImageBundle/Resources/config/routing.yml"
-    prefix:   /
-```
-
 
 4: Configuration
 ---------------------------
