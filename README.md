@@ -30,7 +30,7 @@ ResponsiveImageBundle adds the ability to easily created styled responsive image
 
 Out of the box, ResponsiveImage bundle should work with minimal configuration.
 
-### 1: [Install](../blob/master/LICENSE) the bundle and [generate](../blob/master/LICENSE) a [ResponsiveImage entity](../blob/master/LICENSE) and it's CRUD.
+### 1: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/installation.md) a [ResponsiveImage entity](../blob/master/LICENSE) and it's CRUD.
 
 ```php
 php bin/console responsive_image:generate:entity
@@ -127,7 +127,6 @@ You can now render [responsiveimages]() using srcset ans image sizes in twig tem
     
 ## Attribution
 
-- The standalone PHP Imagine Library is used by this bundle for image transformations.
-- Flysystem..
-- OneupFlysystemBundle
-- Crop focus widget...
+- [Intervention](http://image.intervention.io/) is the standalone PHP Imagine Library is used by this bundle for image transformations
+- [OneupFlysystemBundle](https://github.com/1up-lab/OneupFlysystemBundle) which used [Flysystem](https://flysystem.thephpleague.com/) filesystem astraction library, is required by this bundle
+- The CropFocus art direction widget javascript was created by following this [TutsPlus tutorial](http://code.tutsplus.com/tutorials/how-to-create-a-jquery-image-cropping-plugin-from-scratch-part-i--net-20994)
