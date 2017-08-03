@@ -30,7 +30,7 @@ ResponsiveImageBundle adds the ability to easily created styled responsive image
 
 Out of the box, ResponsiveImage bundle should work with minimal configuration.
 
-### 1: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/installation.md) a [ResponsiveImage entity](../blob/master/LICENSE) and it's CRUD.
+### 1: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/commands.md) a [ResponsiveImage entity](Resources/doc/entities.md) and it's CRUD.
 
 ```php
 php bin/console responsive_image:generate:entity
@@ -38,7 +38,7 @@ php bin/console responsive_image:generate:crud
 ```
 With the generated entity and CRUD you can now, create and upload images, apply 'Art Direction' to images.
 
-### 2: Define some image styles in your [configuration](../blob/master/LICENSE) file. (Usually config.yml)
+### 2: Define some image styles in your [configuration](Resources/doc/configuration.md) file. (Usually config.yml)
 
 ```yml
 responsive_image:
@@ -60,7 +60,7 @@ responsive_image:
         greyscale: true
 
 ```
-You can now [render](../blob/master/LICENSE) a styled in your twig template like so:
+You can now [render](Resources/doc/rendering.md) a styled in your twig template like so:
  ```
     {{ styled_image(image, 'groovy_thumbnail_style') }}
 
@@ -82,7 +82,7 @@ responsive_image:
         desktop: groovy_thumbnail_style_desktop
 
 ```
-You can now render [responsive <picture> images]() using and even render [responsive background image css]() in twig templates
+You can now render [responsive <picture> images](Resources/doc/rendering.md) using and even render [responsive background image css](Resources/doc/rendering.md) in twig templates
 
 ```
 <head>
@@ -106,7 +106,7 @@ responsive_image:
             srcsets: [ 'groovy_thumbnail_style_mobile', 'groovy_thumbnail_style_desktop' ]
 
 ```
-You can now render [responsiveimages]() using srcset ans image sizes in twig templates.
+You can now render [responsiveimages](Resources/doc/rendering.md) using srcset ans image sizes in twig templates.
 
 ```
     {{ sizes_image(image, 'blog_sizes') }}
@@ -114,16 +114,16 @@ You can now render [responsiveimages]() using srcset ans image sizes in twig tem
 
 ## Documentation
 
-- [Installation and Setup]()
-- [Filesystems]()
-- [Image entities]()
-- [Generators]()
-- [Image rendering]()
-- [Art Direction]()
-- [Configuration]()
-- [Uploading]()
-- [Urls]()
-- [Events]()
+- [Installation and Setup](Resources/doc/installation.md)
+- [Filesystems](Resources/doc/filesystem.md)
+- [Image entities](Resources/doc/entities.md)
+- [Uploading](Resources/doc/uploading.md)
+- [Image rendering](Resources/doc/entities.md)
+- [Art Direction](Resources/doc/art-direction.md)
+- [Commands](Resources/doc/commands.md)
+- [Configuration](Resources/doc/configuration.md)
+- [Urls](Resources/doc/urls.md)
+- [Events](Resources/doc/events.md)
     
 ## Attribution
 
