@@ -10,6 +10,8 @@
 
 namespace IrishDan\ResponsiveImageBundle;
 
+use IrishDan\ResponsiveImageBundle\DependencyInjection\Compiler\DefaultConfigurationPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -19,4 +21,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class ResponsiveImageBundle extends Bundle
 {
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new DefaultConfigurationPass());
+    }
 }

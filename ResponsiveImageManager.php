@@ -23,6 +23,7 @@ class ResponsiveImageManager
     public function __construct(StyleManager $styleManager, array $config, $uploader)
     {
         // @TODO: Decide if this staying or going
+        // GOING
 
         $this->styleManager = $styleManager;
         $this->config       = $config;

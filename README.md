@@ -30,7 +30,7 @@ ResponsiveImageBundle adds the ability to easily created styled responsive image
 
 Out of the box, ResponsiveImage bundle should work with minimal configuration.
 
-### Step 1: Download and enable the bundle
+### Step 1: Download, enable the bundle and import its services.
 
 Download with composer
 ```
@@ -50,6 +50,11 @@ public function registerBundles()
     );
 }
 
+```
+Import responsive image services
+```
+imports:
+    - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
 ```
 
 ### Step 2: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/commands.md) a [ResponsiveImage entity](Resources/doc/entities.md) and it's CRUD.
@@ -79,7 +84,7 @@ responsive_image:
             effect: crop
             width: 200
             height: 300
-        greyscale: true
+            greyscale: true
 
 ```
 You can now [render](Resources/doc/rendering.md) a styled in your twig template like so:
@@ -90,18 +95,19 @@ You can now [render](Resources/doc/rendering.md) a styled in your twig template 
 ### Step 4: Define some breakpoints and "picture sets"
 
 ```yml
-responsive_image:
-    breakpoints:
-        base: 
-            media_query: 'min-width: 0px'
-        mobile: 
-            media_query: 'min-width: 300px'
-        desktop: 
-            media_query: 'min-width: 1100px'
+breakpoints:
+    base: 
+        media_query: 'min-width: 0px'
+    mobile: 
+        media_query: 'min-width: 300px'
+    desktop: 
+        media_query: 'min-width: 1100px'
     groovey_picture_set:
-        base: groovy_thumbnail_style_base
-        mobile: groovy_thumbnail_style_mobile
-        desktop: groovy_thumbnail_style_desktop
+        fallback: 'groovy_thumbnail_style'
+        sources:
+            base: groovy_thumbnail_style_base
+            mobile: groovy_thumbnail_style_mobile
+            desktop: groovy_thumbnail_style_desktop
 
 ```
 You can now render [responsive <picture> images](Resources/doc/rendering.md) using and even render [responsive background image css](Resources/doc/rendering.md) in twig templates
@@ -128,7 +134,7 @@ responsive_image:
             srcsets: [ 'groovy_thumbnail_style_mobile', 'groovy_thumbnail_style_desktop' ]
 
 ```
-You can now render [responsiveimages](Resources/doc/rendering.md) using srcset ans image sizes in twig templates.
+You can now render [responsiveimages](Resources/doc/rendering.md) using srcset and image sizes in twig templates.
 
 ```
     {{ sizes_image(image, 'blog_sizes') }}
@@ -140,6 +146,7 @@ You can now render [responsiveimages](Resources/doc/rendering.md) using srcset a
 - [Filesystems](Resources/doc/filesystem.md)
 - [Image entities](Resources/doc/entities.md)
 - [Uploading](Resources/doc/uploading.md)
+- [Styled image generation](Resources/doc/styled-image-generation.md)
 - [Image rendering](Resources/doc/entities.md)
 - [Art Direction](Resources/doc/art-direction.md)
 - [Commands](Resources/doc/commands.md)
