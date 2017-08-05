@@ -27,18 +27,37 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class GenerateImageEntityCommand extends GeneratorCommand
 {
+    protected $responsiveImageEntity;
+    protected $bundle = 'AppBundle';
+    protected $entityName = 'Image';
+
     /**
-     *
+     * GenerateImageEntityCommand constructor.
      */
+    public function __construct($responsiveImageEntity)
+    {
+        parent::__construct();
+
+        $this->responsiveImageEntity = $responsiveImageEntity;
+        var_dump($responsiveImageEntity);
+    }
+
     protected function configure()
     {
+        // @TODO: Limit generation to One entity for now!
+        // Either:
+        // - Check the image entity configuration, if its set, use that in the interaction validation
+        //   to limit
+        //   If its not set warn users that it needs to be set after the entity has been generated.
+
         $this
             ->setName('responsive_image:generate:entity')
-            ->setDescription('Create a new responsive image doctrine entity')
+            ->setDescription('Creates the ResponsiveImage entity, ' . $this->responsiveImageEntity)
             ->setDefinition(
                 [
-                    new InputOption('bundle', '', InputOption::VALUE_REQUIRED, 'The bundle for this entity'),
-                    new InputOption('entity_name', '', InputOption::VALUE_REQUIRED, 'The name of the entity'),
+                    new InputOption('override', '', InputOption::VALUE_REQUIRED, 'Override if entity already exists'),
+                    // new InputOption('bundle', '', InputOption::VALUE_REQUIRED, 'The bundle for this entity'),
+                    // new InputOption('entity_name', '', InputOption::VALUE_REQUIRED, 'The name of the entity'),
                 ]
             );
     }
@@ -53,64 +72,69 @@ class GenerateImageEntityCommand extends GeneratorCommand
         $questionHelper->writeSection($output, 'Welcome to the Image entity generator');
 
         // Get the Bundle to generate it in
+        $line = sprintf(
+            'This command will generate a doctrine image entity class %s, in %s',
+            $this->entityName,
+            $this->bundle
+        );
         $output->writeln(
             [
-                'This command helps you generate a doctrine image entity class',
-                '',
-                'First, give the name of the bundle to generate the image in (eg <comment>AppBundle</comment>)',
+                $line
+                //'',
+                // 'First, give the name of the bundle to generate the image in (eg <comment>AppBundle</comment>)',
             ]
         );
 
-        $question = new Question(
-            $questionHelper->getQuestion('The bundle name', $input->getOption('bundle')),
-            $input->getOption('bundle')
-        );
+        // $question = new Question(
+        //     $questionHelper->getQuestion('The bundle name', $input->getOption('bundle')),
+        //     $input->getOption('bundle')
+        // );
 
-        $question->setValidator(['Sensio\Bundle\GeneratorBundle\Command\Validators', 'validateBundleName']);
-        $question->setNormalizer(
-            function ($value) {
-                return $value ? trim($value) : '';
-            }
-        );
-        $question->setMaxAttempts(2);
-
-        $bundle = $questionHelper->ask($input, $output, $question);
-        $input->setOption('bundle', $bundle);
-
-        // Get the Bundle to generate it in
-        $output->writeln(
-            [
-                '',
-                'Now, give the name of the new entity class (eg <comment>Image</comment>)',
-            ]
-        );
-
-        // Get the new class name and validate it.
-        $question = new Question(
-            $questionHelper->getQuestion('The entity name', $input->getOption('entity_name')),
-            $input->getOption('entity_name')
-        );
-        $question->setValidator(
-            function ($answer) {
-                // Should only contain letters.
-                $valid = preg_match('/^[a-zA-Z]+$/', $answer);
-                if (!$valid) {
-                    throw new \RuntimeException(
-                        'The class name should only contain letters'
-                    );
-                }
-
-                return $answer;
-            }
-        );
-        $question->setNormalizer(
-            function ($value) {
-                return $value ? trim($value) : '';
-            }
-        );
-
-        $notificationName = $questionHelper->ask($input, $output, $question);
-        $input->setOption('entity_name', $notificationName);
+        // $question->setValidator(['Sensio\Bundle\GeneratorBundle\Command\Validators', 'validateBundleName']);
+        // $question->setNormalizer(
+        //     function ($value) {
+        //         return $value ? trim($value) : '';
+        //     }
+        // );
+        // $question->setMaxAttempts(2);
+        //
+        // $bundle = $questionHelper->ask($input, $output, $question);
+        // $input->setOption('bundle', $bundle);
+        //
+        // // Get the Bundle to generate it in
+        // $output->writeln(
+        //     [
+        //         '',
+        //         'Now, give the name of the new entity class (eg <comment>Image</comment>)',
+        //     ]
+        // );
+        //
+        // // Get the new class name and validate it.
+        // $question = new Question(
+        //     $questionHelper->getQuestion('The entity name', $input->getOption('entity_name')),
+        //     $input->getOption('entity_name')
+        // );
+        // $question->setValidator(
+        //     function ($answer) {
+        //         // Should only contain letters.
+        //         $valid = preg_match('/^[a-zA-Z]+$/', $answer);
+        //         if (!$valid) {
+        //             throw new \RuntimeException(
+        //                 'The class name should only contain letters'
+        //             );
+        //         }
+        //
+        //         return $answer;
+        //     }
+        // );
+        // $question->setNormalizer(
+        //     function ($value) {
+        //         return $value ? trim($value) : '';
+        //     }
+        // );
+        //
+        // $notificationName = $questionHelper->ask($input, $output, $question);
+        // $input->setOption('entity_name', $notificationName);
     }
 
     /**
@@ -137,8 +161,8 @@ class GenerateImageEntityCommand extends GeneratorCommand
 
         $style = new SymfonyStyle($input, $output);
 
-        $bundle = $input->getOption('bundle');
-        $name   = $input->getOption('entity_name');
+        $bundle = $this->bundle;
+        $name   = $this->entityName;
 
         $style->text('Generating New doctrine entity class ' . $name . ' generated in ' . $bundle);
 

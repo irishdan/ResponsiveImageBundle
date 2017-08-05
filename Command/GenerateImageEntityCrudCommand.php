@@ -34,6 +34,9 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
 
     protected function configure()
     {
+        // @TODO: This needs to limit CRUD generation to the single entity defined in configuration
+        // perhaps check the entities which implement the interface??
+
         $this
             ->setName('responsive_image:generate:crud')
             ->setDescription('Generates the CRUD for responsive image entity')

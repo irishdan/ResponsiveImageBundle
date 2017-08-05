@@ -6,6 +6,7 @@
 # For more information about filesystems and there configuration
 # see https://github.com/1up-lab/OneupFlysystemBundle and https://flysystem.thephpleague.com/
 #
+#
 oneup_flysystem:
 #
 # To create a filesystem, first you need to define an adapter.
@@ -21,7 +22,7 @@ oneup_flysystem:
         responsive_image.local:
             local:
                 directory: '%kernel.root_dir%/../web/%responsive_image.image_directory%' # %kernel.root_dir%/cache/
-        responsive_image.temp: # Is this needed?
+        responsive_image.temp: # Is the temporary filesystem needed?
             local:
                 directory: '%kernel.root_dir%/../var/cache/resp_img'
 #

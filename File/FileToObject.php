@@ -35,7 +35,9 @@ class FileToObject
      */
     public function __construct(EntityManagerInterface $manager, $entityClassName)
     {
-        $this->manager         = $manager;
+        $this->manager = $manager;
+
+        // @TODO: Is it possible to to infer the entity based on interface implementation??
         $this->entityClassName = $entityClassName;
     }
 

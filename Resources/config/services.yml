@@ -1,3 +1,6 @@
+#
+# This is the default configuration for this bundle.
+#
 services:
     responsive_image:
         class: IrishDan\ResponsiveImageBundle\ResponsiveImageManager
@@ -27,7 +30,18 @@ services:
         class: IrishDan\ResponsiveImageBundle\File\FileToObject
         arguments: [ '@doctrine.orm.entity_manager', '%responsive_image.entity_class%' ]
 
+    # Responsive image locator
+    responsive_image.image_class_locator:
+        class: IrishDan\ResponsiveImageBundle\ImageEntityClassLocator
+        arguments: ['%kernel.bundles%','@file_locator']
+
     # Command
+    responsive_image.command.generate_entity:
+            class: IrishDan\ResponsiveImageBundle\Command\GenerateImageEntityCommand
+            arguments: [ '%responsive_image.entity_class%' ]
+            tags:
+                - { name: console.command }
+
     responsive_image.command.generate_crud:
         class: IrishDan\ResponsiveImageBundle\Command\GenerateImageEntityCrudCommand
         # parent: Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand
