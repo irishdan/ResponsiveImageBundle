@@ -30,7 +30,7 @@ ResponsiveImageBundle adds the ability to easily created styled responsive image
 
 Out of the box, ResponsiveImage bundle should work with minimal configuration.
 
-### Step 1: Download, enable the bundle and import its services.
+### Step 1: Download, enable the bundle and import its services and configuration
 
 Download with composer
 ```
@@ -49,15 +49,27 @@ public function registerBundles()
         new Oneup\FlysystemBundle\OneupFlysystemBundle(),
     );
 }
-
 ```
-Import responsive image services
+
+### Step 2: Import its services, default configuration and the local image routing
+
+Import responsive image services, default and filesystem configuration.
 ```
 imports:
     - { resource: "@ResponsiveImageBundle/Resources/config/services.yml" }
+    - { resource: "@ResponsiveImageBundle/Resources/config/config.responsive_image_defaults.yml" }
+    - { resource: "@ResponsiveImageBundle/Resources/config/config.responsive_image_filesystem.yml" }
 ```
 
-### Step 2: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/commands.md) a [ResponsiveImage entity](Resources/doc/entities.md) and it's CRUD.
+Import the routing for local on the fly image generation.
+
+```yml
+responsive_image:
+    resource: "@ResponsiveImageBundle/Resources/config/routing.yml"
+    prefix:   /
+```
+
+### Step 3: [Install](Resources/doc/installation.md) the bundle and [generate](Resources/doc/commands.md) a [ResponsiveImage entity](Resources/doc/entities.md) and it's CRUD.
 
 ```php
 php bin/console responsive_image:generate:entity
@@ -65,7 +77,7 @@ php bin/console responsive_image:generate:crud
 ```
 With the generated image [entity](Resources/doc/entities.md) and CRUD you can now, create and [upload](Resources/doc/uploading.md) images, apply '[art direction](Resources/doc/art-direction.md)' to images.
 
-### Step 3: Define some image styles in your [configuration](Resources/doc/configuration.md) file. (Usually config.yml)
+### Step 4: Define some image styles in your [configuration](Resources/doc/configuration.md) file. (Usually config.yml)
 
 ```yml
 responsive_image:
@@ -92,7 +104,7 @@ You can now [render](Resources/doc/rendering.md) a styled in your twig template 
     {{ styled_image(image, 'groovy_thumbnail_style') }}
 
  ```
-### Step 4: Define some breakpoints and "picture sets"
+### Step 5: Define some breakpoints and "picture sets"
 
 ```yml
 breakpoints:
@@ -121,7 +133,7 @@ You can now render [responsive <picture> images](Resources/doc/rendering.md) usi
 </body>
 ```
 
-### Step 5: Define some size sets
+### Step 6: Define some size sets
 
 ```yml
 responsive_image:

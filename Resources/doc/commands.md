@@ -1,7 +1,7 @@
 # Commands
 
 The bundle includes two commands to help you get started. 
-Both commands require the symfony generator bundle to be enabled.
+Both commands require the [symfony generator bundle](http://symfony.com/doc/master/bundles/SensioGeneratorBundle/index.html) to be enabled.
 
 ## Generate Image entity
 
