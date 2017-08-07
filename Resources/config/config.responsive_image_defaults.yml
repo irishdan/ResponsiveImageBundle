@@ -4,7 +4,7 @@
 responsive_image:
     cache_bust: true
     image_compression: 90
-    image_entity_class: 'AppBundle\Entity\ResponsiveImage'
+    # image_entity_class: 'AppBundle\Entity\ResponsiveImage'
     image_directory: 'test/images'
     image_driver: 'gd'
     image_styles_directory: 'styles'

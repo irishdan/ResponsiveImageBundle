@@ -14,7 +14,6 @@ use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvent;
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvents;
 use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
 use League\Flysystem\FilesystemInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -32,26 +31,17 @@ class StyledImagesSubscriber implements EventSubscriberInterface
      * @var FilesystemInterface|null
      */
     private $primaryFileSystem;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * StyledImagesSubscriber constructor.
      *
      * @param PrimaryFileSystemWrapper $PrimaryFileSystemWrapper
      * @param FilesystemInterface|null $temporaryFileSystem
-     * @param LoggerInterface|null     $logger
      */
-    public function __construct(
-        PrimaryFileSystemWrapper $PrimaryFileSystemWrapper,
-        FilesystemInterface $temporaryFileSystem = null,
-        LoggerInterface $logger = null
-    ) {
+    public function __construct(PrimaryFileSystemWrapper $PrimaryFileSystemWrapper, FilesystemInterface $temporaryFileSystem = null)
+    {
         $this->temporaryFileSystem = $temporaryFileSystem;
         $this->primaryFileSystem   = $PrimaryFileSystemWrapper->getFileSystem();
-        $this->logger              = $logger;
     }
 
     /**
@@ -81,8 +71,6 @@ class StyledImagesSubscriber implements EventSubscriberInterface
 
             $this->temporaryFileSystem->delete($relativePath);
         }
-
-        $this->logger->critical('StyledImages subscriber generated');
     }
 
     /**
@@ -90,7 +78,6 @@ class StyledImagesSubscriber implements EventSubscriberInterface
      */
     public function onImagesDeleted(StyledImagesEvent $event)
     {
-        // @TODO: Do we need this
-        $this->logger->critical('StyledImages subscriber deleted');
+        // @TODO: Implement.
     }
 }

@@ -11,6 +11,7 @@
 namespace IrishDan\ResponsiveImageBundle\Command;
 
 use IrishDan\ResponsiveImageBundle\Generator\ImageEntityGenerator;
+use IrishDan\ResponsiveImageBundle\ImageEntityNameResolver;
 use Sensio\Bundle\GeneratorBundle\Command\GeneratorCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -31,15 +32,12 @@ class GenerateImageEntityCommand extends GeneratorCommand
     protected $bundle = 'AppBundle';
     protected $entityName = 'Image';
 
-    /**
-     * GenerateImageEntityCommand constructor.
-     */
-    public function __construct($responsiveImageEntity)
+    public function __construct(ImageEntityNameResolver $entityNameResolver)
     {
         parent::__construct();
 
-        $this->responsiveImageEntity = $responsiveImageEntity;
-        var_dump($responsiveImageEntity);
+        $this->responsiveImageEntity = $entityNameResolver->getClassName();
+        var_dump($this->responsiveImageEntity);
     }
 
     protected function configure()

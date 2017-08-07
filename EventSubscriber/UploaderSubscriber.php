@@ -24,10 +24,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class UploaderSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
      * @var FilesystemInterface
      */
     private $fileSystem;
@@ -35,12 +31,10 @@ class UploaderSubscriber implements EventSubscriberInterface
     /**
      * UploaderSubscriber constructor.
      *
-     * @param LoggerInterface     $logger
      * @param FilesystemInterface $fileSystem
      */
-    public function __construct(LoggerInterface $logger, FilesystemInterface $fileSystem)
+    public function __construct(FilesystemInterface $fileSystem)
     {
-        $this->logger     = $logger;
         $this->fileSystem = $fileSystem;
     }
 
@@ -60,8 +54,7 @@ class UploaderSubscriber implements EventSubscriberInterface
      */
     public function onPreUpload(UploaderEvent $event)
     {
-        $this->logger->critical('Pre upload fired');
-        // @TODO: POC: this is how we can swap filesystems per applications
+        // This is how we can swap filesystems.
         $uploader = $event->getUploader();
 
         if (empty($uploader->getFileSystem())) {
@@ -74,6 +67,6 @@ class UploaderSubscriber implements EventSubscriberInterface
      */
     public function onUploaded(UploaderEvent $event)
     {
-        $this->logger->critical('Uploaded fired');
+        // @TODO: Implement
     }
 }

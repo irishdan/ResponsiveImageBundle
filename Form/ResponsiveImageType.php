@@ -10,6 +10,7 @@
 
 namespace IrishDan\ResponsiveImageBundle\Form;
 
+use IrishDan\ResponsiveImageBundle\ImageEntityNameResolver;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,9 +27,9 @@ class ResponsiveImageType extends AbstractType
 {
     private $responsiveImageEntityName;
 
-    public function __construct($responsiveImageEntityName)
+    public function __construct(ImageEntityNameResolver $entityNameResolver)
     {
-        $this->responsiveImageEntityName = $responsiveImageEntityName;
+        $this->responsiveImageEntityName = $entityNameResolver->getClassName();
     }
 
     /**
@@ -39,8 +40,7 @@ class ResponsiveImageType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('alt')
-        ;
+            ->add('alt');
 
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,

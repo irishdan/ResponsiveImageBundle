@@ -25,10 +25,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ImageSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
      * @var ImageManager
      */
     private $imageManager;
@@ -36,13 +32,11 @@ class ImageSubscriber implements EventSubscriberInterface
     /**
      * ImageSubscriber constructor.
      *
-     * @param ImageManager         $imageManager
-     * @param LoggerInterface|null $logger
+     * @param ImageManager $imageManager
      */
-    public function __construct(ImageManager $imageManager, LoggerInterface $logger = null)
+    public function __construct(ImageManager $imageManager)
     {
         $this->imageManager = $imageManager;
-        $this->logger       = $logger;
     }
 
     /**
@@ -65,10 +59,6 @@ class ImageSubscriber implements EventSubscriberInterface
         // Generate all styled images.
         $image = $event->getImage();
         $this->imageManager->createAllStyledImages($image);
-
-        if (!empty($this->logger)) {
-            $this->logger->debug('Image ' . $image->getId() . ' onImageCreated called');
-        }
     }
 
     /**
@@ -80,10 +70,6 @@ class ImageSubscriber implements EventSubscriberInterface
         // @TODO: Check for updated fields possible?? (crop focus, path or file)
         $image = $event->getImage();
         $this->imageManager->createAllStyledImages($image);
-
-        if (!empty($this->logger)) {
-            $this->logger->debug('Image ' . $image->getId() . ' onImageUpdated called');
-        }
     }
 
     /**
@@ -94,9 +80,5 @@ class ImageSubscriber implements EventSubscriberInterface
         // Delete all styled images
         $image = $event->getImage();
         $this->imageManager->deleteAllImages($image);
-
-        if (!empty($this->logger)) {
-            $this->logger->debug('Image ' . $image->getId() . ' onImageDeleted called');
-        }
     }
 }

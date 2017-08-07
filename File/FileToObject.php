@@ -12,6 +12,7 @@ namespace IrishDan\ResponsiveImageBundle\File;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use IrishDan\ResponsiveImageBundle\ImageEntityNameResolver;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageRepositoryInterface;
 
 /**
@@ -27,17 +28,11 @@ class FileToObject
     private $manager;
     private $entityClassName;
 
-    /**
-     * FileToObject constructor.
-     *
-     * @param EntityManager $manager
-     * @param               $entityClassName
-     */
-    public function __construct(EntityManagerInterface $manager, $entityClassName)
+    public function __construct(EntityManagerInterface $manager, ImageEntityNameResolver $nameResolver)
     {
         $this->manager = $manager;
 
-        // @TODO: Is it possible to to infer the entity based on interface implementation??
+        $entityClassName       = $nameResolver->getClassName();
         $this->entityClassName = $entityClassName;
     }
 

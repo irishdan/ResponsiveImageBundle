@@ -119,8 +119,8 @@ class UrlBuilder
             return $this->formatAsUrl($this->config['default_url'], $relativeFilePath);
         }
 
-        // If all of the above methods fail just return path.
-        // perhaps is being generated elsewhere.
+        // If all of the above methods fail just return the path.
+        // perhaps it being generated elsewhere!!
 
         return $relativeFilePath;
     }

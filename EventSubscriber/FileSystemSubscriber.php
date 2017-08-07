@@ -12,7 +12,6 @@ namespace IrishDan\ResponsiveImageBundle\EventSubscriber;
 
 use IrishDan\ResponsiveImageBundle\Event\FileSystemEvent;
 use IrishDan\ResponsiveImageBundle\Event\FileSystemEvents;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -22,21 +21,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class FileSystemSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * FileSystemSubscriber constructor.
-     *
-     * @param LoggerInterface|null $logger
-     */
-    public function __construct(LoggerInterface $logger = null)
-    {
-        $this->logger = $logger;
-    }
-
     /**
      * @return array
      */
@@ -49,20 +33,18 @@ class FileSystemSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param FileSystemEvent $event
+     * @param FileSystemEvent $fileSystemEvent
      */
-    public function onFileSystemSet(FileSystemEvent $event)
+    public function onFileSystemSet(FileSystemEvent $fileSystemEvent)
     {
-        if ($this->logger) {
-            $this->logger->info('File System subscriber onFileSystemSet');
-        }
+        // @TODO: Implement
     }
 
     /**
-     * @param FileSystemEvent $event
+     * @param FileSystemEvent $fileSystemEvent
      */
-    public function onFileSystemGet(FileSystemEvent $event)
+    public function onFileSystemGet(FileSystemEvent $fileSystemEvent)
     {
-        $this->logger->info('File System subscriber onFileSystemSet');
+        // @TODO: Implement
     }
 }

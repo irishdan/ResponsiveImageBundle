@@ -21,6 +21,7 @@ class ImageEntityClassLocator
     public function __construct($bundles, FileLocator $fileLocator)
     {
         // @TODO: Perhaps use image entity parameter if its set just return that.
+        // @TODO: 
 
         $this->fileLocator = $fileLocator;
 
