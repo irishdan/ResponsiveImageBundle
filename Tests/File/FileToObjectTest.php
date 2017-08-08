@@ -13,6 +13,7 @@ namespace IrishDan\ResponsiveImageBundle\Tests\File;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use IrishDan\ResponsiveImageBundle\File\FileToObject;
+use IrishDan\ResponsiveImageBundle\ImageEntityNameResolver;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageRepositoryInterface;
 use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
@@ -51,8 +52,16 @@ class FileToObjectTest extends \PHPUnit_Framework_TestCase
                       ->method('getRepository')
                       ->will($this->returnValue($imageRepository));
 
+        // The mock the ImageEntityName
+        $nameResolver = $this->getMockBuilder(ImageEntityNameResolver::class)
+                             ->disableOriginalConstructor()
+                             ->getMock();
 
-        $fileToObject = new FileToObject($entityManager, 'ResponsiveImage');
+        $nameResolver->expects($this->once())
+                     ->method('getClassName')
+                     ->will($this->returnValue('ResponsiveImage'));
+
+        $fileToObject = new FileToObject($entityManager, $nameResolver);
 
         // test with non-existing filename.
         $image = $fileToObject->getObjectFromFilename('not-here.jpg');

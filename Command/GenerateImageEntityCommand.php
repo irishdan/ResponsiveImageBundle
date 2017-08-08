@@ -37,7 +37,6 @@ class GenerateImageEntityCommand extends GeneratorCommand
         parent::__construct();
 
         $this->responsiveImageEntity = $entityNameResolver->getClassName();
-        var_dump($this->responsiveImageEntity);
     }
 
     protected function configure()

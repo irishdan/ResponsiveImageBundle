@@ -115,7 +115,6 @@ EOT
 
             // @TODO: Switch to this bundles skeleton directory.
             $skeletonDirectory = $this->getSkeletonDirs($bundle);
-            var_dump($skeletonDirectory);
             $this->formGenerator->setSkeletonDirs($skeletonDirectory);
         }
 
