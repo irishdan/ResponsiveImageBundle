@@ -57,6 +57,7 @@ services:
 # editing images correctly.
     responsive_image.command.generate_crud:
         class: IrishDan\ResponsiveImageBundle\Command\GenerateImageEntityCrudCommand
+        arguments: [ '@responsive_image.class_locator' ]
         # parent: Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand
         tags:
             - { name: console.command }

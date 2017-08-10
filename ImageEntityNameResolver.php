@@ -32,11 +32,12 @@ class ImageEntityNameResolver
      */
     public function getClassName()
     {
+        // If it's set here just return that.
         if (!empty($this->className)) {
             return $this->className;
         }
 
-        // Use class name if its been set
+        // Use class name parameter if its been set
         if (empty($this->className)) {
             if (!empty($imageEntityParameter)) {
                 $this->className = $imageEntityParameter;
@@ -45,20 +46,31 @@ class ImageEntityNameResolver
             }
         }
 
-        // Use the cached value.
+        // Load it from cached data if it exists
+        // as a last resort use the Class locator service.
         if (empty($this->cache)) {
             $this->cache = new FilesystemCache();
         }
-        if (!$this->cache->has(self::CACHE_KEY)) {
-            $classname = $this->classLocator->getClassName();
-            $this->cache->set(self::CACHE_KEY, $classname);
-        }
-        else {
+
+        $cached = $this->cache->has(self::CACHE_KEY);
+        if ($cached) {
             $classname = $this->cache->get(self::CACHE_KEY);
         }
 
+        // LAt resort use the Class locator service
+        if (empty($classname)) {
+            $classname = $this->classLocator->getClassName();
+        }
+
+        // Set the value in as a property in this class
+        // and set as a cached value for next time.
         if (!empty($classname)) {
             $this->className = $classname;
+
+            if (!$cached) {
+                // @TODO: Should set cache expiration
+                $this->cache->set(self::CACHE_KEY, $classname);
+            }
 
             return $this->className;
         }

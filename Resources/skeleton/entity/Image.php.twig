@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @package {{ namespace }}\Entity
  * @ORM\Table(name="{{ table }}")
- * @ORM\Entity(repositoryClass="ResponsiveImageBundle\Repository\ImageRepository")
+ * @ORM\Entity(repositoryClass="IrishDan\ResponsiveImageBundle\Repository\ImageRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class {{ class_name }} implements ResponsiveImageInterface
@@ -28,59 +28,44 @@ class {{ class_name }} implements ResponsiveImageInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
      */
     private $title;
-
     /**
      * @var string
      *
      * @ORM\Column(name="alt", type="string", length=255, nullable=true)
      */
     private $alt;
-
     /**
      * @ORM\Column(name="width", type="integer", nullable=true)
      */
     private $width;
-
     /**
      * @ORM\Column(name="height", type="integer", nullable=true)
      */
     private $height;
-
     /**
      * @var string
      *
      * @ORM\Column(name="path", type="string", length=255, unique=true)
      */
     private $path;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="weight", type="integer", nullable=true)
-     */
-    private $weight;
-
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="created", type="datetime")
      */
     private $created;
-
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="updated", type="datetime")
      */
     private $updated;
-
     /**
      * @var string
      *
@@ -88,20 +73,8 @@ class {{ class_name }} implements ResponsiveImageInterface
      */
     private $cropCoordinates;
 
-    /**
-     * @Assert\File(maxSize="6000000")
-     */
     private $file;
-
-    /**
-     * @var null
-     */
-    private $style = null;
-
-    /**
-     * @var null
-     */
-    public $picture = null;
+    private $src;
 
     public function getId()
     {
@@ -128,16 +101,6 @@ class {{ class_name }} implements ResponsiveImageInterface
         $this->title = $title;
     }
 
-    public function getStyleData()
-    {
-        return $this->style;
-    }
-
-    public function setStyle($style)
-    {
-        $this->style = $style;
-    }
-
     public function getAlt()
     {
         return $this->alt;
@@ -146,16 +109,6 @@ class {{ class_name }} implements ResponsiveImageInterface
     public function setAlt($alt)
     {
         $this->alt = $alt;
-    }
-
-    public function getPicture()
-    {
-        return $this->picture;
-    }
-
-    public function setPicture($picture)
-    {
-        return $this->picture;
     }
 
     public function getWidth()
@@ -196,6 +149,48 @@ class {{ class_name }} implements ResponsiveImageInterface
     public function getFile()
     {
         return $this->file;
+    }
+
+    public function setSrc($src)
+    {
+        $this->src = $src;
+    }
+
+    public function getSrc()
+    {
+        return $this->src;
+    }
+
+    /**
+    * @return \DateTime
+    */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+    * @param \DateTime $created
+    */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+    }
+
+    /**
+    * @return \DateTime
+    */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+    * @param \DateTime $updated
+    */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
     }
 {% endblock class_body %}
 }

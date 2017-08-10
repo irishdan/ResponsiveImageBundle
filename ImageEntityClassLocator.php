@@ -20,14 +20,9 @@ class ImageEntityClassLocator
 
     public function __construct($bundles, FileLocator $fileLocator)
     {
-        // @TODO: Perhaps use image entity parameter if its set just return that.
-        // @TODO: 
-
         $this->fileLocator = $fileLocator;
 
         // The aim is to find entity class which implements ResponsiveImageInterface
-
-        // If doctrine enabled, use declared entities
 
         // Scan Bundle directories for entity directory
         if (empty($this->className)) {
