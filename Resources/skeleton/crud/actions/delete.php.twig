@@ -23,6 +23,10 @@
             $em = $this->getDoctrine()->getManager();
             $em->remove(${{ entity_singularized }});
             $em->flush();
+
+            // Dispatch events to remove styled images.
+            $imageEvent = new ImageEvent();
+            $this->get('event_dispatcher')->dispatch(ImageEvents::IMAGE_DELETED, $imageEvent);
         }
 {% endblock method_body %}
 

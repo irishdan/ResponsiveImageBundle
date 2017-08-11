@@ -17,17 +17,23 @@
     {
 {% block method_body %}
         ${{ entity_singularized }} = new {{ entity_singularized|capitalize }}();
-        {% if use_form_type_instance -%}
-            $form = $this->createForm(new {{ entity_singularized|capitalize }}Type(), ${{ entity_singularized }});
-        {% else -%}
-            $form = $this->createForm('{{ namespace }}\Form\{{ entity }}Type', ${{ entity_singularized }});
-        {% endif -%}
+
+        // The form is provided by the ResponsiveImage bundle
+        $form = $this->createForm(ResponsiveImageType::class, $responsiveImage);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Upload the field to the primary filesystem
+            $this->get('responsive_image.uploader')->upload($responsiveImage);
+
             $em = $this->getDoctrine()->getManager();
             $em->persist(${{ entity_singularized }});
             $em->flush();
+
+            // Dispatch events to create styled images.
+            $imageEvent = new ImageEvent();
+            $this->get('event_dispatcher')->dispatch(ImageEvents::IMAGE_CREATED, $imageEvent);
 
             {% if 'show' in actions -%}
                 return $this->redirectToRoute('{{ route_name_prefix }}_show', array('{{ identifier }}' => ${{ entity_singularized }}->get{{ identifier|capitalize }}()));

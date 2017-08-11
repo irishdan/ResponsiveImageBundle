@@ -17,15 +17,17 @@
     {
 {% block method_body %}
         $deleteForm = $this->createDeleteForm(${{ entity_singularized }});
-        {% if use_form_type_instance -%}
-            $editForm = $this->createForm(new {{ entity_singularized|capitalize }}Type(), ${{ entity_singularized }});
-        {% else -%}
-            $editForm = $this->createForm('{{ namespace }}\Form\{{ entity }}Type', ${{ entity_singularized }});
-        {% endif -%}
+
+        // Use ResponsiveImage FormType supplied by ResponsiveImage Bundle
+        $editForm = $this->createForm( ResponsiveImageType::class, $responsiveImage);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
+
+            // Dispatch events to create styled images.
+            $imageEvent = new ImageEvent();
+            $this->get('event_dispatcher')->dispatch(ImageEvents::IMAGE_UPDATED, $imageEvent);
 
             return $this->redirectToRoute('{{ route_name_prefix }}_edit', array('{{ identifier }}' => ${{ entity_singularized }}->get{{ identifier|capitalize }}()));
         }
