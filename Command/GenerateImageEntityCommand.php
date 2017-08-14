@@ -31,10 +31,13 @@ class GenerateImageEntityCommand extends GeneratorCommand
     protected $responsiveImageEntity;
     protected $bundle = 'AppBundle';
     protected $entityName = 'Image';
+    protected $doctrine;
 
-    public function __construct(ImageEntityNameResolver $entityNameResolver)
+    public function __construct(ImageEntityNameResolver $entityNameResolver, $doctrine)
     {
         parent::__construct();
+
+        $this->doctrine = $doctrine;
 
         $this->responsiveImageEntity = $entityNameResolver->getClassName();
     }
@@ -56,19 +59,9 @@ class GenerateImageEntityCommand extends GeneratorCommand
 
         $this
             ->setName('responsive_image:generate:entity')
-            ->setDescription('Creates the ResponsiveImage entity, ' . $this->responsiveImageEntity);
+            ->setDescription('Creates the Responsive Image entity, ' . $this->responsiveImageEntity);
 
-        if ($this->imageEntityExists()) {
-            // $this
-            //     ->setDefinition(
-            //         [
-            //             new InputOption(
-            //                 'override', '', InputOption::VALUE_REQUIRED, 'Override if entity already exists'
-            //             ),
-            //         ]
-            //     );
-        }
-        else {
+        if (!$this->imageEntityExists()) {
             $this
                 ->setDefinition(
                     [

@@ -10,18 +10,9 @@
 
 namespace IrishDan\ResponsiveImageBundle\Command;
 
-use IrishDan\ResponsiveImageBundle\Generator\ImageEntityGenerator;
 use IrishDan\ResponsiveImageBundle\ImageEntityClassLocator;
-use IrishDan\ResponsiveImageBundle\ImageEntityNameResolver;
-use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCommand;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand;
-use Sensio\Bundle\GeneratorBundle\Command\GeneratorCommand;
 use Sensio\Bundle\GeneratorBundle\Command\Validators;
-use Sensio\Bundle\GeneratorBundle\Generator\DoctrineCrudGenerator;
-use Sensio\Bundle\GeneratorBundle\Generator\DoctrineFormGenerator;
-use Sensio\Bundle\GeneratorBundle\Manipulator\RoutingManipulator;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,24 +32,50 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
     protected $imageEntityShorthand;
     protected $entityName;
     protected $bundle;
+    protected $doctrine;
+    protected $entityShortNotation;
+    protected $metaData;
 
-    public function __construct(ImageEntityClassLocator $entityClassFinder)
+    public function __construct(ImageEntityClassLocator $entityClassFinder, $doctrine)
     {
         parent::__construct();
 
         $this->responsiveImageEntity = $entityClassFinder->getClassName();
+        $this->doctrine              = $doctrine;
+        $em                          = $this->doctrine->getManager();
 
-        if (!empty($this->responsiveImageEntity)) {
-            // @TODO: fix for all bundles
-            $this->bundle = explode('\\', $this->responsiveImageEntity)[0];
-            $this->entityName = explode('\\', $this->responsiveImageEntity)[2];
+        try {
+            $this->metadata = $em->getClassMetadata($this->responsiveImageEntity);;
+        } catch (\Exception $e) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Entity "%s" does not exist. Create it with the "doctrine:generate:entity" command and then execute this command again.',
+                    $this->responsiveImageEntity
+                )
+            );
         }
+
+        $namespace = $this->metadata->namespace;
+
+        // This is bit hacky but it'll do for now.
+        // Lets get rid of the '\Entity'.
+        if (strpos($namespace, '\\Entity') > 0) {
+            $namespace = substr($namespace, 0, -7);
+        }
+
+        $namespaceParts            = explode('\\', $namespace);
+        $this->bundle              = array_pop($namespaceParts);
+        $entityNameParts           = explode('\\', $this->responsiveImageEntity);
+        $this->entityName          = array_pop($entityNameParts);
+        $this->entityShortNotation = $this->bundle . ':' . $this->entityName;
+
+        var_dump($this->doctrine->getAliasNamespace($this->bundle));
+        var_dump($this->entityShortNotation);
     }
 
     protected function configure()
     {
-        // @TODO: This needs to limit CRUD generation to the single entity defined in configuration
-        // perhaps check the entities which implement the interface??
+        // This limits CRUD generation to the single entity defined in configuration
 
         $this
             ->setName('responsive_image:generate:crud')
@@ -66,8 +83,19 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
             ->setDefinition(
                 [
                     new InputOption('route-prefix', '', InputOption::VALUE_REQUIRED, 'The route prefix'),
-                    new InputOption('format', '', InputOption::VALUE_REQUIRED, 'The format used for configuration files (php, xml, yml, or annotation)', 'annotation'),
-                    new InputOption('overwrite', '', InputOption::VALUE_NONE, 'Overwrite any existing controller or form class when generating the CRUD contents'),
+                    new InputOption(
+                        'format',
+                        '',
+                        InputOption::VALUE_REQUIRED,
+                        'The format used for configuration files (php, xml, yml, or annotation)',
+                        'annotation'
+                    ),
+                    new InputOption(
+                        'overwrite',
+                        '',
+                        InputOption::VALUE_NONE,
+                        'Overwrite any existing controller or form class when generating the CRUD contents'
+                    ),
                 ]
             );
     }
@@ -80,7 +108,8 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
         $questionHelper = $this->getQuestionHelper();
 
         if ($input->isInteractive()) {
-            $question = new ConfirmationQuestion($questionHelper->getQuestion('Do you confirm generation', 'yes', '?'),
+            $question = new ConfirmationQuestion(
+                $questionHelper->getQuestion('Do you confirm generation', 'yes', '?'),
                 true
             );
             if (!$questionHelper->ask($input, $output, $question)) {
@@ -90,30 +119,13 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
             }
         }
 
-        // @TODO:
-        $entity = Validators::validateEntityName($this->bundle . ':' . $this->entityName);
-        // list($bundle, $entity) = $this->parseShortcutNotation($entity);
+        $entity = Validators::validateEntityName($this->entityShortNotation);
         $bundle = $this->bundle;
 
         $format = Validators::validateFormat($input->getOption('format'));
         $prefix = $this->getRoutePrefix($input, $entity);
 
         $questionHelper->writeSection($output, 'CRUD generation');
-
-        try {
-            // @TODO:
-            $entityClass = $this->bundle . '\\Entity\\' . $this->entityName;
-            $metadata    = $this->getEntityMetadata($entityClass);
-        } catch (\Exception $e) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Entity "%s" does not exist in the "%s" bundle. Create it with the "doctrine:generate:entity" command and then execute this command again. OIOI',
-                    $entity,
-                    $bundle
-                )
-            );
-        }
-
         $bundle = $this->getContainer()->get('kernel')->getBundle($bundle);
 
         $generator = $this->getGenerator($bundle);
@@ -121,7 +133,7 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
         // $withWrite = true;
         // $forceOverwrite = true;
         // @TODO: Perhaps Don't force overwrite
-        $generator->generate($bundle, 'ResponsiveImage', $metadata[0], $format, $prefix, TRUE, TRUE);
+        $generator->generate($bundle, $this->entityName, $this->metadata[0], $format, $prefix, true, true);
 
         $output->writeln('Generating the CRUD code: <info>OK</info>');
 
