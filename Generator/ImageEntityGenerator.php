@@ -21,15 +21,17 @@ class ImageEntityGenerator extends Generator
 {
     /** @var Filesystem */
     private $filesystem;
+    private $overwrite;
 
     /**
      * NotificationGenerator constructor.
      *
      * @param Filesystem $filesystem
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, $overwrite = false)
     {
         $this->filesystem = $filesystem;
+        $this->overwrite  = $overwrite;
     }
 
     /**
@@ -49,7 +51,7 @@ class ImageEntityGenerator extends Generator
             'namespace'  => $bundle->getNamespace(),
             'class_name' => $imageClassName,
             'name'       => $name,
-            'table'      => strtolower($name), // @TODO: Use the tableize function
+            'table'      => strtolower($name), // @TODO: Use the tablize function
         ];
 
         // Build an array of files to be created
@@ -76,7 +78,7 @@ class ImageEntityGenerator extends Generator
 
         // Check that each file does not already exist
         foreach ($files as $file) {
-            if ($this->filesystem->exists($file[1])) {
+            if ($this->filesystem->exists($file[1]) && empty($this->overwrite)) {
                 throw new \RuntimeException(sprintf('"%s" already exists', $file[1]));
             }
         }

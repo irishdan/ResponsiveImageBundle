@@ -27,6 +27,14 @@ class ImageEntityNameResolver
         $this->imageEntityParameter = $imageEntityParameter;
     }
 
+    public function classExists()
+    {
+        $class        = $this->getClassName();
+        $locatedClass = $this->classLocator->getClassName();
+
+        return ($class === $locatedClass) ? true : false;
+    }
+
     /**
      * @return mixed
      */

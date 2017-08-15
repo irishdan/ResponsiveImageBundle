@@ -28,32 +28,31 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class GenerateImageEntityCommand extends GeneratorCommand
 {
+    protected $entityNameResolver;
     protected $responsiveImageEntity;
-    protected $bundle = 'AppBundle';
-    protected $entityName = 'Image';
+    protected $bundle;
+    protected $entityName;
     protected $doctrine;
+    protected $classExists;
+    protected $needsOverWritePermission = false;
+    protected $overwrite = false;
 
     public function __construct(ImageEntityNameResolver $entityNameResolver, $doctrine)
     {
-        parent::__construct();
-
-        $this->doctrine = $doctrine;
-
+        $this->entityNameResolver    = $entityNameResolver;
+        $this->doctrine              = $doctrine;
         $this->responsiveImageEntity = $entityNameResolver->getClassName();
-    }
+        $this->classExists           = $entityNameResolver->classExists();
 
-    private function imageEntityExists()
-    {
-        return !empty($this->responsiveImageEntity);
+        parent::__construct();
     }
 
     protected function configure()
     {
         // Limit generation to One entity for now!
-        // Either:
-        // - Check the image entity configuration, if its set, use that in the interaction validation
-        //   to limit
-        //   If its not set warn users that it needs to be set after the entity has been generated.
+        // We are checking two things:
+        // If entity class name is set
+        // If the class exists
 
         // @TODO: Would be good to ask for additional fields.
 
@@ -61,7 +60,8 @@ class GenerateImageEntityCommand extends GeneratorCommand
             ->setName('responsive_image:generate:entity')
             ->setDescription('Creates the Responsive Image entity, ' . $this->responsiveImageEntity);
 
-        if (!$this->imageEntityExists()) {
+        // If the Classname is not set we need to ask for it
+        if (empty($this->responsiveImageEntity)) {
             $this
                 ->setDefinition(
                     [
@@ -70,6 +70,38 @@ class GenerateImageEntityCommand extends GeneratorCommand
                     ]
                 );
         }
+        // The classname is set and and the entity already exists
+        elseif ($this->classExists) {
+            $this->needsOverWritePermission = true;
+
+            // Needs to have the entityName and bundle properties set
+            // @TODO:Is there a nicer way to do this?
+            $em        = $this->doctrine->getManager();
+            $metadata  = $em->getClassMetadata($this->responsiveImageEntity);
+            $namespace = $metadata->namespace;
+
+            // This is bit hacky but it'll do for now.
+            // Lets get rid of the '\Entity'.
+            if (strpos($namespace, '\\Entity') > 0) {
+                $namespace = substr($namespace, 0, -7);
+            }
+
+            $namespaceParts   = explode('\\', $namespace);
+            $this->bundle     = array_pop($namespaceParts);
+            $entityNameParts  = explode('\\', $this->responsiveImageEntity);
+            $this->entityName = array_pop($entityNameParts);
+
+            $this
+                ->setDefinition(
+                    [
+                        new InputOption(
+                            'overwrite', '', InputOption::VALUE_NONE, 'Overwrite the existing image entity'
+                        ),
+                    ]
+                );
+        }
+        // The classname is set but the entity does not exist.
+        // We don't need any options for this, simple generate based on the defined classname
     }
 
     /**
@@ -86,8 +118,9 @@ class GenerateImageEntityCommand extends GeneratorCommand
             '',
         ];
 
-        // Get the Bundle to generate it in
-        if ($this->imageEntityExists()) {
+        // If entity already exists,
+        // get overwrite permission
+        if ($this->needsOverWritePermission) {
             $message[] = sprintf('It looks like the image entity exists as %s', $this->responsiveImageEntity);
             $message[] = '';
             $message[] = sprintf(
@@ -95,20 +128,24 @@ class GenerateImageEntityCommand extends GeneratorCommand
                 $this->responsiveImageEntity
             );
 
-            $entityPart = explode('\\', $this->responsiveImageEntity);
+            $output->writeln($message);
 
-            // @TODO: Make sure to set this as a valid bundle
-            $this->bundle     = $entityPart[0];
-            $this->entityName = $entityPart[2];
+            // Ask whether overwrite is allowed
+            $question  = $this->createYesNoQuestion($questionHelper, $input, $this->responsiveImageEntity);
+            $overwrite = $questionHelper->ask($input, $output, $question);
+
+            if ($overwrite !== 'y') {
+                throw new \RuntimeException(
+                    'Aborting, overwrite permission is needed.'
+                );
+            }
+            else {
+                $this->overwrite = true;
+            }
         }
-        else {
-            $message[] = sprintf('If looks like there is no image entity.');
-        }
-
-
-        $output->writeln($message);
-
-        if (!$this->imageEntityExists()) {
+        // If class name is not set,
+        // Ask the bundle and the entity name questions
+        elseif (empty($this->responsiveImageEntity)) {
             $question = new Question(
                 $questionHelper->getQuestion('The bundle name', $input->getOption('bundle')),
                 $input->getOption('bundle')
@@ -160,6 +197,14 @@ class GenerateImageEntityCommand extends GeneratorCommand
             $notificationName = $questionHelper->ask($input, $output, $question);
             $input->setOption('entity_name', $notificationName);
         }
+        // Should be all ready to generate
+
+        // At the end we need the bundle and the entity
+        if (empty($this->entityName) || empty($this->bundle)) {
+            throw new \RuntimeException(
+                'Required options have not been set'
+            );
+        }
     }
 
     /**
@@ -210,7 +255,42 @@ class GenerateImageEntityCommand extends GeneratorCommand
     protected function createGenerator()
     {
         return new ImageEntityGenerator(
-            $this->getContainer()->get('filesystem')
+            $this->getContainer()->get('filesystem'),
+            $this->overwrite
         );
+    }
+
+    protected function createYesNoQuestion($questionHelper, $input, $entity)
+    {
+        $question = new Question(
+            $questionHelper->getQuestion(
+                'Overwrite the existing image entity ' . $entity . '? <comment>[yes]</comment>',
+                'overwrite'
+            ), 'yes'
+        );
+        $question->setNormalizer(
+            function ($value) {
+                return $value[0] == 'y' ? 'y' : 'n';
+            }
+        );
+        $question->setValidator(
+            function ($answer) {
+                // Should only contain letters.
+                $allowed = [
+                    'y',
+                    'n',
+                ];
+                $valid   = in_array($answer, $allowed);
+                if (!$valid) {
+                    throw new \RuntimeException(
+                        'Only allowed values are ' . implode(', ', $allowed)
+                    );
+                }
+
+                return $answer;
+            }
+        );
+
+        return $question;
     }
 }

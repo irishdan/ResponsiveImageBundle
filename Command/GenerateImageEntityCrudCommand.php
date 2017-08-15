@@ -45,7 +45,7 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
         $em                          = $this->doctrine->getManager();
 
         try {
-            $this->metadata = $em->getClassMetadata($this->responsiveImageEntity);;
+            $this->metadata = $em->getClassMetadata($this->responsiveImageEntity);
         } catch (\Exception $e) {
             throw new \RuntimeException(
                 sprintf(
@@ -68,9 +68,6 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
         $entityNameParts           = explode('\\', $this->responsiveImageEntity);
         $this->entityName          = array_pop($entityNameParts);
         $this->entityShortNotation = $this->bundle . ':' . $this->entityName;
-
-        var_dump($this->doctrine->getAliasNamespace($this->bundle));
-        var_dump($this->entityShortNotation);
     }
 
     protected function configure()
