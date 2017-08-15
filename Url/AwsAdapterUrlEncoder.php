@@ -31,10 +31,11 @@ class AwsAdapterUrlEncoder implements UrlEncoderInterface
     }
 
     /**
-     * @param            $data
+     * @param            $adapter
      * @param array|null $config
      *
      * @return string
+     * @internal param $data
      */
     public function getData($adapter, array $config = null)
     {

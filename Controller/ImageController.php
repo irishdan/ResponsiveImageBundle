@@ -11,7 +11,7 @@
 namespace IrishDan\ResponsiveImageBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -26,6 +26,8 @@ class ImageController extends Controller
      *
      * @param $stylename
      * @param $filename
+     *
+     * @return StreamedResponse
      */
     public function indexAction($stylename, $filename)
     {

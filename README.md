@@ -39,7 +39,6 @@ composer require irishdan/responsive-image-bundle
 ```
 Enable the bundle and OneupFlysystem in the kernel
 ```php
-<?php
 // app/AppKernel.php
 
 public function registerBundles()

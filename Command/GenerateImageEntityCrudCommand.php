@@ -34,7 +34,7 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
     protected $bundle;
     protected $doctrine;
     protected $entityShortNotation;
-    protected $metaData;
+    protected $metadata;
 
     public function __construct(ImageEntityClassLocator $entityClassFinder, $doctrine)
     {
@@ -99,6 +99,11 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
 
     /**
      * @see Command
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

@@ -39,6 +39,8 @@ class UrlBuilder
     private $adapterUrlMappings = [];
 
     /**
+     * @param string $adapterType
+     *
      * @return array
      */
     public function getAdapterUrlMappings($adapterType = '')
@@ -86,9 +88,10 @@ class UrlBuilder
 
     /**
      * @param        $relativeFilePath
-     * @param string $adapterUrlData
+     * @param array  $urlData
      *
      * @return string
+     * @internal param string $adapterUrlData
      */
     public function filePublicUrl($relativeFilePath, array $urlData = [])
     {
@@ -169,9 +172,9 @@ class UrlBuilder
     }
 
     /**
-     * @param array $data
-     *
      * @return string
+     * @internal param array $data
+     *
      */
     protected function getUrlFromFileSystem()
     {

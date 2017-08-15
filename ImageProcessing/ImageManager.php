@@ -25,6 +25,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class ImageManager
 {
+    /**
+     * @var StyleManager
+     */
     protected $styleManager;
     protected $ImageStyler;
     protected $fileSystem;
@@ -96,9 +99,6 @@ class ImageManager
             } catch (\Exception $e) {
                 // @TODO: Throw exception
             }
-        }
-        else {
-            // throw InvalidArgumentException::
         }
     }
 
