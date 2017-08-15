@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Config\FileLocator;
  *
  * The aim is to find entity class which implements ResponsiveImageInterface
  *
+ * @property array bundles
  * @package IrishDan\ResponsiveImageBundle
  */
 class ImageEntityClassLocator

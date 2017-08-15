@@ -13,7 +13,7 @@ namespace IrishDan\ResponsiveImageBundle\EventSubscriber;
 use IrishDan\ResponsiveImageBundle\Event\UploaderEvent;
 use IrishDan\ResponsiveImageBundle\Event\UploaderEvents;
 use League\Flysystem\FilesystemInterface;
-use Psr\Log\LoggerInterface;
+
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**

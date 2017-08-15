@@ -48,6 +48,7 @@ class Uploader implements UploaderInterface
      * @var FileValidatorInterface
      */
     protected $fileValidator;
+    protected $eventDispatcher;
 
     /**
      * Uploader constructor.

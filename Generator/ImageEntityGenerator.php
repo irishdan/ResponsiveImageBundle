@@ -27,6 +27,7 @@ class ImageEntityGenerator extends Generator
      * NotificationGenerator constructor.
      *
      * @param Filesystem $filesystem
+     * @param bool       $overwrite
      */
     public function __construct(Filesystem $filesystem, $overwrite = false)
     {

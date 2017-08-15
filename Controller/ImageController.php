@@ -11,7 +11,7 @@
 namespace IrishDan\ResponsiveImageBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -26,6 +26,8 @@ class ImageController extends Controller
      *
      * @param $stylename
      * @param $filename
+     *
+     * @return StreamedResponse
      */
     public function indexAction($stylename, $filename)
     {
@@ -35,9 +37,7 @@ class ImageController extends Controller
         }
 
         // Create image if the file exists.
-        // $imageEntityClass = $this->getParameter('responsive_image.entity_class');
         $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename);
-
         if (!empty($imageObject)) {
             $generatedImageArray = $this->get('responsive_image.image_manager')->createStyledImages(
                 $imageObject,

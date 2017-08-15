@@ -14,7 +14,7 @@ namespace IrishDan\ResponsiveImageBundle\EventSubscriber;
 use IrishDan\ResponsiveImageBundle\Event\ImageEvent;
 use IrishDan\ResponsiveImageBundle\Event\ImageEvents;
 use IrishDan\ResponsiveImageBundle\ImageProcessing\ImageManager;
-use Psr\Log\LoggerInterface;
+
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**

@@ -131,7 +131,7 @@ class GenerateImageEntityCommand extends GeneratorCommand
             $output->writeln($message);
 
             // Ask whether overwrite is allowed
-            $question  = $this->createYesNoQuestion($questionHelper, $input, $this->responsiveImageEntity);
+            $question  = $this->createYesNoQuestion($questionHelper, $this->responsiveImageEntity);
             $overwrite = $questionHelper->ask($input, $output, $question);
 
             if ($overwrite !== 'y') {
@@ -260,7 +260,7 @@ class GenerateImageEntityCommand extends GeneratorCommand
         );
     }
 
-    protected function createYesNoQuestion($questionHelper, $input, $entity)
+    protected function createYesNoQuestion($questionHelper, $entity)
     {
         $question = new Question(
             $questionHelper->getQuestion(

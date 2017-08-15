@@ -11,7 +11,7 @@
 namespace IrishDan\ResponsiveImageBundle\Tests\File;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
+
 use IrishDan\ResponsiveImageBundle\File\FileToObject;
 use IrishDan\ResponsiveImageBundle\ImageEntityNameResolver;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;

@@ -34,7 +34,7 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
     protected $bundle;
     protected $doctrine;
     protected $entityShortNotation;
-    protected $metaData;
+    protected $metadata;
 
     public function __construct(ImageEntityClassLocator $entityClassFinder, $doctrine)
     {
@@ -99,6 +99,11 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
 
     /**
      * @see Command
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -166,12 +171,11 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
             ]
         );
 
-        // list($bundle, $entity) = $this->parseShortcutNotation($entity);
         $entity = $this->entityName;
         $bundle = $this->bundle;
         try {
             $entityClass = $this->getContainer()->get('doctrine')->getAliasNamespace($bundle) . '\\' . $entity;
-            $metadata    = $this->getEntityMetadata($entityClass);
+            $this->getEntityMetadata($entityClass);
         } catch (\Exception $e) {
             throw new \RuntimeException(
                 sprintf(
