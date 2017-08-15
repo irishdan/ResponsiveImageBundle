@@ -46,12 +46,10 @@ class ImageEntityNameResolver
         }
 
         // Use class name parameter if its been set
-        if (empty($this->className)) {
-            if (!empty($imageEntityParameter)) {
-                $this->className = $imageEntityParameter;
+        if (!empty($this->imageEntityParameter)) {
+            $this->className = $this->imageEntityParameter;
 
-                return $this->className;
-            }
+            return $this->className;
         }
 
         // Load it from cached data if it exists
@@ -84,5 +82,10 @@ class ImageEntityNameResolver
         }
 
         return false;
+    }
+
+    public function getCache()
+    {
+        return $this->cache;
     }
 }
