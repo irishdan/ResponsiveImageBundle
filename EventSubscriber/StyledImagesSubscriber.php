@@ -67,7 +67,9 @@ class StyledImagesSubscriber implements EventSubscriberInterface
 
         foreach ($generatedImages as $style => $relativePath) {
             $contents = $this->temporaryFileSystem->read($relativePath);
-            $this->primaryFileSystem->put($relativePath, $contents);
+            if (!empty($contents)) {
+                $this->primaryFileSystem->put($relativePath, $contents);
+            }
 
             $this->temporaryFileSystem->delete($relativePath);
         }

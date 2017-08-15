@@ -110,10 +110,7 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
         $questionHelper = $this->getQuestionHelper();
 
         if ($input->isInteractive()) {
-            $question = new ConfirmationQuestion(
-                $questionHelper->getQuestion('Do you confirm generation', 'yes', '?'),
-                true
-            );
+            $question = new ConfirmationQuestion($questionHelper->getQuestion('Do you confirm generation', 'yes', '?'), true);
             if (!$questionHelper->ask($input, $output, $question)) {
                 $output->writeln('<error>Command aborted</error>');
 

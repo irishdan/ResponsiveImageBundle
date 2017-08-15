@@ -39,9 +39,7 @@ class AwsAdapterUrlEncoder implements UrlEncoderInterface
      */
     public function getData($adapter, array $config = null)
     {
-        $data = $this->getDataFromAdapter();
-
-        return $data;
+        return $this->getDataArray($adapter);
     }
 
     private function getDataArray($adapter)

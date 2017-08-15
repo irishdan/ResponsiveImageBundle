@@ -23,4 +23,8 @@ interface UploaderInterface
      * @return mixed
      */
     public function upload(ResponsiveImageInterface $image);
+
+    public function getFileSystem();
+
+    public function setFileSystem($filesystem);
 }

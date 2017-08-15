@@ -95,16 +95,6 @@ class TestImage implements ResponsiveImageInterface
         $this->alt = $alt;
     }
 
-    public function getPicture()
-    {
-        return $this->picture;
-    }
-
-    public function setPicture($picture)
-    {
-        $this->picture = $picture;
-    }
-
     public function getWidth()
     {
         return $this->width;

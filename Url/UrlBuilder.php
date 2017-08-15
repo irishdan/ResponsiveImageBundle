@@ -26,7 +26,7 @@ class UrlBuilder
      */
     private $fileSystem;
     /**
-     * @var array
+     * @var array|null
      */
     private $config;
     /**
