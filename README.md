@@ -1,6 +1,7 @@
 # ResponsiveImageBundle
 
 [![Build Status](https://travis-ci.org/irishdan/ResponsiveImageBundle.svg?branch=master)](https://travis-ci.org/irishdan/ResponsiveImageBundle)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/irishdan/ResponsiveImageBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/irishdan/ResponsiveImageBundle/?branch=master)
 
 ## Overview:
 
