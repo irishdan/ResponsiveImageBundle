@@ -50,6 +50,16 @@ class Uploader implements UploaderInterface
     protected $fileValidator;
     protected $eventDispatcher;
 
+    public function getFileSystem()
+    {
+        return $this->fileSystem;
+    }
+
+    public function setFileSystem($filesystem)
+    {
+        $this->fileSystem = $filesystem;
+    }
+
     /**
      * Uploader constructor.
      *
