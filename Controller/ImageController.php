@@ -37,9 +37,7 @@ class ImageController extends Controller
         }
 
         // Create image if the file exists.
-        // $imageEntityClass = $this->getParameter('responsive_image.entity_class');
         $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename);
-
         if (!empty($imageObject)) {
             $generatedImageArray = $this->get('responsive_image.image_manager')->createStyledImages(
                 $imageObject,

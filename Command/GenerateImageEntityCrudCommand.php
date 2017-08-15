@@ -171,12 +171,11 @@ class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
             ]
         );
 
-        // list($bundle, $entity) = $this->parseShortcutNotation($entity);
         $entity = $this->entityName;
         $bundle = $this->bundle;
         try {
             $entityClass = $this->getContainer()->get('doctrine')->getAliasNamespace($bundle) . '\\' . $entity;
-            $metadata    = $this->getEntityMetadata($entityClass);
+            $this->getEntityMetadata($entityClass);
         } catch (\Exception $e) {
             throw new \RuntimeException(
                 sprintf(
