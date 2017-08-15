@@ -1,212 +1,254 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle;
 
+use IrishDan\ResponsiveImageBundle\ImageProcessing\CoordinateGeometry;
+
 /**
  * Class StyleManager
+ * This class is responsible for image style information,
+ * and translating styles into relative style paths.
  *
  * @package ResponsiveImageBundle
  */
 class StyleManager
 {
-    /**
-     * @var array
-     */
     private $breakpoints = [];
-    /**
-     * @var
-     */
-    private $displayPathPrefix = '/';
-    /**
-     * @var
-     */
-    private $remoteFilePolicy;
-    /**
-     * @var FileManager
-     */
-    private $fileManager;
-    /**
-     * @var array
-     */
     private $pictureSets = [];
-    /**
-     * @var array
-     */
+    private $sizeSets = [];
     private $styles = [];
+    private $styleDirectory = 'styles';
 
     /**
      * StyleManager constructor.
      *
-     * @param \ResponsiveImageBundle\FileManager $system
-     * @param array                              $parameters
+     * @param array $configuration
      */
-    public function __construct(FileManager $system, array $parameters)
+    public function __construct(array $configuration)
     {
-        $this->fileManager = $system;
-
-        // Set the styles array.
-        if (!empty($parameters['image_styles'])) {
-            $this->styles = $parameters['image_styles'];
+        // Set the styles directory;
+        if (!empty($configuration['image_styles_directory'])) {
+            $this->styleDirectory = $configuration['image_styles_directory'];
         }
 
-        // Set the picture sets array
-        if (!empty($parameters['picture_sets'])) {
-            $this->pictureSets = $parameters['picture_sets'];
-            // Get the any picture set styles and incorporate into the configured styles array.
-            foreach ($parameters['picture_sets'] as $pictureSetName => $picture_set) {
-                foreach ($picture_set as $breakpoint => $set_style) {
-                    if (is_array($set_style)) {
-                        $this->styles[$pictureSetName . '-' . $breakpoint] = $set_style;
-                    }
+        // Set the styles array.
+        if (!empty($configuration['image_styles'])) {
+            $this->styles = $configuration['image_styles'];
+        }
+
+        // Set the picture sets array.
+        if (!empty($configuration['picture_sets'])) {
+            $this->pictureSets = $configuration['picture_sets'];
+        }
+
+        // Set the size sets array.
+        if (!empty($configuration['size_sets'])) {
+            $this->sizeSets = $configuration['size_sets'];
+        }
+
+        // Set the breakpoints array.
+        if (!empty($configuration['breakpoints'])) {
+            $this->breakpoints = $configuration['breakpoints'];
+        }
+    }
+
+    public function setImageAttributes(ResponsiveImageInterface $image, $styleName = null, $src = null)
+    {
+        // Use the style data to figure out the width and height for this image
+        // and then set hose attributes on the image.
+        if (!empty($styleName)) {
+            $styleData = $this->getStyleData($styleName);
+            if (!empty($styleData) && !empty($styleData['effect'])) {
+                switch ($styleData['effect']) {
+                    case 'crop':
+                        $image->setWidth($styleData['width']);
+                        $image->setHeight($styleData['height']);
+                        break;
+
+                    case 'scale':
+                        $scaledDimensions = $this->getScaledDimensions($image, $styleData);
+
+                        $image->setWidth($scaledDimensions['width']);
+                        $image->setHeight($scaledDimensions['height']);
+
+                        break;
                 }
             }
         }
 
-        // Set the breakpoints array.
-        if (!empty($parameters['breakpoints'])) {
-            $this->breakpoints = $parameters['breakpoints'];
+        // Set the src if value is provided
+        if (!empty($src)) {
+            $image->setSrc($src);
         }
 
-        // Set the prefix.
-        if (!empty($parameters['path_prefix'])) {
-            $this->displayPathPrefix = $parameters['path_prefix'];
-        }
-
-        if (!empty($parameters['aws_s3'])) {
-            if (!empty($parameters['aws_s3']['remote_file_policy'])) {
-                $this->remoteFilePolicy = $parameters['aws_s3']['remote_file_policy'];
-            }
-        }
+        return $image;
     }
 
-    /**
-     * Deletes a file.
-     *
-     * @param $filename
-     */
-    public function deleteImageFile($filename)
+    protected function getScaledDimensions(ResponsiveImageInterface $image, array $styleData)
     {
-        $system_upload_path = $this->fileManager->getSystemUploadPath();
-        $path = $system_upload_path . '/' . $filename;
-        // Delete the source file.
-        $this->fileManager->deleteFile($path);
-        // Delete the styled files.
-        $this->deleteImageStyledFiles($filename);
-    }
+        $coordinates = $image->getCropCoordinates();
 
-    /**
-     * Deletes all of the files in an image style folder.
-     *
-     * @param array $styles
-     */
-    public function deleteStyledImages(array $styles)
-    {
-        foreach ($styles as $style) {
-            $system_styles_path = $this->fileManager->getSystemStylesPath();
-            $path = $system_styles_path . '/' . $style;
-            $this->fileManager->deleteDirectory($path);
+        if (empty($coordinates)) {
+            $geometry = new CoordinateGeometry(0, 0, $image->getWidth(), $image->getHeight());
         }
+        else {
+            $cropCoordinates = explode(':', $coordinates)[0];
+            $points          = explode(',', $cropCoordinates);
+            $geometry        = new CoordinateGeometry(
+                trim($points[0]),
+                trim($points[1]),
+                trim($points[2]),
+                trim($points[3])
+            );
+        }
+
+        return $geometry->scaleSize($styleData['width'], $styleData['height']);
     }
 
-    /**
-     * Checks if a given style name is a defined style.
-     *
-     * @param $styleName
-     * @return bool
-     */
     public function styleExists($styleName)
     {
-        $style = $this->getStyle($styleName);
+        // If its's a custom style, grab the data and add the styles array.
+        if (0 === strpos($styleName, 'custom_')) {
+            $styleData = $this->styleDataFromCustomStyleString($styleName);
+            $this->addStyle($styleName, $styleData);
+        }
+
+        $style = $this->getStyleData($styleName);
 
         return !empty($style);
     }
 
-    /**
-     * @param mixed $displayPathPrefix
-     */
-    public function setDisplayPathPrefix($displayPathPrefix)
-    {
-        $this->displayPathPrefix = $displayPathPrefix;
-    }
-
-    /**
-     * @param mixed $remoteFilePolicy
-     */
-    public function setRemoteFilePolicy($remoteFilePolicy)
-    {
-        $this->remoteFilePolicy = $remoteFilePolicy;
-    }
-
-    /**
-     * @return array
-     */
     public function getAllStyles()
     {
         return $this->styles;
     }
 
-    /**
-     * Returns a style information array.
-     *
-     * @param $stylename
-     * @return bool
-     */
-    public function getStyle($stylename)
+    public function getAllStylesNames()
     {
-        if (!in_array($stylename, array_keys($this->styles))) {
-            return false;
-        } else {
-            return $this->styles[$stylename];
-        }
+        $styles = $this->getAllStyles();
+
+        return array_keys($styles);
     }
 
-    /**
-     * Prefixes url string with the displayPathPrefix string, if the style and the config require it.
-     *
-     * @param $url
-     * @param $style
-     * @return string
-     */
-    protected function prefixPath($url, $style = null)
+    public function getStyleData($styleName)
     {
-        // Remote fle policy values ALL, STYLED_ONLY.
-        if (!empty($this->displayPathPrefix) && $style !== null) {
-            $url = $this->displayPathPrefix . $url;
-        } else {
-            if ($this->remoteFilePolicy != 'STYLED_ONLY' && $style == null) {
-                $url = $this->displayPathPrefix . $url;
-            } else {
-                if ($this->remoteFilePolicy == 'STYLED_ONLY' && $style == null) {
-                    $url = '/' . $url;
-                } else {
-                    $url = '/' . $url;
-                }
+        if (!in_array($styleName, array_keys($this->styles))) {
+            // If is custom style string.
+            if (strpos($styleName, 'custom_') === 0) {
+                return $this->styleDataFromCustomStyleString($styleName);
             }
         }
+        else {
+            return $this->styles[$styleName];
+        }
 
-        return $url;
+        return false;
     }
 
-    public function getMediaQuerySourceMappings(ResponsiveImageInterface $image, $pictureSetName)
+    public function getPictureData(ResponsiveImageInterface $image, $pictureSetName)
     {
-        $mappings = [];
+        $mappings = [
+            'fallback' => '',
+            'sources'  => [],
+        ];
         $filename = $image->getPath();
-
-        // First mapping is the default image.
-        $mappings[] = $image->getStyle();
 
         if (!empty($this->pictureSets[$pictureSetName])) {
             $set = $this->pictureSets[$pictureSetName];
 
-            foreach ($set as $break => $style) {
-                if (is_array($style)) {
-                    $styleName = $pictureSetName . '-' . $break;
-                } else {
-                    $styleName = $style;
-                }
-                $path = $this->buildStylePath($styleName, $filename);
+            foreach ($set['sources'] as $break => $styleName) {
+                $paths   = [];
+                $paths[] = $this->buildStylePath($styleName, $filename);
 
-                $mappings[$this->breakpoints[$break]] = $path;
+                // Check to for multiplier styles
+                $multiplierStyles = $this->findMultiplierStyles($styleName);
+                if (!empty($multiplierStyles)) {
+                    foreach ($multiplierStyles as $multiplier => $style) {
+                        $paths[] = $this->buildStylePath($style, $filename) . ' ' . $multiplier;
+                    }
+                }
+
+                // Mappings should be in 'media_query' => '/path/to/image'
+                if ($this->breakpoints[$break]) {
+                    $mediaQuery                       = $this->breakpoints[$break]['media_query'];
+                    $mappings['sources'][$mediaQuery] = implode(', ', $paths);
+                }
+            }
+
+            // Set the fallback image path.
+            if (isset($set['fallback'])) {
+                $mappings['fallback'] = $this->getStylePath($image, $set['fallback']);
+            }
+        }
+
+        return $mappings;
+    }
+
+    protected function findMultiplierStyles($styleName)
+    {
+        $multiplierStyles = [];
+        foreach ($this->styles as $style => $styleData) {
+            // ^thumb_[0-9]+([.][0-9])?x$
+            $regex = '/^' . $styleName . '_([0-9]+([.][0-9])?x$)/';
+            preg_match($regex, $style, $matches);
+
+            if ($matches) {
+                $multiplierStyles[$matches[1]] = $style;
+            }
+        }
+
+        return $multiplierStyles;
+    }
+
+    public function getImageSizesData(ResponsiveImageInterface $image, $imageSizesSetName)
+    {
+        $mappings = [
+            'fallback' => '',
+            'sizes'    => [],
+            'srcsets'  => [],
+        ];
+        $sizeData = $this->getSizesSet($imageSizesSetName);
+
+        if ($sizeData) {
+            // Sort out the sizes data.
+            $mappings['sizes'] = [];
+            foreach ($sizeData['sizes'] as $vw => $mediaQuery) {
+                // Get the media query from the breakpoint data.
+                $breakpoint = $this->breakpoints[$mediaQuery['breakpoint']];
+
+                if ($breakpoint) {
+                    // $mappings['sizes'][$vw] = $breakpoint['media_query'];
+                    $mappings['sizes'][] = '(' . $breakpoint['media_query'] . ') ' . $vw;
+                }
+            }
+
+            // Get the image paths and widths.
+            // In most case the width will be apart of the style (crop or scale)
+            // If it's not we can need to derive it.
+            foreach ($sizeData['srcsets'] as $styleName) {
+                $styleData = $this->getStyleData($styleName);
+                if ($styleData) {
+                    if (empty($styleData['width'])) {
+                        // We need to derive the width.
+                        $scaledDimensions = $this->getScaledDimensions($image, $styleData);
+                        $width            = $scaledDimensions['width'];
+                    }
+                    else {
+                        $width = $styleData['width'];
+                    }
+
+                    $path = $this->getStylePath($image, $styleName);
+                    // Stick it into that array there.
+                    $mappings['srcsets'][$path] = $width;
+                }
             }
         }
 
@@ -215,40 +257,45 @@ class StyleManager
 
     protected function buildStylePath($styleName, $fileName)
     {
-        $styles_directory = $this->fileManager->getStylesDirectory();
-        $path = $styles_directory . '/' . $styleName . '/' . $fileName;
-        $path = $this->prefixPath($path, $styleName);
+        $path = $this->styleDirectory . '/' . $styleName . '/' . $fileName;
 
         return $path;
     }
 
-    /**
-     * Sets the path of a an Image object to the full styled image path.
-     *
-     * @param ResponsiveImageInterface $image
-     * @param null                     $styleName
-     * @return ResponsiveImageInterface
-     */
-    public function setImageStyle(ResponsiveImageInterface $image, $styleName = null)
+    public function getStylePath(ResponsiveImageInterface $image, $styleName = null)
     {
-        // @TODO: Hack to avoid looping over itself and string paths together.
-        if ($styleName !== null && empty($this->getStyle($styleName))) {
-            return $image;
-        }
-
         $filename = $image->getPath();
 
         if (!empty($styleName)) {
-            $stylePath = $this->fileManager->styleWebPath($styleName);
-        } else {
-            $stylePath = $this->fileManager->getUploadsDirectory();
+            $stylePath = $this->buildStylePath($styleName, $filename);
+        }
+        else {
+            $stylePath = $filename;
         }
 
-        $webPath = $stylePath . '/' . $filename;
-        $webPath = $this->prefixPath($webPath, $styleName);
+        return $stylePath;
+    }
 
-        $image->setStyle($webPath);
+    public function addStyle($key, $styleData)
+    {
+        $this->styles[$key] = $styleData;
+    }
 
-        return $image;
+    public function styleDataFromCustomStyleString($customStyleString)
+    {
+        $styleData = explode('_', $customStyleString);
+
+        list($custom, $effect, $width, $height) = $styleData;
+
+        return [
+            'effect' => $effect,
+            'width'  => $width,
+            'height' => $height,
+        ];
+    }
+
+    public function getSizesSet($setName)
+    {
+        return isset($this->sizeSets[$setName]) ? $this->sizeSets[$setName] : false;
     }
 }

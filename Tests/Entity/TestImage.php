@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="ResponsiveImageBundle\Repository\ImageRepository")
+ * @ORM\Entity(repositoryClass="IrishDan\ResponsiveImageBundle\Repository\ImageRepository")
  * @ORM\Table(name="image")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -48,14 +48,7 @@ class TestImage implements ResponsiveImageInterface
      * @ORM\Column(name="crop_coordinations", type="string", nullable=true)
      */
     private $cropCoordinates = '200, 3, 800, 1400:310, 145, 750, 617';
-    /**
-     * @var
-     */
-    private $style;
-    /**
-     * @var
-     */
-    private $picture;
+    private $src;
 
     public function getId()
     {
@@ -82,7 +75,7 @@ class TestImage implements ResponsiveImageInterface
         $this->title = $title;
     }
 
-    public function getStyle()
+    public function getStyleData()
     {
         return $this->style;
     }
@@ -142,7 +135,6 @@ class TestImage implements ResponsiveImageInterface
         $this->cropCoordinates = $cords;
     }
 
-    // @TODO: Only used during upload review if needed after move to flysystem
     public function setFile(UploadedFile $file)
     {
         $this->file = $file;
@@ -153,47 +145,13 @@ class TestImage implements ResponsiveImageInterface
         return $this->file;
     }
 
-    /**
-     * Generates an <img> tag for a given style.
-     *
-     * @param null $style
-     * @return string
-     */
-    public function img()
+    public function setSrc($src)
     {
-        // @TODO: Look at using twig template to generate the html. this way users can override.
-
-        if (!empty($this->style)) {
-            $src = $this->style;
-        } else {
-            $src = $this->getPath();
-        }
-
-        // @TODO: Use cache_bust config.
-        // $updated = $this->getUpdated();
-        // if (!empty($updated)) {
-        //     $src = $this->path . '?' . $updated->getTimestamp();
-        // }
-
-        $title = $this->title;
-        $alt = $this->alt;
-
-        // @TODO: If image style is used height and width should be transposed.
-        $height = $this->height;
-        $width = $this->width;
-
-        return '<img src="' . $src . '" height="' . $height . '" width="' . $width . '" title="' . $title . '" alt="' . $alt . '"/>';
+        $this->src = $src;
     }
 
-    /**
-     *  Returns an <img> tag string if the object is printed directly.
-     */
-    public function __toString()
+    public function getSrc()
     {
-        if (empty($this->picture)) {
-            return $this->img();
-        }
-
-        return $this->picture;
+        return $this->src;
     }
 }

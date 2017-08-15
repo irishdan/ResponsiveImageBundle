@@ -1,0 +1,65 @@
+#
+# This is the default configuration for this bundle.
+#
+responsive_image:
+    cache_bust: true
+    image_compression: 90
+    # image_entity_class: 'AppBundle\Entity\ResponsiveImage'
+    image_directory: 'test/images'
+    image_driver: 'gd'
+    image_styles_directory: 'styles'
+    # preferred protocol: https
+    crop_focus_widget:
+        include_js_css: TRUE
+        display_coordinates: TRUE
+# Breakpoints
+    breakpoints:
+        base:
+            media_query: 'min-width: 0px'
+        desktop:
+            media_query: 'min-width: 1100px'
+        tv:
+            media_query: 'min-width: 1800px'
+        size_mq:
+            media_query: 'min-width: 36em'
+# Image styles
+    image_styles:
+        thumb:
+            effect: 'crop'
+            width: 180
+            height: 180
+        thumb_2x:
+            effect: 'crop'
+            width: 360
+            height: 360
+        picture_thumb_base:
+            effect:  'crop'
+            width:  300
+            height:  600
+        picture_thumb_tv:
+            effect:  'scale'
+            width:  800
+            height:  600
+            greyscale: true
+# Sizesets
+    size_sets:
+        blog_sizes:
+            fallback: 'thumb'
+            sizes:
+                10vw:
+                    breakpoint: 'size_mq'
+            srcsets: [ 'thumb', 'picture_thumb_base', 'picture_thumb_tv' ]
+# Picture sets
+    picture_sets:
+        thumb_picture:
+            fallback: 'thumb'
+            sources:
+                base: 'picture_thumb_base'
+                desktop: 'thumb'
+                tv: 'picture_thumb_tv'
+        blog_picture:
+            fallback: 'thumb'
+            sources:
+                base: 'picture_thumb_base'
+                desktop: 'thumb'
+                tv: 'picture_thumb_tv'

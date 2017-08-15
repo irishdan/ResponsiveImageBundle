@@ -1,80 +1,189 @@
+#
+# These are the services needed by the bundle.
+#
 services:
-    responsive_image:
-        class: IrishDan\ResponsiveImageBundle\ResponsiveImageManager
-        arguments: [ '@responsive_image.image_maker', '@responsive_image.style_manager', '%responsive_image%', '@responsive_image.file_manager', '@responsive_image.s3_bridge', '@responsive_image.uploader' ]
+    responsive_image.image_manager:
+        class: IrishDan\ResponsiveImageBundle\ImageProcessing\ImageManager
+        arguments:
+            - '@responsive_image.style_manager'
+            - '@responsive_image.image_styler'
+            - '@responsive_image.file_system_wrapper'
+            - '@responsive_image_temp'
+            - '@event_dispatcher'
 
-    responsive_image.file_manager:
-        class: IrishDan\ResponsiveImageBundle\FileManager
-        arguments: ['%kernel.root_dir%', '%responsive_image%', '@filesystem' ]
-
+# This service handles style paths, picture sets and srcsets
     responsive_image.style_manager:
         class: IrishDan\ResponsiveImageBundle\StyleManager
-        arguments: ['@responsive_image.file_manager', '%responsive_image%' ]
+        arguments: [ '%responsive_image%' ]
 
-    responsive_image.image_maker:
-        class: IrishDan\ResponsiveImageBundle\ImageMaker
-        arguments: [ '@responsive_image.file_manager', '%responsive_image%' ]
+# This is the service that creates derivative images.
+# Its does so by interacting with the intervention image library.
+    responsive_image.image_styler:
+        class: IrishDan\ResponsiveImageBundle\ImageProcessing\ImageStyler
+        arguments: [ '%responsive_image%' ]
 
+# This service takes a filename string and return and image object if it exists
     responsive_image.file_to_object:
-        class: IrishDan\ResponsiveImageBundle\FileToObject
-        arguments: [ '@doctrine.orm.entity_manager' ]
+        class: IrishDan\ResponsiveImageBundle\File\FileToObject
+        arguments: [ '@doctrine.orm.entity_manager', '@responsive_image.class_name_resolver' ]
 
+# This Service returns the FQCN ofthe image entity.
+# It first checks for the cached value
+# Then checks for the configured value
+# If none are found it finally uses the responsive_image.class_locator to locate the class.
+# The reason to do this is to avoid the need to configure it, making bundle installation easier.
+    responsive_image.class_name_resolver:
+        class: IrishDan\ResponsiveImageBundle\ImageEntityNameResolver
+        arguments: ['@responsive_image.class_locator', '%responsive_image.entity_class%']
+
+# This service returns the Fully Qualified Class name of whatever class implements the ResponsiveImageInterface.
+# The service will look in all bundle directories, Entity directory.
+# The first object found that implements the interface is returned.
+    responsive_image.class_locator:
+        class: IrishDan\ResponsiveImageBundle\ImageEntityClassLocator
+        arguments: ['%kernel.bundles%', '@file_locator']
+
+# COMMANDS
+
+# This command generates the Image entity.
+# The command will check if there is an existing entity and prompt whether to override it or not.
+    responsive_image.command.generate_entity:
+            class: IrishDan\ResponsiveImageBundle\Command\GenerateImageEntityCommand
+            arguments: [ '@responsive_image.class_name_resolver', '@doctrine']
+            tags:
+                - { name: console.command }
+# This command generates the CRUD for the Image entity.
+# Generated CRUD is similar to default generated CRUD but it includes the logic for uploading and
+# editing images correctly.
+    responsive_image.command.generate_crud:
+        class: IrishDan\ResponsiveImageBundle\Command\GenerateImageEntityCrudCommand
+        arguments: [ '@responsive_image.class_locator', '@doctrine']
+        # parent: Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand
+        tags:
+            - { name: console.command }
+
+# FILESYSTEM
+
+# This service is a wrapper around a flysystem filesystem
+# It acts as the main storage filesystem.
+# The service fires a couple of events when internally.
+# These can be used to swap the filesystem during runtime for example
+    responsive_image.file_system_wrapper:
+        class: IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper
+        arguments: [ '@event_dispatcher', '@responsive_image_filesystem' ]
+
+# UPLOADER
+
+# This service uploads files to the primary filesystem wrapper
+# Before uploading, validation is applied to the the file and filenames are transliterated.
+# Foor custom validation and/or validation swap with your own validator and/or transliterator.
     responsive_image.uploader:
         class: IrishDan\ResponsiveImageBundle\Uploader
-        arguments: ['@responsive_image.file_manager']
+        arguments:
+            - '@responsive_image.file_system_wrapper'
+            - '@responsive_image.filename_transliterator'
+            - '@responsive_image.file_validator'
 
-    responsive_image.s3_bridge:
-        class: IrishDan\ResponsiveImageBundle\S3Bridge
-        arguments: [ '%responsive_image.aws_s3%' ]
+# The default transliterator service.
+    responsive_image.filename_transliterator:
+        class: IrishDan\ResponsiveImageBundle\File\FilenameTransliterator
+        arguments: ['@responsive_image.file_to_object']
 
-    # Custom form field type.
+# Default validator service.
+    responsive_image.file_validator:
+        class: IrishDan\ResponsiveImageBundle\File\FileValidator
+
+# URL
+
+# URL builder service.
+# This service turns relative paths into urls to image files.
+# This can be achieved in a number of ways
+# 1: The urls base information is passed into the service.
+# 2: An adapter Url Encoder can be used, or a cusomt one could be defined
+# 3: Mappings oer adapter can be provided, either in configuration or at run time
+# 4: A global url base can be provided in configuration, default_url
+    responsive_image.url_builder:
+        class: IrishDan\ResponsiveImageBundle\Url\UrlBuilder
+        arguments: ['@responsive_image.file_system_wrapper', '%responsive_image%']
+        calls:
+            # Here we are setting url encoders
+            - [ setAdapterUrlEncoder, [ 'Local' , '@responsive_image.local_url_encoder']]
+            - [ setAdapterUrlEncoder, [ 'AwsS3Adapter' , '@responsive_image.aws_url_encoder']]
+            # here we are providing mappings
+            # - [ setAdapterUrlMappings, [ 'Local', '/']]
+            # - [ setAdapterUrlMappings, [ 'AwsS3Adapter', 'http://aws.s3.com/']]
+
+# Local adapter url encoder
+    responsive_image.local_url_encoder:
+        class: IrishDan\ResponsiveImageBundle\Url\LocalAdapterUrlEncoder
+        shared: false
+# AWS S3 adapter encoder
+    responsive_image.aws_url_encoder:
+        class: IrishDan\ResponsiveImageBundle\Url\AwsAdapterUrlEncoder
+        shared: false
+
+# FORM TYPE
+
+# Form field type for the crop_focus field.
+# This is the CropFocus widget.
     responsive_image.form.type.crop_focus:
         class: IrishDan\ResponsiveImageBundle\Form\CropFocusType
         arguments: [ '@responsive_image.style_manager', '%responsive_image%' ]
         tags:
             - { name: form.type }
 
+# Form Type used by the Generated Image entity
     responsive_image.form.type.responsive_image:
         class: IrishDan\ResponsiveImageBundle\Form\ResponsiveImageType
-        arguments: [ '%responsive_image.entity_class%' ]
+        arguments: [ '@responsive_image.class_name_resolver' ]
         tags:
             - { name: form.type }
 
-    # Event listeners.
-    responsive_image.listener.image_generate_styled:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
-        tags:
-            - { name: kernel.event_listener, event: responsive_image.image_generate_styled, method: imageGenerateStyled }
+# EVENT SUBSCRIBER
 
-    responsive_image.listener.image_delete_all:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
+# Subscriber for Image events.
+# This a simple implementation used to create a simple workflow.
+# On edit styled images are created
+# On delete images are deleted.
+# For most projects you would probably want to create your own
+    responsive_image.image_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\ImageSubscriber
+        arguments: [ '@responsive_image.image_manager' ]
         tags:
-            - { name: kernel.event_listener, event: responsive_image.image_delete_all, method: imageDeleteAll }
+            - { name: kernel.event_subscriber }
 
-    responsive_image.listener.image_delete_styled:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
+# Subscriber to Uploader events
+# For most projects you would probably want to create your own
+    responsive_image.uploader_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\UploaderSubscriber
+        arguments: [ '@responsive_image_filesystem' ]
         tags:
-            - { name: kernel.event_listener, event: responsive_image.image_delete_styled, method: imageDeleteStyled }
+            - { name: kernel.event_subscriber }
 
-    responsive_image.listener.style_delete_styled:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
+# Subscriber to Filesystem events
+# For most projects you would probably want to create your own
+    responsive_image.file_system_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\FileSystemSubscriber
+        arguments: [ '@logger' ]
         tags:
-            - { name: kernel.event_listener, event: responsive_image.style_delete_styled, method: styleDeleteStyled }
+            - { name: kernel.event_subscriber }
 
-    responsive_image.listener.style_delete_all:
-        class: IrishDan\ResponsiveImageBundle\Event\ImageListener
-        arguments: [ '%responsive_image', '@responsive_image' ]
+# Subscriber to Styled image events
+# For most projects you would probably want to create your own
+    responsive_image.styled_image_event_subscriber:
+        class: IrishDan\ResponsiveImageBundle\EventSubscriber\StyledImagesSubscriber
+        arguments:
+            - '@responsive_image.file_system_wrapper'
+            - '@responsive_image_temp'
         tags:
-            - { name: kernel.event_listener, event: responsive_image.style_delete_all, method: styleDeleteAll }
+            - { name: kernel.event_subscriber }
 
-    # Twig extensions
+# TWIG EXTENSION
+
+# This twig extension provides the twig functions needed to render images
     responsive_image.twig_extension:
         class: IrishDan\ResponsiveImageBundle\Twig\ResponsiveImageExtension
         public: false
-        arguments: [ '@responsive_image.style_manager' ]
+        arguments: [ '@responsive_image.style_manager', '@responsive_image.url_builder' , '@responsive_image.image_manager']
         tags:
             - { name: twig.extension }

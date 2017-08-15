@@ -1,4 +1,11 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\DependencyInjection;
 
@@ -24,10 +31,19 @@ class Configuration implements ConfigurationInterface
 
         // Add basic configurations.
         $rootNode
+            ->validate()
+                ->ifTrue(function($config) {
+                    return $this->validateBreakpointKeys($config);
+                })
+                ->thenInvalid('Undefined breakpoint key detected in picture_set or size_set definitions')
+            ->end()
+            ->validate()
+                ->ifTrue(function($config) {
+                    return $this->validateStyleKeys($config);
+                })
+                ->thenInvalid('Undefined style key detected in picture_set or size_set definitions')
+            ->end()
             ->children()
-                ->booleanNode('debug')
-                    ->defaultFalse()
-                ->end()
                 ->booleanNode('cache_bust')
                     ->defaultFalse()
                 ->end()
@@ -49,9 +65,15 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('styles')
                 ->end()
                 ->arrayNode('breakpoints')
-                    ->prototype('scalar')->end()
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('media_query')->end()
+                        ->end()
+                    ->end()
                 ->end()
                 ->arrayNode('image_styles')
+                    ->useAttributeAsKey('name')
                     ->prototype('array')
                         ->children()
                             ->integerNode('width')
@@ -64,10 +86,44 @@ class Configuration implements ConfigurationInterface
                                 ->defaultValue('scale')
                                 ->values(['scale', 'crop'])
                             ->end()
+                            ->booleanNode('greyscale')
+                                ->defaultFalse()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
-                ->variableNode('picture_sets')->end()
+                ->arrayNode('picture_sets')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('fallback')->end()
+                            ->booleanNode('multipliers')->end()
+                            ->arrayNode('sources')
+                                ->prototype('scalar')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('size_sets')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('fallback')->end()
+                            ->arrayNode('sizes')
+                                ->useAttributeAsKey('name')
+                                ->prototype('array')
+                                    ->children()
+                                        ->scalarNode('breakpoint')->end()
+                                        ->scalarNode('calc')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                            ->arrayNode('srcsets')
+                                ->prototype('scalar')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
                 ->arrayNode('crop_focus_widget')
                     ->children()
                         ->booleanNode('include_js_css')
@@ -78,7 +134,6 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-                ->append($this->addAWSNode())
             ->end()
         ;
 
@@ -86,57 +141,69 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * The configuration for responsive image AWS functionality.
+     * @param $config
      *
-     * @return \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition|\Symfony\Component\Config\Definition\Builder\NodeDefinition
+     * @return bool
      */
-    protected function addAWSNode() {
-        $builder = new TreeBuilder();
-        $node = $builder->root('aws_s3');
+    private function validateStyleKeys($config) {
+        // Get a list of image styles and break points to validate against.
+        $styles = [];
+        if (!empty($config['image_styles'])) {
+            $styles = array_keys($config['image_styles']);
+        }
 
-        $node
-            ->children()
-                ->booleanNode('enabled')
-                    ->defaultFalse()
-                ->end()
-                // ->enumNode('local_file_policy')
-                //     ->defaultValue('KEEP_NONE')
-                //     ->values(['KEEP_ALL', 'KEEP_NONE', 'KEEP_ORIGINAL'])
-                // ->end()
-                ->enumNode('remote_file_policy')
-                   ->defaultValue('ALL')
-                   ->values(['ALL', 'STYLED_ONLY'])
-                ->end()
-                ->scalarNode('temp_directory')
-                    ->defaultValue(null)
-                ->end()
-                ->scalarNode('bucket')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('region')
-                    ->defaultValue('eu-west-1')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('version')
-                    ->defaultValue('latest')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('directory')
-                    ->defaultValue('')
-                ->end()
-                ->enumNode('protocol')
-                    ->defaultValue('http')
-                    ->values(['http', 'https'])
-                ->end()
-                ->scalarNode('access_key_id')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('secret_access_key')
-                    ->cannotBeEmpty()
-                ->end()
-            ->end()
-        ;
+        foreach ($config['picture_sets'] as $pictureSet) {
+            foreach ($pictureSet['sources'] as $breakpoint => $style) {
+                if (!in_array($style, $styles)) {
+                    return true;
+                }
+            }
+        }
 
-        return $node;
+        foreach ($config['size_sets'] as $sizeSet) {
+            foreach ($sizeSet['srcsets'] as $style) {
+                if (!in_array($style, $styles)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $config
+     *
+     * @return bool
+     */
+    private function validateBreakpointKeys($config) {
+        // Get a list of breakpoints to validate against.
+        $breakpoints = [];
+        if (!empty($config['breakpoints'])) {
+            $breakpoints = array_keys($config['breakpoints']);
+        }
+
+        // Validate that the picture sets are defined using valid breakpoints
+        foreach ($config['picture_sets'] as $pictureSet) {
+            foreach ($pictureSet['sources'] as $breakpoint => $style) {
+                if (!in_array($breakpoint, $breakpoints)) {
+                    return true;
+                }
+            }
+        }
+
+        // Validate that the picture sets are defined using valid breakpoints
+        foreach ($config['size_sets'] as $sizeSet) {
+            foreach ($sizeSet['sizes'] as $size) {
+                $breakpoint = empty($size['breakpoint']) ? null : $size['breakpoint'];
+                if ($breakpoint) {
+                    if (!in_array($breakpoint, $breakpoints)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

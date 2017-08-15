@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle;
 
@@ -18,6 +26,7 @@ Interface ResponsiveImageInterface
 
     /**
      * @param $path
+     *
      * @return mixed
      */
     public function setPath($path);
@@ -29,6 +38,7 @@ Interface ResponsiveImageInterface
 
     /**
      * @param $title
+     *
      * @return mixed
      */
     public function setTitle($title);
@@ -40,6 +50,7 @@ Interface ResponsiveImageInterface
 
     /**
      * @param $alt
+     *
      * @return mixed
      */
     public function setAlt($alt);
@@ -51,6 +62,7 @@ Interface ResponsiveImageInterface
 
     /**
      * @param $width
+     *
      * @return mixed
      */
     public function setWidth($width);
@@ -62,6 +74,7 @@ Interface ResponsiveImageInterface
 
     /**
      * @param $height
+     *
      * @return mixed
      */
     public function setHeight($height);
@@ -72,21 +85,8 @@ Interface ResponsiveImageInterface
     public function getCropCoordinates();
 
     /**
-     * @param $picture
-     * @return mixed
-     */
-    public function setPicture($picture);
-
-    /**
-     * @param $style
-     * @return mixed
-     */
-    public function setStyle($style);
-
-    public function getStyle();
-
-    /**
      * @param UploadedFile $file
+     *
      * @return mixed
      */
     public function setFile(UploadedFile $file);
@@ -96,7 +96,22 @@ Interface ResponsiveImageInterface
      */
     public function getFile();
 
-    public function getPicture();
-
+    /**
+     * @param $cords
+     *
+     * @return mixed
+     */
     public function setCropCoordinates($cords);
+
+    /**
+     * @param $src
+     *
+     * @return mixed
+     */
+    public function setSrc($src);
+
+    /**
+     * @return mixed
+     */
+    public function getSrc();
 }

@@ -1,40 +1,23 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Event;
 
 /**
  * Class ImageEvents
  *
- * @package ResponsiveImageBundle\Event
+ * @package IrishDan\ResponsiveImageBundle\Event
  */
-final class ImageEvents {
-    /**
-     * Generate styled images.
-     */
-    const IMAGE_GENERATE_STYLED = 'responsive_image.image_generate_styled';
-
-    /**
-     * Delete original and styled images for a given image object.
-     */
-    const IMAGE_DELETE_ALL = 'responsive_image.image_delete_all';
-
-    /**
-     * Delete original and styled images for a given image object.
-     */
-    const IMAGE_DELETE_ORIGINAL = 'responsive_image.image_delete_original';
-
-    /**
-     * Delete styled images for a given image object.
-     */
-    const IMAGE_DELETE_STYLED = 'responsive_image.image_delete_styled';
-
-    /**
-     * Delete all images of belonging to a style
-     */
-    const STYLE_DELETE_STYLED = 'responsive_image.style_delete_styled';
-
-    /**
-     * Delete all styled images
-     */
-    const STYLE_DELETE_ALL = 'responsive_image.style_delete_all';
+final class ImageEvents
+{
+    const IMAGE_CREATED = 'responsive_image.image_created';
+    const IMAGE_UPDATED = 'responsive_image.image_updated';
+    const IMAGE_DELETED = 'responsive_image.image_deleted';
 }

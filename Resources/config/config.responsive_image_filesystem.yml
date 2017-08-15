@@ -1,0 +1,68 @@
+#
+# This is the default filesystem configuration for this bundle.
+# Local and an AWS S3 filesystems are defined.
+# The AWS S3 configuration has been commented out.
+#
+# For more information about filesystems and there configuration
+# see https://github.com/1up-lab/OneupFlysystemBundle and https://flysystem.thephpleague.com/
+#
+#
+oneup_flysystem:
+#
+# To create a filesystem, first you need to define an adapter.
+# Different storage solutions require different adapters.
+# Available adapters can be found here https://github.com/1up-lab/OneupFlysystemBundle
+# You can also create your own adapter
+#
+# There are two kinds of adapters defined in this config file
+# 1 - local adapter (stores files on local server)
+# 2 - awss3vs (stores files on amazon s3 buckets)
+#
+    adapters:
+        responsive_image.local:
+            local:
+                directory: '%kernel.root_dir%/../web/%responsive_image.image_directory%' # %kernel.root_dir%/cache/
+        responsive_image.temp: # Is the temporary filesystem needed?
+            local:
+                directory: '%kernel.root_dir%/../var/cache/resp_img'
+#
+# This is the awss3v3 adapter.
+# Note: It uses an s3 client service, 'responsive_image.s3_client', which is defined in here also.
+#   responsive_image.aws:
+#       awss3v3:
+#           client: responsive_image.s3_client
+#           bucket: 'YOUR_BUCKET'
+#           prefix: 'DIRECTORY'
+#           # options: { visibility: 'public-read', protocol: 'https' }
+#
+    filesystems:
+        responsive_image.local:
+            adapter: responsive_image.local
+            alias: responsive_image_filesystem
+#
+# This is the temporary filesystem
+# The bundle uses it internally to store images, before moving them to permanent filesystems.
+# The alias 'responsive_image_temp' let's the bundle know its the temporary filesystem.
+        responsive_image.temp:
+            adapter: responsive_image.temp
+            alias: responsive_image_temp
+#
+# The is the aws example filesystem
+#       responsive_image.aws:
+#           adapter: responsive_image.aws
+#           # alias: responsive_image_filesystem
+#
+
+services:
+#
+# This the s3_client service needed by the AWS S3 adapter.
+#   responsive_image.s3_client:
+#       class: Aws\S3\S3Client
+#       arguments:
+#           -
+#               version: 'latest'
+#               region: 'eu-west-1'
+#               credentials:
+#                   key: 'YOUR_KEY'
+#                   secret: 'YOUR_SECRET'
+#

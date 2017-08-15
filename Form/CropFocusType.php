@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Form;
 
@@ -17,16 +25,31 @@ use Symfony\Component\Form\AbstractType;
  */
 class CropFocusType extends AbstractType
 {
+    /**
+     * @var StyleManager
+     */
     private $styleManager;
+    /**
+     * @var bool
+     */
     private $displayCoordinates = true;
+    /**
+     * @var bool
+     */
     private $includeJsCss = true;
 
+    /**
+     * CropFocusType constructor.
+     *
+     * @param StyleManager $styleManager
+     * @param array        $configuration
+     */
     public function __construct(StyleManager $styleManager, array $configuration)
     {
         $this->styleManager = $styleManager;
 
         if (!empty($configuration['crop_focus_widget'])) {
-            $this->includeJsCss = empty($configuration['crop_focus_widget']['include_js_css']) ? false : true;
+            $this->includeJsCss       = empty($configuration['crop_focus_widget']['include_js_css']) ? false : true;
             $this->displayCoordinates = empty($configuration['crop_focus_widget']['display_coordinates']) ? false : true;
         }
     }
@@ -36,17 +59,19 @@ class CropFocusType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'label' => 'Focus and Crop',
-            'empty_data' => '0, 0, 0, 0:0, 0, 0, 0',
-            'alt' => 'Alt',
-            'title' => 'title',
-            'width' => 100,
-            'height' => 100,
-            'display_coordinates' => $this->displayCoordinates,
-            'include_js_css' => $this->includeJsCss,
-            'coordinate_field_type' => $this->displayCoordinates ? 'text' : 'hidden',
-        ]);
+        $resolver->setDefaults(
+            [
+                'label'                 => 'Focus and Crop',
+                'empty_data'            => '0, 0, 0, 0:0, 0, 0, 0',
+                'alt'                   => 'Alt',
+                'title'                 => 'title',
+                'width'                 => 100,
+                'height'                => 100,
+                'display_coordinates'   => $this->displayCoordinates,
+                'include_js_css'        => $this->includeJsCss,
+                'coordinate_field_type' => $this->displayCoordinates ? 'text' : 'hidden',
+            ]
+        );
     }
 
     /**
@@ -67,17 +92,16 @@ class CropFocusType extends AbstractType
     {
         parent::buildView($view, $form, $options);
 
-        $image = $options['data'];
-        $image = $this->styleManager->setImageStyle($image);
+        $image            = $options['data'];
         $options['value'] = $image->getCropCoordinates();
         $options['image'] = $image;
 
         if ($options['include_js_css']) {
             $pubicDirectory = dirname(__FILE__) . '/../Resources/public/';
-            $js = file_get_contents($pubicDirectory . 'js/jquery.cropper.js', FILE_USE_INCLUDE_PATH);
-            $css = file_get_contents($pubicDirectory . 'css/cropper.css', FILE_USE_INCLUDE_PATH);
+            $js             = file_get_contents($pubicDirectory . 'js/jquery.cropper.js', FILE_USE_INCLUDE_PATH);
+            $css            = file_get_contents($pubicDirectory . 'css/cropper.css', FILE_USE_INCLUDE_PATH);
 
-            $options['js'] = $js;
+            $options['js']  = $js;
             $options['css'] = $css;
         }
 

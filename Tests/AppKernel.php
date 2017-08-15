@@ -15,6 +15,8 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\MonologBundle\MonologBundle();
             $bundles[] = new Doctrine\Bundle\DoctrineBundle\DoctrineBundle();
             $bundles[] = new IrishDan\ResponsiveImageBundle\ResponsiveImageBundle();
+            $bundles[] = new Oneup\FlysystemBundle\OneupFlysystemBundle();
+            $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
         }
 
         return $bundles;

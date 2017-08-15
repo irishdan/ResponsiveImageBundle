@@ -1,7 +1,14 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Event;
-
 
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use Symfony\Component\EventDispatcher\Event;
@@ -11,39 +18,21 @@ use Symfony\Component\EventDispatcher\Event;
  *
  * @package ResponsiveImageBundle\Event
  */
-class ImageEvent extends Event {
-
+class ImageEvent extends Event
+{
     /**
      * @var
      */
     protected $image;
 
     /**
-     * @var
-     */
-    protected $styles = [];
-
-    /**
      * ImageEvent constructor.
+     *
      * @param ResponsiveImageInterface|NULL $image
-     * @param array|NULL $stylesArray
      */
-    public function __construct(ResponsiveImageInterface $image = NULL, array $stylesArray = NULL)
+    public function __construct(ResponsiveImageInterface $image = null)
     {
-        if (!empty($image)) {
-            $this->image = $image;
-        }
-        if (!empty($stylesArray)) {
-            $this->styles = $stylesArray;
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getStyles()
-    {
-        return $this->styles;
+        $this->image = $image;
     }
 
     /**

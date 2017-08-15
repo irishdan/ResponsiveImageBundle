@@ -1,8 +1,15 @@
 <?php
+/**
+ * This file is part of the IrishDan\ResponsiveImageBundle package.
+ *
+ * (c) Daniel Byrne <danielbyrne@outlook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE file that was distributed with this source
+ * code.
+ */
 
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -21,6 +28,13 @@ class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
         $this->testKernel->boot();
     }
 
+    protected function createDirectory($directory)
+    {
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+    }
+
     protected function deleteDirectory($directory)
     {
         if (!is_dir($directory)) {
@@ -33,7 +47,8 @@ class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
         foreach ($files as $file) {
             if (is_dir($file)) {
                 self::deleteDirectory($file);
-            } else {
+            }
+            else {
                 unlink($file);
             }
         }
@@ -50,7 +65,8 @@ class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
         $application->setAutoExit(false);
 
         $output = new NullOutput();
-        $input = new ArrayInput([
+        $input  = new ArrayInput(
+            [
                 'name' => $name,
             ]
         );
@@ -75,7 +91,7 @@ class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
     protected function getParameters($key = '')
     {
         if (empty($this->parameters)) {
-            $path = __DIR__ . '/config_test.yml';
+            $path             = __DIR__ . '/config_test.yml';
             $this->parameters = Yaml::parse(file_get_contents($path));
         }
 

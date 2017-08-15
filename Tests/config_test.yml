@@ -47,25 +47,57 @@ doctrine:
                 prefix: 'ResponsiveImageBundle\Tests\Entity\TestImage'
                 is_bundle: false
 
+oneup_flysystem:
+    adapters:
+        nomad.local:
+            local:
+                directory: '%kernel.root_dir%/../web/%responsive_image.image_directory%'
+        nomad.temp:
+            local:
+                directory: '%kernel.root_dir%/../var/cache/resp_img'
+    filesystems:
+        nomad.local:
+            adapter: nomad.local
+            alias: responsive_image_filesystem
+        nomad.temp:
+            adapter: nomad.temp
+            alias: responsive_image_temp
+
 responsive_image:
-    debug: false
     image_compression: 90
     image_directory: 'test/images'
     image_driver: 'gd'
     image_styles_directory: 'styles'
     breakpoints:
-        base: 'min-width: 0px'
-        desktop: 'min-width: 1100px'
-        tv: 'min-width: 1800px'
+        base:
+            media_query: 'min-width: 0px'
+        desktop:
+            media_query: 'min-width: 1100px'
+        tv:
+            media_query: 'min-width: 1800px'
     image_styles:
         thumb:
             effect: 'crop'
             width: 180
             height: 180
+        big_thumb:
+            effect:  'crop'
+            width:  300
+            height:  600
+        test_scale:
+            effect: 'scale'
+            width: 500
+            height: 800 # @TODO: should be able to handle only one dimension
     picture_sets:
         thumb_picture:
-            base:
-                effect:  'crop'
-                width:  300
-                height:  600
-            desktop: 'thumb'
+            fallback: 'thumb'
+            sources:
+                base: 'big_thumb'
+                desktop: 'thumb'
+    size_sets:
+        blog_sizes:
+            fallback: 'thumb'
+            sizes:
+                10vw:
+                    breakpoint: 'desktop'
+            srcsets: [ 'thumb', 'big_thumb' ]

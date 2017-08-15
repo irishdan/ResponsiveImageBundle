@@ -71,8 +71,7 @@
                 // Merge current options with the custom option.
                 function setOptions(customOptions) {
                     this.options = $.extend(this.options, customOptions);
-                };
-
+                }
                 // Initialize the image
                 this.$image = $(object);
                 // Initialize an image holder
