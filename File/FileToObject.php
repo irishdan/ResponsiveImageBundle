@@ -23,9 +23,12 @@ use IrishDan\ResponsiveImageBundle\ResponsiveImageRepositoryInterface;
 class FileToObject
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $manager;
+    /**
+     * @var string
+     */
     private $entityClassName;
 
     public function __construct(EntityManagerInterface $manager, ImageEntityNameResolver $nameResolver)
