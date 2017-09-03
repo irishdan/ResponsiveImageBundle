@@ -19,7 +19,7 @@
         "symfony/twig-bundle": "^3.2",
         "symfony/validator": "^3.2",
         "symfony/property-access": "^3.2",
-        "symfony/monolog-bundle": "^3.0.2",
+        "symfony/monolog-bundle": "^2.8",
         "sensio/generator-bundle": "^3.0"
     },
     "require-dev": {

@@ -23,6 +23,6 @@ class ResponsiveImageBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new DefaultConfigurationPass());
+        // $container->addCompilerPass(new DefaultConfigurationPass());
     }
 }

@@ -8,7 +8,6 @@
  * code.
  */
 
-
 namespace IrishDan\ResponsiveImageBundle;
 
 use Symfony\Component\HttpKernel\Config\FileLocator;
