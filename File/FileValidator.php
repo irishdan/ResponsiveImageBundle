@@ -35,18 +35,17 @@ class FileValidator implements FileValidatorInterface
     public function validate(UploadedFile $file)
     {
         // Check allowed types.
-        $fileExtension        = $file->getClientOriginalExtension();
-        $guessedFileExtension = $file->guessExtension();
+        $fileExtension        = strtolower($file->getClientOriginalExtension());
+        $guessedFileExtension = strtolower($file->guessExtension());
 
-        if ($fileExtension !== $guessedFileExtension) {
-            $this->errors[] = 'File extension does not match mime type extension';
+        if (!in_array($guessedFileExtension, $this->allowedTypes)) {
+          $this->errors[] = 'Files of "' . $guessedFileExtension . '" type are not allowed';
 
-            return false;
+          return false;
         }
 
-        $extension = strtolower($fileExtension);
-        if (!in_array($extension, $this->allowedTypes)) {
-            $this->errors[] = 'Files of "' . $extension . '" type are not allowed';
+        if (!in_array($fileExtension, $this->allowedTypes)) {
+            $this->errors[] = 'Files of "' . $fileExtension . '" type are not allowed';
 
             return false;
         }
