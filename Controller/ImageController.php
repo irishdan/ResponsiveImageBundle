@@ -33,6 +33,7 @@ class ImageController extends Controller
     {
         // Get image style information.
         if (empty($this->get('responsive_image.style_manager')->styleExists($stylename))) {
+            // @TODO: Custom exception would better.
             throw $this->createNotFoundException('The style does not exist');
         }
 
@@ -47,7 +48,7 @@ class ImageController extends Controller
             if (!empty($generatedImageArray[$stylename])) {
                 $path = $generatedImageArray[$stylename];
 
-                $cache  = $this->get('responsive_image.file_system_factory')->getAdapter();
+                $cache  = $this->get('responsive_image.file_system_wrapper')->getAdapter();
                 $stream = $cache->readStream($path);
 
                 $response = new StreamedResponse();
