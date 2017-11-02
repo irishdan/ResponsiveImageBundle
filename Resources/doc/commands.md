@@ -5,7 +5,7 @@ Both commands require the [symfony generator bundle](http://symfony.com/doc/mast
 
 ## Generate Image entity
 
-Generates a Doctrine image [entity](entity.md) you can use and/or modify for your own needs. 
+Generates a Doctrine image [entity](entities.md) you can use and/or modify for your own needs. 
 
 ```php
 php bin/console responsive_image:generate:entity

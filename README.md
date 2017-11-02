@@ -159,7 +159,7 @@ You can now render [responsiveimages](Resources/doc/rendering.md) using srcset a
 - [Image entities](Resources/doc/entities.md)
 - [Uploading](Resources/doc/uploading.md)
 - [Styled image generation](Resources/doc/styled-image-generation.md)
-- [Image rendering](Resources/doc/entities.md)
+- [Image rendering](Resources/doc/rendering.md)
 - [Art Direction](Resources/doc/art-direction.md)
 - [Commands](Resources/doc/commands.md)
 - [Configuration](Resources/doc/configuration.md)
