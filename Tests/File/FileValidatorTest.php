@@ -66,26 +66,4 @@ class FileValidatorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($valid);
     }
-
-    public function testMimeAndExtensionDontMatch()
-    {
-        $uploadedFile = $this->getMockFileUpload();
-        $uploadedFile->expects($this->once())
-                     ->method('getClientOriginalExtension')
-                     ->will(
-                         $this->returnValue('jpg')
-                     );
-        $uploadedFile->expects($this->once())
-                     ->method('guessExtension')
-                     ->will(
-                         $this->returnValue('png')
-                     );
-
-        // Test the validator.
-        $validator = new FileValidator();
-
-        $valid = $validator->validate($uploadedFile);
-
-        $this->assertFalse($valid);
-    }
 }
