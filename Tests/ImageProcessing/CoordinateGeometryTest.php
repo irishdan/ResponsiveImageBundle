@@ -25,6 +25,10 @@ class CoordinateGeometryTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(80, $this->geometry->axisLength('x'));
         $this->assertEquals(80, $this->geometry->axisLength('y'));
+
+        $this->geometry->setPoints(283, 397, 991, 1289);
+        $this->assertEquals(708, $this->geometry->axisLength('x'));
+        $this->assertEquals(892, $this->geometry->axisLength('y'));
     }
 
     public function testScaleSize()
