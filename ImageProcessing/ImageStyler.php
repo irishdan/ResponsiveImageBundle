@@ -36,7 +36,7 @@ class ImageStyler
      */
     private $focusCoordinates = [];
     /**
-     * @var
+     * @var \Intervention\Image\Image
      */
     private $image;
     /**
@@ -71,8 +71,8 @@ class ImageStyler
     public function setCoordinateGroups($cropFocusCoords)
     {
         // x1, y1, x2, y2:x3, y3, x4, y4
-        $coordsSets             = explode(':', $cropFocusCoords);
-        $this->cropCoordinates  = explode(', ', $coordsSets[0]);
+        $coordsSets = explode(':', $cropFocusCoords);
+        $this->cropCoordinates = explode(', ', $coordsSets[0]);
         $this->focusCoordinates = explode(', ', $coordsSets[1]);
     }
 
@@ -83,9 +83,9 @@ class ImageStyler
      */
     public function setStyleData($style = [])
     {
-        $this->styleData['effect']    = empty($style['effect']) ? null : $style['effect'];
-        $this->styleData['width']     = empty($style['width']) ? null : $style['width'];
-        $this->styleData['height']    = empty($style['height']) ? null : $style['height'];
+        $this->styleData['effect'] = empty($style['effect']) ? null : $style['effect'];
+        $this->styleData['width'] = empty($style['width']) ? null : $style['width'];
+        $this->styleData['height'] = empty($style['height']) ? null : $style['height'];
         $this->styleData['greyscale'] = empty($style['greyscale']) ? null : $style['greyscale'];
     }
 
@@ -123,7 +123,7 @@ class ImageStyler
      * @param       $source
      * @param       $destination
      * @param array $style
-     * @param null  $cropFocusCoords
+     * @param null $cropFocusCoords
      *
      * @return string
      */
@@ -202,12 +202,16 @@ class ImageStyler
      */
     protected function cropImage($width, $height, $xOffset, $yOffset)
     {
-        $this->image->crop(
-            round($width),
-            round($height),
-            round($xOffset),
-            round($yOffset)
-        );
+        try {
+            $this->image->crop(
+                round($width),
+                round($height),
+                round($xOffset),
+                round($yOffset)
+            );
+        } catch (Exception $exception) {
+            throw new ImageProcessingException($e->getMessage);
+        }
     }
 
     /**
@@ -221,11 +225,11 @@ class ImageStyler
             $geometry = new CoordinateGeometry($cropCoords[0], $cropCoords[1], $cropCoords[2], $cropCoords[3]);
 
             // Get the lengths.
-            $newWidth  = $geometry->axisLength('x');
+            $newWidth = $geometry->axisLength('x');
             $newHeight = $geometry->axisLength('y');
 
             // Do the initial crop.
-            $this->image->crop($newWidth, $newHeight, $cropCoords[0], $cropCoords[1]);
+            $this->cropImage($newWidth, $newHeight, $cropCoords[0], $cropCoords[1]);
         }
     }
 
@@ -237,7 +241,7 @@ class ImageStyler
     protected function getCoordinates($type = 'crop')
     {
         $coords = $this->{$type . 'Coordinates'};
-        $valid  = 0;
+        $valid = 0;
         foreach ($coords as $id => $coord) {
             if ($coord > 0) {
                 $valid++;
