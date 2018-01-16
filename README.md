@@ -5,26 +5,21 @@
 
 ## Overview:
 
-The ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped, greyscale) in Symfony3.
-This bundle allows for the management and presentation of images in various styles (scaled, cropped, grey scale etc etc)
-and sizes.
-Art directed responsive images, with picture or sizes/srcset, can also be generated.
-Define break points, map them to images styles to create responsive images and css.
+The ResponsiveImageBundle adds the ability to easily create styled and responsive images (scaled, cropped, greyscale) in Symfony3.
+Responsive images are generated as <picture> tags or as <img> tags with sizes and scrset attributes. 
+
+A crop and focus area widget is also provided to ensure that cropped images always include the most important part of the image.
 
 The bundle uses flysystem filesystem abstraction layer giving you control over where images are stored.
-Eventas are used to dirvie the system, giving more flexibiltiy and extensibility, can control when images are generated, eg perhaps this should be queued
-Images can be created from predefined styles or on the fly
-supports retina 2x 1.5x images
-
-ResponsiveImageBundle adds the ability to easily created styled responsive images (scaled, cropped, greyscale) in Symfony3.
+Events are used to drive the system, giving more flexibiltiy and the ability to implement queuing of intensive image processing. 
 
 ## Features
 
 - Image objects are stored via Doctrine ORM
-- Handles uploading images to a configurable directory or an s3 bucket. 
-- Allows for images styles to be defined in configuration.
-- Allows breakpoints and pictures sets to be configured
-- Handles creation of styled images on the fly (as they are viewed) or viw events listeners
+- Handles uploading images to a "FlySystem" filesystem 
+- Images styles are defined in configuration.
+- Breakpoints and pictures sets are defined in configuration
+- Handles creation of styled images on the fly (as they are viewed) if using a local filesystem
 - Includes a widget to define an images crop and focus areas giving art direction to styled images.
 
 ## Quick and basic setup
@@ -122,7 +117,7 @@ breakpoints:
             desktop: groovy_thumbnail_style_desktop
 
 ```
-You can now render [responsive <picture> images](Resources/doc/rendering.md) using and even render [responsive background image css](Resources/doc/rendering.md) in twig templates
+You can now render &lt;picture> [responsive images](Resources/doc/rendering.md) or render [responsive background image css](Resources/doc/rendering.md) in twig templates
 
 ```
 <head>
@@ -146,7 +141,7 @@ responsive_image:
             srcsets: [ 'groovy_thumbnail_style_mobile', 'groovy_thumbnail_style_desktop' ]
 
 ```
-You can now render [responsiveimages](Resources/doc/rendering.md) using srcset and image sizes in twig templates.
+You can now render &lt;img> [responsive images](Resources/doc/rendering.md) width srcset and sizes attributes in twig templates.
 
 ```
     {{ sizes_image(image, 'blog_sizes') }}
