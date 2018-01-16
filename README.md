@@ -10,13 +10,13 @@ Responsive images are generated as <picture> tags or as <img> tags with sizes an
 
 A crop and focus area widget is also provided to ensure that cropped images always include the most important part of the image.
 
-The bundle uses flysystem filesystem abstraction layer giving you control over where images are stored.
+The bundle uses [FlySystem](http://flysystem.thephpleague.com/) filesystem abstraction layer giving you control over where images are stored.
 Events are used to drive the system, giving more flexibiltiy and the ability to implement queuing of intensive image processing. 
 
 ## Features
 
 - Image objects are stored via Doctrine ORM
-- Handles uploading images to a "FlySystem" filesystem 
+- Handles uploading images to a "[FlySystem](http://flysystem.thephpleague.com/)" filesystem 
 - Images styles are defined in configuration.
 - Breakpoints and pictures sets are defined in configuration
 - Handles creation of styled images on the fly (as they are viewed) if using a local filesystem
