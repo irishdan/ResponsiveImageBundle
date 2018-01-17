@@ -1,14 +1,16 @@
 # Art Direction
 
-Styles images are automatically cropped which can cause important parts of the image to be cut out of the image.
+Styled images are automatically cropped which can cause important parts of the image to be cut out or partially cut out.
 This where art direction can help. 
 
-Essentially a method of defining which area of a source image is the focus, the most important
-area, of an image. Once we know the most important area of a image, we can ensure that this area is always include in any cropped images.
+By defining which area of a source image is the focus area, or the most important,area of the image, we can ensure that 
+this area is always include in any cropped images. 
 
 ## CropFocus Widget
 
 This bundle includes a widget for defining two areas on the source image.
+
+<img src="images/cropfocuswidgetlabelled.jpg" />
 
 ### The crop Area
 The crop area is an area of the image that is always removed.
