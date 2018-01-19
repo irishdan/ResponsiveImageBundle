@@ -6,7 +6,7 @@
 ## Overview:
 
 The ResponsiveImageBundle adds the ability to easily create styled and responsive images (scaled, cropped, greyscale) in Symfony3.
-Responsive images are generated as <picture> tags or as <img> tags with sizes and scrset attributes. 
+Responsive images are generated as &lt;picture> tags or as &lt;mg> tags with sizes and scrset attributes. 
 
 A crop and focus area widget is also provided to ensure that cropped images always include the most important part of the image.
 
@@ -20,7 +20,7 @@ Events are used to drive the system, giving more flexibiltiy and the ability to 
 - Images styles are defined in configuration.
 - Breakpoints and pictures sets are defined in configuration
 - Handles creation of styled images on the fly (as they are viewed) if using a local filesystem
-- Includes a widget to define an images crop and focus areas giving art direction to styled images.
+- Includes a widget to define an image's crop and focus areas giving art direction to styled images
 
 ## Quick and basic setup
 

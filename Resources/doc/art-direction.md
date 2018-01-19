@@ -3,12 +3,16 @@
 Styled images are automatically cropped which can cause important parts of the image to be cut out or partially cut out.
 This where art direction can help. 
 
-By defining which area of a source image is the focus area, or the most important,area of the image, we can ensure that 
-this area is always include in any cropped images. 
+By defining which area of a source image is the focus area, or the most important area of the image, we can ensure that 
+this area is always included in any cropped images. 
 
 ## CropFocus Widget
 
-This bundle includes a widget for defining two areas on the source image.
+This bundle includes a widget for defining two areas on the source image:
+- Crop area
+- Focus area
+
+These areas are stored together as coordinates, x1,y1,x2,y2:x1,y1,x2,y2. (crop coordinates:focus coordinates)
 
 <img src="images/cropfocuswidgetlabelled.jpg" />
 
@@ -16,14 +20,14 @@ This bundle includes a widget for defining two areas on the source image.
 The crop area is an area of the image that is always removed.
 
 ### The focus area
-The focus area is an area which is never cropped out. This area is the most important part of the image  
+The focus area is an area which is never cropped out. This area is the most important part of the image.  
 
 ### Usage
-The CropFocus widget is included in the generated crud. A custom formType is included which creates a 'crop and focus widget'. This widget allows users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
+The CropFocus widget is included in the [generated crud](commands.md#generate-image-entity-crud). A custom formType is included which creates a 'crop and focus widget'. This widget allows users to select an area which is always cropped out of the image, and a focus area which is always included in the image.
 
 <img src="images/cropfocuswidget.jpg" />
 
-The black area will always be cropped out for all image styles. The inner rectangle will always be fully included in styled images. 
+The black area will always be cropped out for all image styles. The inner rectangle will always be included in styled images. 
 There are some combinations of styles dimensions and focus dimensions where its just not possible include the whole focus rectangle. 
 In this case the largest possible portion of the focus rectangle is included.
 
