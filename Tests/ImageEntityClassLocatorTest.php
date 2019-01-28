@@ -10,9 +10,10 @@
 
 namespace IrishDan\ResponsiveImageBundle;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Config\FileLocator;
 
-class ImageEntityClassLocatorTest extends \PHPUnit_Framework_TestCase
+class ImageEntityClassLocatorTest extends TestCase
 {
     public function getBundleDirectory()
     {

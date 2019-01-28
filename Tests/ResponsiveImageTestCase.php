@@ -10,12 +10,13 @@
 
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Yaml\Yaml;
 
-class ResponsiveImageTestCase extends \PHPUnit_Framework_TestCase
+class ResponsiveImageTestCase extends TestCase
 {
     protected $testKernel;
     protected $parameters = [];

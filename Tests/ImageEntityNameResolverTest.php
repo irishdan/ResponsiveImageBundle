@@ -11,9 +11,10 @@
 namespace IrishDan\ResponsiveImageBundle;
 
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 
-class ImageEntityNameResolverTest extends \PHPUnit_Framework_TestCase
+class ImageEntityNameResolverTest extends TestCase
 {
     protected $cache;
 

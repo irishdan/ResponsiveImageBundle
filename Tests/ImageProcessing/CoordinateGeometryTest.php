@@ -11,8 +11,9 @@
 namespace IrishDan\ResponsiveImageBundle\Tests\ImageProcessing;
 
 use IrishDan\ResponsiveImageBundle\ImageProcessing\CoordinateGeometry;
+use PHPUnit\Framework\TestCase;
 
-class CoordinateGeometryTest extends \PHPUnit_Framework_TestCase
+class CoordinateGeometryTest extends TestCase
 {
     protected $geometry;
 

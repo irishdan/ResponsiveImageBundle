@@ -13,12 +13,14 @@ services:
 
 # This service handles style paths, picture sets and srcsets
     responsive_image.style_manager:
+        public: true
         class: IrishDan\ResponsiveImageBundle\StyleManager
         arguments: [ '%responsive_image%' ]
 
 # This is the service that creates derivative images.
 # Its does so by interacting with the intervention image library.
     responsive_image.image_styler:
+        public: true
         class: IrishDan\ResponsiveImageBundle\ImageProcessing\ImageStyler
         arguments: [ '%responsive_image%' ]
 
@@ -187,3 +189,8 @@ services:
         arguments: [ '@responsive_image.style_manager', '@responsive_image.url_builder' , '@responsive_image.image_manager']
         tags:
             - { name: twig.extension }
+
+
+    router:
+        class: Symfony\Component\Routing\Router
+        public: true

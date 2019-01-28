@@ -11,7 +11,6 @@
 namespace IrishDan\ResponsiveImageBundle\Tests;
 
 use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
-use IrishDan\ResponsiveImageBundle\File\FileManager;
 
 
 class StyleManagerTest extends ResponsiveImageTestCase

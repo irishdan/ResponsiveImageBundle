@@ -1,20 +1,13 @@
 <?php
-/**
- * This file is part of the IrishDan\ResponsiveImageBundle package.
- *
- * (c) Daniel Byrne <danielbyrne@outlook.com>
- *
- * For the full copyright and license information, please view the LICENSE file that was distributed with this source
- * code.
- */
 
 namespace IrishDan\ResponsiveImageBundle\Tests\File;
 
 use IrishDan\ResponsiveImageBundle\File\FilenameTransliterator;
 use IrishDan\ResponsiveImageBundle\File\FileToObject;
 use IrishDan\ResponsiveImageBundle\Tests\Entity\TestImage;
+use PHPUnit\Framework\TestCase;
 
-class FilenameTransliteratorTest extends \PHPUnit_Framework_TestCase
+class FilenameTransliteratorTest extends TestCase
 {
     public function testTransliterate()
     {

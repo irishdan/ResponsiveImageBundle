@@ -1,19 +1,12 @@
 <?php
-/**
- * This file is part of the IrishDan\ResponsiveImageBundle package.
- *
- * (c) Daniel Byrne <danielbyrne@outlook.com>
- *
- * For the full copyright and license information, please view the LICENSE file that was distributed with this source
- * code.
- */
 
 namespace IrishDan\ResponsiveImageBundle\Tests\File;
 
 use IrishDan\ResponsiveImageBundle\File\FileValidator;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class FileValidatorTest extends \PHPUnit_Framework_TestCase
+class FileValidatorTest extends TestCase
 {
     protected function getMockFileUpload()
     {

@@ -1,18 +1,15 @@
 <?php
-/**
- * This file is part of the IrishDan\ResponsiveImageBundle package.
- *
- * (c) Daniel Byrne <danielbyrne@outlook.com>
- *
- * For the full copyright and license information, please view the LICENSE file that was distributed with this source
- * code.
- */
 
 namespace IrishDan\ResponsiveImageBundle\Command;
 
 use IrishDan\ResponsiveImageBundle\Generator\ImageEntityGenerator;
 use IrishDan\ResponsiveImageBundle\ImageEntityNameResolver;
-use Sensio\Bundle\GeneratorBundle\Command\GeneratorCommand;
+use Symfony\Bundle\MakerBundle\ConsoleStyle;
+use Symfony\Bundle\MakerBundle\DependencyBuilder;
+use Symfony\Bundle\MakerBundle\Generator;
+use Symfony\Bundle\MakerBundle\InputConfiguration;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +23,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * @package IrishDan\ResponsiveImageBundle\Command
  */
-class GenerateImageEntityCommand extends GeneratorCommand
+class GenerateImageEntityCommand extends BaseCommand
 {
     protected $entityNameResolver;
     protected $responsiveImageEntity;
@@ -39,10 +36,10 @@ class GenerateImageEntityCommand extends GeneratorCommand
 
     public function __construct(ImageEntityNameResolver $entityNameResolver, $doctrine)
     {
-        $this->entityNameResolver    = $entityNameResolver;
-        $this->doctrine              = $doctrine;
+        $this->entityNameResolver = $entityNameResolver;
+        $this->doctrine = $doctrine;
         $this->responsiveImageEntity = $entityNameResolver->getClassName();
-        $this->classExists           = $entityNameResolver->classExists();
+        $this->classExists = $entityNameResolver->classExists();
 
         parent::__construct();
     }
@@ -69,15 +66,14 @@ class GenerateImageEntityCommand extends GeneratorCommand
                         new InputOption('entity_name', '', InputOption::VALUE_REQUIRED, 'The name of the entity'),
                     ]
                 );
-        }
-        // The classname is set and and the entity already exists
+        } // The classname is set and and the entity already exists
         elseif ($this->classExists) {
             $this->needsOverWritePermission = true;
 
             // Needs to have the entityName and bundle properties set
             // @TODO:Is there a nicer way to do this?
-            $em        = $this->doctrine->getManager();
-            $metadata  = $em->getClassMetadata($this->responsiveImageEntity);
+            $em = $this->doctrine->getManager();
+            $metadata = $em->getClassMetadata($this->responsiveImageEntity);
             $namespace = $metadata->namespace;
 
             // This is bit hacky but it'll do for now.
@@ -86,9 +82,9 @@ class GenerateImageEntityCommand extends GeneratorCommand
                 $namespace = substr($namespace, 0, -7);
             }
 
-            $namespaceParts   = explode('\\', $namespace);
-            $this->bundle     = array_pop($namespaceParts);
-            $entityNameParts  = explode('\\', $this->responsiveImageEntity);
+            $namespaceParts = explode('\\', $namespace);
+            $this->bundle = array_pop($namespaceParts);
+            $entityNameParts = explode('\\', $this->responsiveImageEntity);
             $this->entityName = array_pop($entityNameParts);
 
             $this
@@ -105,7 +101,7 @@ class GenerateImageEntityCommand extends GeneratorCommand
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      */
     protected function interact(InputInterface $input, OutputInterface $output)
@@ -131,15 +127,14 @@ class GenerateImageEntityCommand extends GeneratorCommand
             $output->writeln($message);
 
             // Ask whether overwrite is allowed
-            $question  = $this->createYesNoQuestion($questionHelper, $this->responsiveImageEntity);
+            $question = $this->createYesNoQuestion($questionHelper, $this->responsiveImageEntity);
             $overwrite = $questionHelper->ask($input, $output, $question);
 
             if ($overwrite !== 'y') {
                 throw new \RuntimeException(
                     'Aborting, overwrite permission is needed.'
                 );
-            }
-            else {
+            } else {
                 $this->overwrite = true;
             }
         }
@@ -208,7 +203,7 @@ class GenerateImageEntityCommand extends GeneratorCommand
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return int
@@ -232,7 +227,7 @@ class GenerateImageEntityCommand extends GeneratorCommand
         $style = new SymfonyStyle($input, $output);
 
         $bundle = $this->bundle;
-        $name   = $this->entityName;
+        $name = $this->entityName;
 
         $style->text('Generating New doctrine entity class ' . $name . ' generated in ' . $bundle);
 
@@ -280,7 +275,7 @@ class GenerateImageEntityCommand extends GeneratorCommand
                     'y',
                     'n',
                 ];
-                $valid   = in_array($answer, $allowed);
+                $valid = in_array($answer, $allowed);
                 if (!$valid) {
                     throw new \RuntimeException(
                         'Only allowed values are ' . implode(', ', $allowed)
@@ -292,5 +287,51 @@ class GenerateImageEntityCommand extends GeneratorCommand
         );
 
         return $question;
+    }
+
+    /**
+     * Return the command name for your maker (e.g. make:report).
+     *
+     * @return string
+     */
+    public static function getCommandName(): string
+    {
+        // TODO: Implement getCommandName() method.
+    }
+
+    /**
+     * Configure the command: set description, input arguments, options, etc.
+     *
+     * By default, all arguments will be asked interactively. If you want
+     * to avoid that, use the $inputConfig->setArgumentAsNonInteractive() method.
+     *
+     * @param Command $command
+     * @param InputConfiguration $inputConfig
+     */
+    public function configureCommand(Command $command, InputConfiguration $inputConfig)
+    {
+        // TODO: Implement configureCommand() method.
+    }
+
+    /**
+     * Configure any library dependencies that your maker requires.
+     *
+     * @param DependencyBuilder $dependencies
+     */
+    public function configureDependencies(DependencyBuilder $dependencies)
+    {
+        // TODO: Implement configureDependencies() method.
+    }
+
+    /**
+     * Called after normal code generation: allows you to do anything.
+     *
+     * @param InputInterface $input
+     * @param ConsoleStyle $io
+     * @param Generator $generator
+     */
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
+    {
+        // TODO: Implement generate() method.
     }
 }

@@ -13,6 +13,7 @@ namespace IrishDan\ResponsiveImageBundle\Command;
 use IrishDan\ResponsiveImageBundle\ImageEntityClassLocator;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand;
 use Sensio\Bundle\GeneratorBundle\Command\Validators;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  *
  * @package IrishDan\ResponsiveImageBundle\Command
  */
-class GenerateImageEntityCrudCommand extends GenerateDoctrineCrudCommand
+class GenerateImageEntityCrudCommand extends Command
 {
     protected $responsiveImageEntity;
     protected $imageEntityShorthand;
