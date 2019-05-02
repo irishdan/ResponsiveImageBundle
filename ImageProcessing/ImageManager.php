@@ -12,6 +12,7 @@ namespace IrishDan\ResponsiveImageBundle\ImageProcessing;
 
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvent;
 use IrishDan\ResponsiveImageBundle\Event\StyledImagesEvents;
+use IrishDan\ResponsiveImageBundle\Exception\ImageFilesystemException;
 use IrishDan\ResponsiveImageBundle\FileSystem\PrimaryFileSystemWrapper;
 use IrishDan\ResponsiveImageBundle\ResponsiveImageInterface;
 use IrishDan\ResponsiveImageBundle\StyleManager;
@@ -25,9 +26,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class ImageManager
 {
-    /**
-     * @var StyleManager
-     */
     protected $styleManager;
     protected $ImageStyler;
     protected $fileSystem;
@@ -35,6 +33,14 @@ class ImageManager
     protected $eventDispatcher;
     protected $generatedImages = [];
 
+    /**
+     * ImageManager constructor.
+     * @param StyleManager $styleManager
+     * @param ImageStyler $imageStyler
+     * @param PrimaryFileSystemWrapper $fileSystem
+     * @param FilesystemInterface|null $temporaryFileSystem
+     * @param EventDispatcherInterface|null $eventDispatcher
+     */
     public function __construct(
         StyleManager $styleManager,
         ImageStyler $imageStyler,
@@ -49,6 +55,10 @@ class ImageManager
         $this->eventDispatcher     = $eventDispatcher;
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @return array
+     */
     public function createAllStyledImages(ResponsiveImageInterface $image)
     {
         $styles = $this->styleManager->getAllStylesNames();
@@ -56,6 +66,11 @@ class ImageManager
         return $this->createStyledImages($image, $styles);
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param array $styles
+     * @return array
+     */
     public function createStyledImages(ResponsiveImageInterface $image, array $styles = [])
     {
         // Copy the image from its current filesystem onto the filesystem used by intervention.
@@ -77,6 +92,10 @@ class ImageManager
         return $this->generatedImages;
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param $style
+     */
     protected function createStyledImage(ResponsiveImageInterface $image, $style)
     {
         $styleData = $this->styleManager->getStyleData($style);
@@ -97,17 +116,24 @@ class ImageManager
                 $this->ImageStyler->createImage($source, $destination, $styleData, $cropFocusData);
                 $this->generatedImages[$style] = $relativeStylePath;
             } catch (\Exception $e) {
-                // @TODO: Throw exception
+
             }
         }
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     */
     public function deleteAllImages(ResponsiveImageInterface $image)
     {
         $this->deleteImage($image);
         $this->deleteStyledImages($image);
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param array $styles
+     */
     public function deleteStyledImages(ResponsiveImageInterface $image, array $styles = [])
     {
         if (empty($styles)) {
@@ -119,6 +145,10 @@ class ImageManager
         }
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param string $style
+     */
     public function deleteImage(ResponsiveImageInterface $image, $style = '')
     {
         if (!empty($style)) {
@@ -130,21 +160,43 @@ class ImageManager
         $this->fileSystem->delete($path);
     }
 
+    /**
+     * Creates a directory for storing styled images.
+     *
+     * @param $destination
+     * @throws ImageFilesystemException
+     */
     protected function createStyleDirectory($destination)
     {
         $filename  = basename($destination);
         $directory = explode($filename, $destination)[0];
 
         if (!$this->temporaryFileSystem->has($directory)) {
-            $this->temporaryFileSystem->createDir($directory);
+            try {
+                $this->temporaryFileSystem->createDir($directory);
+            }
+            catch (\Exception $e) {
+                throw new ImageFilesystemException($e->getMessage());
+            }
         }
     }
 
+    /**
+     * Checks is an image file exists in the filesystem.
+     *
+     * @param $path
+     * @return bool
+     */
     public function imageExists($path)
     {
         return $this->fileSystem->has($path);
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param $customStyleString
+     * @param bool $forceGenerate
+     */
     public function createCustomStyledImage(ResponsiveImageInterface $image, $customStyleString, $forceGenerate = false)
     {
         // @TODO: To avoid creating images, that already exist, check if it exists, need a way to disable this checking
@@ -163,6 +215,9 @@ class ImageManager
         }
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     */
     public function deleteCustomStyledImages(ResponsiveImageInterface $image)
     {
         // @TODO: Implement
