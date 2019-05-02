@@ -42,7 +42,7 @@ class ImageEntityClassLocator
      * @param             $bundles
      * @param FileLocator $fileLocator
      */
-    public function __construct($bundles = [], FileLocator $fileLocator)
+    public function __construct(array $bundles = [], FileLocator $fileLocator)
     {
         $this->bundles     = $bundles;
         $this->fileLocator = $fileLocator;
@@ -55,6 +55,8 @@ class ImageEntityClassLocator
     {
         // Scan Bundle directories for entity directory
         if (empty($this->className)) {
+            // @TODO: For symfony 4, this should merely scan src/Entity directory, or
+            // should check the doctrine mappings config for the directory
             foreach ($this->bundles as $key => $namespace) {
 
                 $path = $this->fileLocator->locate('@' . $key);

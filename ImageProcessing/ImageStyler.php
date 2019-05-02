@@ -48,6 +48,24 @@ class ImageStyler
      */
     private $styleData = [];
 
+    private $allowedStyleValues = [
+        'blur',
+        'brightness',
+        'compression',
+        'contrast',
+        'colorize',
+        'effect',
+        'flip',
+        'greyscale',
+        'height',
+        'opacity',
+        'orientate',
+        'pixelate',
+        'rotate',
+        'sharpen',
+        'width',
+    ];
+
     /**
      * ImageStyler constructor.
      *
@@ -70,10 +88,12 @@ class ImageStyler
      */
     public function setCoordinateGroups($cropFocusCoords)
     {
-        // x1, y1, x2, y2:x3, y3, x4, y4
-        $coordsSets = explode(':', $cropFocusCoords);
-        $this->cropCoordinates = explode(', ', $coordsSets[0]);
-        $this->focusCoordinates = explode(', ', $coordsSets[1]);
+        // x1, y1, x2, y2:x3, y3, x4, y4 => x1,y1,x2,y2:x3,y3,x4,y4
+        if ($cropFocusCoords) {
+            $coordsSets             = explode(':', str_replace(' ', '', $cropFocusCoords));
+            $this->cropCoordinates  = explode(',', $coordsSets[0]);
+            $this->focusCoordinates = explode(',', $coordsSets[1]);
+        }
     }
 
     /**
@@ -83,10 +103,11 @@ class ImageStyler
      */
     public function setStyleData($style = [])
     {
-        $this->styleData['effect'] = empty($style['effect']) ? null : $style['effect'];
-        $this->styleData['width'] = empty($style['width']) ? null : $style['width'];
-        $this->styleData['height'] = empty($style['height']) ? null : $style['height'];
-        $this->styleData['greyscale'] = empty($style['greyscale']) ? null : $style['greyscale'];
+        foreach ($style as $name => $value) {
+            if (in_array($name, $this->allowedStyleValues)) {
+                $this->styleData[$name] = $value;
+            }
+        }
     }
 
     /**
@@ -127,7 +148,7 @@ class ImageStyler
      *
      * @return string
      */
-    public function createImage($source, $destination, array $style = [], $cropFocusCoords = null)
+    public function createImage($source, $destination = null, array $style = [], $cropFocusCoords = null, $mimeType = '')
     {
         $this->setImage($source, $this->driver);
 
@@ -139,13 +160,18 @@ class ImageStyler
             $this->setCoordinateGroups($cropFocusCoords);
         }
 
-        if (!empty($this->styleData)) {
+        // Cropping and scalling should be done first
+        if (!empty($this->styleData['effect'])) {
             switch ($this->styleData['effect']) {
                 case 'scale':
                     // Do the crop rectangle first
                     // then scale the image
                     $this->doCropRectangle();
-                    $this->scaleImage($this->styleData['width'], $this->styleData['height']);
+                    // @TODO: Surely one can be ommitted??
+                    $width = empty($this->styleData['width']) ? null : $this->styleData['width'];
+                    $height = empty($this->styleData['height']) ? null : $this->styleData['height'];
+
+                    $this->scaleImage($width, $height);
                     break;
 
                 case 'crop':
@@ -184,14 +210,62 @@ class ImageStyler
 
                     break;
             }
+        }
 
-            // Do greyscale.
-            if (!empty($this->styleData['greyscale'])) {
-                $this->image->greyscale();
+        if (!empty($this->styleData)) {
+            foreach ($this->styleData as $styleKey => $styleValue) {
+                if ($styleValue !== null) {
+                    switch ($styleKey) {
+                        case 'effect':
+                        case 'width':
+                        case 'height':
+                            // Do nothing, has been dealt with above
+                            break;
+
+                        case 'orientate':
+                            $this->image->orientate();
+                            break;
+
+                        case 'colorize':
+                            $colorValues = explode(',', str_replace( ' ', '', $styleValue));
+                            if (array_key_exists(2, $colorValues)) {
+                                $this->image->colorize((int) $colorValues[0], (int) $colorValues[1], (int) $colorValues[2]);
+                            }
+
+                            break;
+
+                        case 'compression':
+                            $this->compression = $styleValue;
+                            break;
+
+                        default:
+                            $this->image->{$styleKey}((int) $styleValue);
+                            break;
+                    }
+                }
             }
         }
 
-        return $this->saveImage($destination);
+        if ($destination) {
+            return $this->saveImage($destination);
+        }
+
+        // @TODO: A user way want to convert images between formats
+        /*
+        switch ($mimeType) {
+            case 'image/jpeg':
+                $format = 'jpg';
+                break;
+
+            default:
+                $format = 'jpg';
+                break;
+        }*/
+
+        $stream = $this->image->stream(null, $this->compression);
+        $stream->imageType = $mimeType;
+
+        return $stream;
     }
 
     /**
@@ -209,8 +283,8 @@ class ImageStyler
                 round($xOffset),
                 round($yOffset)
             );
-        } catch (Exception $exception) {
-            throw new ImageProcessingException($e->getMessage);
+        } catch (\Exception $exception) {
+            throw new ImageProcessingException($exception->getMessage);
         }
     }
 

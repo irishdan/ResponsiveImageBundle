@@ -10,7 +10,8 @@
 
 namespace IrishDan\ResponsiveImageBundle;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
+// use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Interface ResponsiveImageInterface
@@ -65,7 +66,7 @@ Interface ResponsiveImageInterface
      *
      * @return mixed
      */
-    public function setWidth($width);
+    public function setWidth(int $width):void;
 
     /**
      * @return mixed
@@ -77,7 +78,7 @@ Interface ResponsiveImageInterface
      *
      * @return mixed
      */
-    public function setHeight($height);
+    public function setHeight(int $height): void;
 
     /**
      * @return mixed
@@ -85,11 +86,11 @@ Interface ResponsiveImageInterface
     public function getCropCoordinates();
 
     /**
-     * @param UploadedFile $file
+     * @param File $file
      *
      * @return mixed
      */
-    public function setFile(UploadedFile $file);
+    public function setFile(?File $file): void;
 
     /**
      * @return mixed
@@ -101,14 +102,14 @@ Interface ResponsiveImageInterface
      *
      * @return mixed
      */
-    public function setCropCoordinates($cords);
+    public function setCropCoordinates(?string $cords) : void;
 
     /**
      * @param $src
      *
      * @return mixed
      */
-    public function setSrc($src);
+    public function setSrc(string $src): void;
 
     /**
      * @return mixed

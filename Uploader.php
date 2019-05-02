@@ -48,13 +48,20 @@ class Uploader implements UploaderInterface
      * @var FileValidatorInterface
      */
     protected $fileValidator;
+
     protected $eventDispatcher;
 
+    /**
+     * @return FilesystemInterface|null
+     */
     public function getFileSystem()
     {
         return $this->fileSystem;
     }
 
+    /**
+     * @param $filesystem
+     */
     public function setFileSystem($filesystem)
     {
         $this->fileSystem = $filesystem;
@@ -80,6 +87,10 @@ class Uploader implements UploaderInterface
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @return mixed|void
+     */
     public function upload(ResponsiveImageInterface $image)
     {
         // Dispatch pre-upload event.
@@ -134,6 +145,9 @@ class Uploader implements UploaderInterface
         }
     }
 
+    /**
+     * @return array
+     */
     protected function getStorageDataFormFileSystem()
     {
         $adapter     = $this->fileSystem->getAdapter();
@@ -167,6 +181,10 @@ class Uploader implements UploaderInterface
         return [];
     }
 
+    /**
+     * @param AdapterInterface $adapter
+     * @return mixed
+     */
     protected function getAdapterType(AdapterInterface $adapter)
     {
         $class          = get_class($adapter);
@@ -175,6 +193,9 @@ class Uploader implements UploaderInterface
         return array_pop($namespaceArray);
     }
 
+    /**
+     * @return mixed|null|string
+     */
     protected function formatPath()
     {
         $path = $this->file->getClientOriginalName();
@@ -185,6 +206,9 @@ class Uploader implements UploaderInterface
         return $path;
     }
 
+    /**
+     * @return bool
+     */
     protected function isValid()
     {
         if ($this->fileValidator instanceof FileValidatorInterface) {

@@ -10,8 +10,10 @@
 
 namespace IrishDan\ResponsiveImageBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -19,34 +21,41 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  *
  * @package ResponsiveImageBundle\Controller
  */
-class ImageController extends Controller
+class ImageController extends AbstractController
 {
+
     /**
-     * Generates a derivative image as a response
+     * @param                                           $stylename
+     * @param                                           $filename
+     * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @param $stylename
-     * @param $filename
-     *
-     * @return StreamedResponse
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function indexAction($stylename, $filename)
+    public function indexAction($stylename, $filename, Request $request)
     {
         // Get image style information.
         if (empty($this->get('responsive_image.style_manager')->styleExists($stylename))) {
-            // @TODO: Custom exception would better.
             throw $this->createNotFoundException('The style does not exist');
         }
 
+        return $this->createDerivedImageResponse($filename, $stylename);
+    }
+
+    /**
+     * @param string                                    $filename
+     * @param string|array                              $style
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    protected function createDerivedImageResponse(string $filename, $style)
+    {
         // Create image if the file exists.
         $imageObject = $this->get('responsive_image.file_to_object')->getObjectFromFilename($filename);
         if (!empty($imageObject)) {
-            $generatedImageArray = $this->get('responsive_image.image_manager')->createStyledImages(
-                $imageObject,
-                [$stylename]
-            );
+            $generatedImageArray = $this->get('responsive_image.image_manager')->createStyledImages($imageObject, [$style]);
 
-            if (!empty($generatedImageArray[$stylename])) {
-                $path = $generatedImageArray[$stylename];
+            if (!empty($generatedImageArray[$style])) {
+                $path = $generatedImageArray[$style];
 
                 $cache  = $this->get('responsive_image.file_system_wrapper')->getAdapter();
                 $stream = $cache->readStream($path);
@@ -55,8 +64,8 @@ class ImageController extends Controller
                 $response->headers->set('Content-Type', $cache->getMimetype($path));
                 $response->headers->set('Content-Length', $cache->getSize($path));
                 $response->setPublic();
-                $response->setMaxAge(31536000);
-                $response->setExpires(date_create()->modify('+1 years'));
+                $response->setMaxAge(31536000); // @TODO:
+                $response->setExpires(date_create()->modify('+1 years')); // @TODO:
 
                 $response->setCallback(
                     function () use ($stream) {

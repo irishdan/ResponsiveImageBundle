@@ -87,7 +87,7 @@ responsive_image:
         groovy_thumbnail_style_mobile:
             effect: scale
             height:480
-        groovy_thumbnail_style_mobile:
+        groovy_thumbnail_style_tablet:
             effect: crop
             width: 200
             height: 300

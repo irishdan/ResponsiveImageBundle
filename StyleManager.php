@@ -60,6 +60,12 @@ class StyleManager
         }
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param null $styleName
+     * @param null $src
+     * @return ResponsiveImageInterface
+     */
     public function setImageAttributes(ResponsiveImageInterface $image, $styleName = null, $src = null)
     {
         // Use the style data to figure out the width and height for this image
@@ -92,6 +98,11 @@ class StyleManager
         return $image;
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param array $styleData
+     * @return array
+     */
     protected function getScaledDimensions(ResponsiveImageInterface $image, array $styleData)
     {
         $coordinates = $image->getCropCoordinates();
@@ -113,6 +124,10 @@ class StyleManager
         return $geometry->scaleSize($styleData['width'], $styleData['height']);
     }
 
+    /**
+     * @param $styleName
+     * @return bool
+     */
     public function styleExists($styleName)
     {
         // If its's a custom style, grab the data and add the styles array.
@@ -126,11 +141,17 @@ class StyleManager
         return !empty($style);
     }
 
+    /**
+     * @return array|mixed
+     */
     public function getAllStyles()
     {
         return $this->styles;
     }
 
+    /**
+     * @return array
+     */
     public function getAllStylesNames()
     {
         $styles = $this->getAllStyles();
@@ -138,6 +159,10 @@ class StyleManager
         return array_keys($styles);
     }
 
+    /**
+     * @param $styleName
+     * @return array|bool|mixed
+     */
     public function getStyleData($styleName)
     {
         if (!in_array($styleName, array_keys($this->styles))) {
@@ -153,6 +178,11 @@ class StyleManager
         return false;
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param $pictureSetName
+     * @return array
+     */
     public function getPictureData(ResponsiveImageInterface $image, $pictureSetName)
     {
         $mappings = [
@@ -192,6 +222,10 @@ class StyleManager
         return $mappings;
     }
 
+    /**
+     * @param $styleName
+     * @return array
+     */
     protected function findMultiplierStyles($styleName)
     {
         $multiplierStyles = [];
@@ -208,6 +242,11 @@ class StyleManager
         return $multiplierStyles;
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param $imageSizesSetName
+     * @return array
+     */
     public function getImageSizesData(ResponsiveImageInterface $image, $imageSizesSetName)
     {
         $mappings = [
@@ -255,6 +294,11 @@ class StyleManager
         return $mappings;
     }
 
+    /**
+     * @param $styleName
+     * @param $fileName
+     * @return string
+     */
     protected function buildStylePath($styleName, $fileName)
     {
         $path = $this->styleDirectory . '/' . $styleName . '/' . $fileName;
@@ -262,6 +306,11 @@ class StyleManager
         return $path;
     }
 
+    /**
+     * @param ResponsiveImageInterface $image
+     * @param null $styleName
+     * @return mixed|string
+     */
     public function getStylePath(ResponsiveImageInterface $image, $styleName = null)
     {
         $filename = $image->getPath();
@@ -276,11 +325,19 @@ class StyleManager
         return $stylePath;
     }
 
+    /**
+     * @param $key
+     * @param $styleData
+     */
     public function addStyle($key, $styleData)
     {
         $this->styles[$key] = $styleData;
     }
 
+    /**
+     * @param $customStyleString
+     * @return array
+     */
     public function styleDataFromCustomStyleString($customStyleString)
     {
         $styleData = explode('_', $customStyleString);
@@ -294,6 +351,10 @@ class StyleManager
         ];
     }
 
+    /**
+     * @param $setName
+     * @return bool|mixed
+     */
     public function getSizesSet($setName)
     {
         return isset($this->sizeSets[$setName]) ? $this->sizeSets[$setName] : false;

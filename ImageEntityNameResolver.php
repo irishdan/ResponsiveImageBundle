@@ -16,6 +16,7 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
 class ImageEntityNameResolver
 {
     const CACHE_KEY = 'responsive_image.image_entity';
+
     protected $className = null;
     protected $classLocator;
     protected $cache;
@@ -63,7 +64,7 @@ class ImageEntityNameResolver
             $classname = $this->cache->get(self::CACHE_KEY);
         }
 
-        // LAt resort use the Class locator service
+        // Last resort use the Class locator service
         if (empty($classname)) {
             $classname = $this->classLocator->getClassName();
         }
